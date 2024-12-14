@@ -10,7 +10,7 @@ interface GoogleLoginButtonProps {
 export default function GoogleLoginButton({ buttonText }: GoogleLoginButtonProps) {
   const handleGoogleLogin = () => {
     try {
-      const googleAuthUrl = `${process.env.NEXT_PUBLIC_GOOGLE_AUTH_BASE_URL}?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&response_type=token&scope=email%20profile`;
+      const googleAuthUrl = `${process.env.NEXT_PUBLIC_GOOGLE_AUTH_BASE_URL}?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}&response_type=code&scope=email%20profile`;
 
       // Google 로그인 페이지로 이동
       window.location.href = googleAuthUrl;
