@@ -13,22 +13,21 @@ const API_DOMAIN = `${DOMAIN}/api/v1`;
 const authorization = (accessToken: string) => {
     return { headers: { Authorization: `Bearer ${accessToken}` } }
 };
-const SIGN_IN_URL = () => `${API_DOMAIN}/auth/sign-in`;
+const SIGN_IN_URL = () => `${API_DOMAIN}/auth/login`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 
 export const signInRequest = async (requestBody: SignInRequestDto) => {
-    const result = await axios.post(SIGN_IN_URL(), requestBody)
-        .then(response => {
-            const responseBody: SignInResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response.data) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
-    return result;
-}
+    try {
+        const response = await axios.post(SIGN_IN_URL(), requestBody);
+        return response.data as SignInResponseDto; // 성공 시 응답 반환
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.data) {
+            return error.response.data as ResponseDto; // 실패 시 백엔드 에러 반환
+        }
+        console.error("SignInRequest Error:", error); // 네트워크 오류 또는 기타 예외
+        throw new Error("Unexpected error occurred.");
+    }
+};
 
 export const signUpRequest = async (requestBody: SignUpRequestDto) => {
     const result = await axios.post(SIGN_UP_URL(), requestBody)
