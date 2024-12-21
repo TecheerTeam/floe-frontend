@@ -34,7 +34,7 @@ export default function Main() {
     queryKey: ['records'],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getRecordRequest(pageParam, 5);
-      console.log(response); // 반환되는 데이터 확인
+      // console.log(response);
       return response;
     },
     getNextPageParam: (lastPage: GetRecordResponseDto) => {
@@ -141,7 +141,7 @@ export default function Main() {
                           if (page.content && Array.isArray(page.content)) {
                             return page.content.length > 0 ? (
                               page.content.map((recordListItem) => {
-                                console.log('Record:', recordListItem); // 각 레코드 출력
+                                // console.log('Record:', recordListItem); // 각 레코드 출력
                                 return (
                                   <PostItemCardType
                                     key={recordListItem.recordId}
@@ -170,7 +170,7 @@ export default function Main() {
                           if (page.content && Array.isArray(page.content)) {
                             return page.content.length > 0 ? (
                               page.content.map((recordListItem) => {
-                                console.log('Record:', recordListItem); // 각 게시글글 출력
+                                // console.log('Record:', recordListItem); // 각 게시글글 출력
                                 return (
                                   <PostItemListType
                                     key={recordListItem.recordId}

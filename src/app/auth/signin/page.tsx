@@ -1,10 +1,68 @@
+'use client';
 import React from 'react';
 import styles from './SignIn.module.css';
 import Link from 'next/link';
-import { useState, KeyboardEvent, useRef, ChangeEvent, useEffect } from "react";
-import { ResponseDto } from "@/apis/response";
-// import { useCookies } from "react-cookie";
+import { useState, KeyboardEvent, useRef, ChangeEvent, useEffect } from 'react';
+import { ResponseDto } from '@/apis/response';
+import { SignInRequestDto } from '@/apis/request/auth';
+import { signInRequest } from '@/apis';
+import { SignInResponseDto } from '@/apis/response/auth';
+import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/navigation'; // App Router 전용
 export default function SignIn() {
+  const router = useRouter();
+  //          state: 쿠키 상태          //
+  const [cookies, setCookie] = useCookies();
+  //          state:     email input 상태          //
+  const [email, setEmail] = useState<string>('');
+  //          state:     pw input 상태          //
+  const [password, setPassword] = useState<string>('');
+  //          state:     email input 참조 상태          //
+  const emailRef = useRef<HTMLInputElement | null>(null);
+  //          state:     pw input 참조 상태          //
+  const passwordRef = useRef<HTMLInputElement | null>(null);
+  //         event handler:    이메일 변경 이벤트 처리      //
+  const onEmailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setEmail(value);
+  };
+  //         event handler:    비밀번호호 변경 이벤트 처리      //
+  const onPwChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setPassword(value);
+  };
+  //          event handler: 이메일 input 키 다운 이벤트 처리 (엔터키 입력히 pw 포커스)         //
+  const onEmailKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+    if (!passwordRef.current) return;
+    passwordRef.current.focus();
+  };
+  //          event handler: 패스워드 input 키 다운 이벤트 처리  (엔터키 입력히 로그인 버튼 클릭)          //
+  const onPasswordKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+    onSignInButtonClickHandler();
+  };
+
+  //          event handler: 로그인 버튼 클릭 이벤트 처리          //
+  const onSignInButtonClickHandler = () => {
+    const requestBody: SignInRequestDto = { email, password };
+    signInRequest(requestBody).then(signInResponse);
+    console.log(requestBody);
+  };
+
+  //          function: sign in response 처리 함수          //
+  const signInResponse = (responseBody: SignInResponseDto | ResponseDto) => {
+    console.log('Sign In Response:', responseBody); // 회원가입 응답 출력
+    const { code } = responseBody;
+    if (code === 'U006') alert('로그인 실패.');
+    if (code !== 'U001') return;
+    const { token, expirationTime } = responseBody.data;
+    const now = new Date().getTime();
+    const expires = new Date(now + expirationTime * 1000);
+    console.log('res', responseBody);
+    setCookie('accessToken', token, { expires, path: '/' });
+    router.push('/');
+  };
   //          render: 로그인 페이지 렌더링          //
   return (
     <div className={styles['signIn-wrapper']}>
@@ -19,21 +77,33 @@ export default function SignIn() {
           <div className={styles['signIn-email-section']}>
             <div className={styles['E-MAIL']}>{'E-Mail'}</div>
             <input
+              ref={emailRef}
               type="text"
               placeholder="Enter your Email"
               className={styles['email-input']}
+              value={email}
+              onChange={onEmailChangeHandler}
+              onKeyDown={onEmailKeyDownHandler}
             />
           </div>
           <div className={styles['signIn-pw-section']}>
             <div className={styles['PW']}>{'PW'}</div>
             <input
+              ref={passwordRef}
               type="text"
               placeholder="Enter your Password"
               className={styles['pw-input']}
+              value={password}
+              onChange={onPwChangeHandler}
+              onKeyDown={onPasswordKeyDownHandler}
             />
           </div>
         </div>
-        <div className={styles['signIn-signIn-button']}>{'Sign In'}</div>
+        <div
+          className={styles['signIn-signIn-button']}
+          onClick={onSignInButtonClickHandler}>
+          {'Sign In'}
+        </div>
         <div className={styles['other-text-section']}>
           <div className={styles['other-text-left']}>
             {"Don't Have An Account?"}
