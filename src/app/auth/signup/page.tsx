@@ -184,6 +184,7 @@ export default function SignUp() {
       return;
     }
     const { code } = responseBody;
+    console.log(responseBody);
     if (code === 'U003') alert('중복된 이메일입니다');
     if (code === 'U004') alert('중복된 닉네임입니다.');
     if (code !== 'U001') return;

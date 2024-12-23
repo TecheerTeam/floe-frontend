@@ -3,7 +3,7 @@ import { ResponseDto } from './response';
 import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, PostCommentResponseDto, GetCommentResponseDto, DeleteCommentResponseDto, GetRecordResponseDto, GetRecordLikeCountResponseDto, GetRecordLikeListResponseDto } from './response/record';
 import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto } from './request/record';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
-import { SignInResponseDto, SignUpResponseDto } from './response/auth';
+import {  SignUpResponseDto } from './response/auth';
 import GetDetailRecordResponseDto from './response/record/record.response.dto';
 
 const DOMAIN = 'http://localhost:8080';
@@ -16,18 +16,74 @@ const authorization = (accessToken: string) => {
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/login`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 
+// export const signInRequest = async (requestBody: SignInRequestDto) => {
+//     try {
+//         const response = await axios.post(SIGN_IN_URL(), requestBody);
+//         return response.data as SignInResponseDto; // 성공 시 응답 반환
+//     } catch (error) {
+//         if (axios.isAxiosError(error) && error.response?.data) {
+//             return error.response.data as ResponseDto; // 실패 시 백엔드 에러 반환
+//         }
+//         console.error("SignInRequest Error:", error); // 네트워크 오류 또는 기타 예외
+//         throw new Error("Unexpected error occurred.");
+//     }
+// };
+// export const signInRequest = async (requestBody: { email: string, password: string }) => {
+//     const result = await axios.post(SIGN_IN_URL(), requestBody)
+//         .then(response => {
+//             const responseBody: SignInResponseDto = response.data;
+//             console.log('api', responseBody);
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             if (!error.response.data) return null;
+//             const responseBody: ResponseDto = error.response.data;
+//             return responseBody;
+//         });
+//     return result;
+// }
+// 로그인 요청을 보내고 응답에서 'Authorization' 헤더를 추출
+
 export const signInRequest = async (requestBody: SignInRequestDto) => {
-    try {
-        const response = await axios.post(SIGN_IN_URL(), requestBody);
-        return response.data as SignInResponseDto; // 성공 시 응답 반환
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.data) {
-            return error.response.data as ResponseDto; // 실패 시 백엔드 에러 반환
-        }
-        console.error("SignInRequest Error:", error); // 네트워크 오류 또는 기타 예외
-        throw new Error("Unexpected error occurred.");
-    }
+    const result = await axios.post(SIGN_IN_URL(), requestBody, { withCredentials: true })
+        .then(response => {
+            console.log('Response Headers:', response.headers);
+            // 응답 헤더에서 'accessToken'과 'refreshToken' 추출
+            const accessToken = response.headers['authorization']; // 'authorization'이 맞는지 확인
+            const refreshToken = response.headers['authorization-refresh']; // 'auth
+            const expires = response.headers['expires'];
+            console.log('Access Token from Headers:', accessToken);
+            console.log('Refresh Token from Headers:', refreshToken);
+
+            const responseBody = {
+                ...response.data, // 기존 응답 데이터
+                accessToken,       // 추가된 accessToken
+                refreshToken,
+                expires      // 추가된 refreshToken
+            };
+            console.log('api', responseBody);
+
+            // 토큰 값이 없으면 실패 처리
+            if (!accessToken || !refreshToken) {
+                console.error('토큰 정보가 없습니다.');
+                return null;  // 또는 error 처리
+            }
+
+            return responseBody;
+        })
+        .catch(error => {
+            if (!error.response || !error.response.data) {
+                return null;
+            }
+            const responseBody: ResponseDto = error.response.data;
+            console.error('로그인 오류:', responseBody);
+            return responseBody;
+        });
+
+    return result;
 };
+
+
 
 export const signUpRequest = async (requestBody: SignUpRequestDto) => {
     const result = await axios.post(SIGN_UP_URL(), requestBody)
