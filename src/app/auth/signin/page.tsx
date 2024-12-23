@@ -49,20 +49,37 @@ export default function SignIn() {
     signInRequest(requestBody).then(signInResponse);
     console.log(requestBody);
   };
-
   //          function: sign in response 처리 함수          //
-  const signInResponse = (responseBody: SignInResponseDto | ResponseDto) => {
+  const signInResponse = (responseBody: any) => {
     console.log('Sign In Response:', responseBody); // 회원가입 응답 출력
-    const { code } = responseBody;
-    if (code === 'U006') alert('로그인 실패.');
-    if (code !== 'U001') return;
-    const { token, expirationTime } = responseBody.data;
+    if (!responseBody) {
+      alert('네트워크 이상입니다.');
+      return;
+    }
+    console.log(responseBody);
+
+    const { accessToken, refreshToken, expires } = responseBody;
+    console.log('ex', expires);
     const now = new Date().getTime();
-    const expires = new Date(now + expirationTime * 1000);
-    console.log('res', responseBody);
-    setCookie('accessToken', token, { expires, path: '/' });
+    const expirationTime = new Date(now + expires * 1000);
+
+    console.log('Access Token:', accessToken);
+    console.log('Refresh Token:', refreshToken);
+
+    // 쿠키에 accessToken 저장
+    setCookie('accessToken', accessToken, {
+      expires: expirationTime,
+      path: '/',
+    });
+    setCookie('refreshToken', refreshToken, {
+      expires: expirationTime,
+      path: '/',
+    });
+
+    // 로그인 후 홈 페이지로 리디렉션
     router.push('/');
   };
+
   //          render: 로그인 페이지 렌더링          //
   return (
     <div className={styles['signIn-wrapper']}>
