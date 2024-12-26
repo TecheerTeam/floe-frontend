@@ -11,12 +11,19 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Header from '../../header/page';
 import styles from './PostWrite.module.css';
 import NavBar from '../../navBar/page';
-import { useRecordTypeStore } from '@/store';
+import { useLoginUserStore, useRecordTypeStore } from '@/store';
 import { useRecordStore } from '@/store';
-import { fileUploadRequest, postRecordRequest } from '@/apis';
+import { postRecordRequest } from '@/apis';
 import { PostRecordRequestDto } from '@/apis/request/record';
+import { useCookies } from 'react-cookie';
+import { PostRecordResponseDto } from '@/apis/response/record';
+import { ResponseDto } from '@/apis/response';
+import { useRouter } from 'next/navigation';
 //          component: 게시물 작성 화면 컴포넌트          //
 export default function PostWrite() {
+  const router = useRouter(); // 페이지 리다이렉트 사용
+  const { user, logout } = useLoginUserStore(); // zustand 상태 관리
+  const [cookies] = useCookies(); // 쿠키 상태 관리
   //          state: 제목 영역 요소 참조 상태          //
   const titleRef = useRef<HTMLInputElement | null>(null);
   //          state: 이미지 입력 요소 참조 상태          //
@@ -86,13 +93,13 @@ export default function PostWrite() {
     const newRecordImageFileList = [...images];
 
     files.forEach((file) => {
-      const imageUrl = URL.createObjectURL(file);
+      const imageUrl = URL.createObjectURL(file); // 이미지 미리보기 URL 생성
       newImageUrls.push(imageUrl);
       newRecordImageFileList.push(file);
     });
 
-    setImageUrls(newImageUrls);
-    setImages(newRecordImageFileList); // Update images in the backend-friendly format
+    setImageUrls(newImageUrls); // 미리보기 URL 상태 업데이트
+    setImages(newRecordImageFileList); // 서버 전송 파일 목록 상태 업데이트
   };
 
   //          event handler: 이미지 닫기 버튼 클릭 이벤트 처리          //
@@ -138,33 +145,49 @@ export default function PostWrite() {
 
   //         function: 업로드 버튼 클릭 함수          //
   const onUploadButtonClickHandler = async () => {
-    const medias: { mediaId: number; mediaUrl: string }[] = [];
+    const accessToken = cookies.accessToken;
+    if (!accessToken) return;
 
-    for (const file of images) {
-      const data = new FormData();
-      data.append('file', file);
-
-      const url = await fileUploadRequest(data);
-      if (url) {
-        // 받은 URL을 mediaId와 함께 추가
-        medias.push({
-          mediaId: 0, // 이 값은 서버에서 처리 후 수정되어야 할 수 있음
-          mediaUrl: url,
-        });
+    const formData = new FormData();
+    // console.log('dd', );
+    // 1. 이미지 데이터를 FormData에 추가
+    const dto = {
+      title: title,
+      content: content,
+      recordType: recordType,
+      tagNames: tagNames,
+    };
+    const blob = new Blob([JSON.stringify(dto)], {
+      type: 'application/json',
+    });
+    formData.append('dto', blob);
+    // 이미지 파일들을 formData에 추가
+    if (images.length > 0) {
+      for (const file of images) {
+        formData.append('files', file);
       }
+    } else {
+      // 파일이 없을 경우 빈 Blob 객체를 추가
+      const emptyBlob = new Blob([], { type: 'application/json' });
+      formData.append('files', emptyBlob);
     }
 
-    const requestBody: PostRecordRequestDto = {
-      title,
-      content,
-      recordType,
-      tagNames: tagNames.map((tagNames) => tagNames.toUpperCase()),
-      medias, // mediaId와 mediaUrl 포함
-    };
-    console.log(requestBody); // 실제 API 호출로 변경 필요
-    // postRecordRequest(requestBody).then()
+    // 3. API 호출: 서버에 FormData 보내기
+    try {
+      const response = await postRecordRequest(formData, accessToken);
+
+      if (response) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error('Error posting record', error);
+    }
   };
 
+  // const medias: { mediaId: number; mediaUrl: string }[] = [];
+
+  useEffect(()=>{})
+  
   return (
     <>
       <Header />
@@ -312,7 +335,11 @@ export default function PostWrite() {
           </div>
 
           <div className={styles['upload-Section']}>
-            <button className={styles['upload-Button']} onClick={onUploadButtonClickHandler}>Upload</button>
+            <button
+              className={styles['upload-Button']}
+              onClick={onUploadButtonClickHandler}>
+              Upload
+            </button>
           </div>
         </div>
       </div>

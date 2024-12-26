@@ -3,8 +3,9 @@ import { ResponseDto } from './response';
 import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, PostCommentResponseDto, GetCommentResponseDto, DeleteCommentResponseDto, GetRecordResponseDto, GetRecordLikeCountResponseDto, GetRecordLikeListResponseDto } from './response/record';
 import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto } from './request/record';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
-import {  SignUpResponseDto } from './response/auth';
+import { SignUpResponseDto } from './response/auth';
 import GetDetailRecordResponseDto from './response/record/record.response.dto';
+import { GetUserResponseDto } from './response/user';
 
 const DOMAIN = 'http://localhost:8080';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
@@ -16,34 +17,8 @@ const authorization = (accessToken: string) => {
 const SIGN_IN_URL = () => `${API_DOMAIN}/auth/login`;
 const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 
-// export const signInRequest = async (requestBody: SignInRequestDto) => {
-//     try {
-//         const response = await axios.post(SIGN_IN_URL(), requestBody);
-//         return response.data as SignInResponseDto; // 성공 시 응답 반환
-//     } catch (error) {
-//         if (axios.isAxiosError(error) && error.response?.data) {
-//             return error.response.data as ResponseDto; // 실패 시 백엔드 에러 반환
-//         }
-//         console.error("SignInRequest Error:", error); // 네트워크 오류 또는 기타 예외
-//         throw new Error("Unexpected error occurred.");
-//     }
-// };
-// export const signInRequest = async (requestBody: { email: string, password: string }) => {
-//     const result = await axios.post(SIGN_IN_URL(), requestBody)
-//         .then(response => {
-//             const responseBody: SignInResponseDto = response.data;
-//             console.log('api', responseBody);
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             if (!error.response.data) return null;
-//             const responseBody: ResponseDto = error.response.data;
-//             return responseBody;
-//         });
-//     return result;
-// }
-// 로그인 요청을 보내고 응답에서 'Authorization' 헤더를 추출
 
+// 로그인 요청을 보내고 응답에서 'Authorization' 헤더를 추출
 export const signInRequest = async (requestBody: SignInRequestDto) => {
     const result = await axios.post(SIGN_IN_URL(), requestBody, { withCredentials: true })
         .then(response => {
@@ -83,8 +58,6 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
     return result;
 };
 
-
-
 export const signUpRequest = async (requestBody: SignUpRequestDto) => {
     const result = await axios.post(SIGN_UP_URL(), requestBody)
         .then(response => {
@@ -99,6 +72,20 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
     return result;
 }
 
+const GET_SIGN_IN_USER_URL = () => `${API_DOMAIN}/users`;
+export const getSignInUserRequest = async (accessToken: string) => {
+    const result = await axios.get(GET_SIGN_IN_USER_URL(), authorization(accessToken))
+        .then(response => {
+            const responseBody: GetUserResponseDto = response.data;
+            return responseBody;
+        })
+        .catch(error => {
+            if (!error.response) return null;
+            const responseBody: ResponseDto = error.response.data;
+            return responseBody;
+        })
+    return result;
+}
 
 // 특정 기록 조회
 const GET_DETAIL_RECORD_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}`;
@@ -136,19 +123,29 @@ export const getRecordRequest = async (page: number, size: number): Promise<GetR
 
 
 //          function: 기록 생성 요청 API          //
-export const postRecordRequest = async (requestBody: PostRecordRequestDto, accessToken: string) => {
-    const result = await axios.post(POST_RECORD_URL(), requestBody, authorization(accessToken))
-        .then(response => {
-            const responseBody: PostRecordResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
+
+export const postRecordRequest = async (formData: FormData, accessToken: string) => {
+    try {
+        const result = await axios.post(POST_RECORD_URL(), formData, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'multipart/form-data'
+            },
+        });
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
             if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
-    return result;
-}
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+};
+
 
 //          function: 특정 게시물 수정 요청 API          //
 export const putRecord = async (recordId: number | string, requestBody: PutRecordRequestDto, accessToken: string) => {
@@ -342,17 +339,17 @@ const FILE_DOMAIN = `${DOMAIN}/file`;
 
 const FILE_UPLOAD_URL = () => `${FILE_DOMAIN}/upload`;
 
-const multipartFormData = { headers: { 'Content-Type': 'multipart/form-data' } };
+// const multipartFormData = { headers: { 'Content-Type': 'multipart/form-data' } };
 
-export const fileUploadRequest = async (data: FormData) => {
-    const result = await axios.post(FILE_UPLOAD_URL(), data, multipartFormData)
-        .then(response => {
-            const responseBody: string = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            return null;
-        })
-    return result;
-}
+// export const fileUploadRequest = async (data: FormData) => {
+//     const result = await axios.post(FILE_UPLOAD_URL(), data, multipartFormData)
+//         .then(response => {
+//             const responseBody: string = response.data;
+//             return responseBody;
+//         })
+//         .catch(error => {
+//             return null;
+//         })
+//     return result;
+// }
 

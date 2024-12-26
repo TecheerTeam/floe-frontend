@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import styles from './NavBar.module.css';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLoginUserStore } from '@/store';
 
 export default function NavBar() {
+  const { user, isLoggedIn } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //
@@ -187,8 +189,14 @@ export default function NavBar() {
       )}
       <Link href="/auth" passHref style={{ textDecoration: 'none' }}>
         <button className={styles['Profile-Button']}>
-          <div className={styles['Guest-Icon']}></div>
-          Guest
+          {user?.profileImage !== null ? (
+            <div
+              className={styles['user-profile-image']}
+              style={{ backgroundImage: `url($${user?.profileImage})` }}></div>
+          ) : (
+            <div className={styles['Guest-Icon']}></div>
+          )}
+          {isLoggedIn ? user?.nickname : 'Guest'}
         </button>
       </Link>
     </div>
