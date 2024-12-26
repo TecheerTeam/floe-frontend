@@ -178,6 +178,7 @@ export default function PostWrite() {
 
       if (response) {
         console.log(response);
+        router.push('/');
       }
     } catch (error) {
       console.error('Error posting record', error);
@@ -186,8 +187,8 @@ export default function PostWrite() {
 
   // const medias: { mediaId: number; mediaUrl: string }[] = [];
 
-  useEffect(()=>{})
-  
+  useEffect(() => {});
+
   return (
     <>
       <Header />

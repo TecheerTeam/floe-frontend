@@ -2,6 +2,7 @@ export default interface RecordListItem {
     recordId: number;
     user: {
         nickname: string;
+        email: string;
         profileImage: string | null;
     };
     title: string;
@@ -9,7 +10,7 @@ export default interface RecordListItem {
     medias: { mediaId: number; mediaUrl: string }[];
     tagNames: string[];
     createdAt: string;
-    likeCount : number;
+    likeCount: number;
     commentCount: number;
-    saveCount : number;
+    saveCount: number;
 }

@@ -48,7 +48,7 @@ export default function RootLayout({
         logout(); // 오류가 있으면 로그아웃 처리
         router.push('/auth/login');
       });
-  }, [cookies.accessToken, setUser, logout, router]);
+  }, [cookies.accessToken, setUser, logout]);
 
   return (
     <html lang="en">

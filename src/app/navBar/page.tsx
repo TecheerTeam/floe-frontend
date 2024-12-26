@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useLoginUserStore } from '@/store';
 
 export default function NavBar() {
-  const { user, isLoggedIn } = useLoginUserStore(); // Zustand로 로그인
+  const { user } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //
@@ -196,7 +196,7 @@ export default function NavBar() {
           ) : (
             <div className={styles['Guest-Icon']}></div>
           )}
-          {isLoggedIn ? user?.nickname : 'Guest'}
+          {user ? user?.nickname : 'Guest'}
         </button>
       </Link>
     </div>

@@ -26,17 +26,14 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
             // 응답 헤더에서 'accessToken'과 'refreshToken' 추출
             const accessToken = response.headers['authorization']; // 'authorization'이 맞는지 확인
             const refreshToken = response.headers['authorization-refresh']; // 'auth
-            const expires = response.headers['expires'];
-            console.log('Access Token from Headers:', accessToken);
-            console.log('Refresh Token from Headers:', refreshToken);
+            const expirationTime = response.headers['expires'];
 
             const responseBody = {
                 ...response.data, // 기존 응답 데이터
                 accessToken,       // 추가된 accessToken
                 refreshToken,
-                expires      // 추가된 refreshToken
+                expirationTime      // 추가된 refreshToken
             };
-            console.log('api', responseBody);
 
             // 토큰 값이 없으면 실패 처리
             if (!accessToken || !refreshToken) {
@@ -88,19 +85,19 @@ export const getSignInUserRequest = async (accessToken: string) => {
 }
 
 // 특정 기록 조회
-const GET_DETAIL_RECORD_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}`;
+const GET_DETAIL_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`;
 // 전체 기록 조회(최신순 / 홈페이지)
 const GET_RECORD_URL = () => `${API_DOMAIN}/records`;
 // 기록 생성
 const POST_RECORD_URL = () => `${API_DOMAIN}/records`;
 // 특정 기록 수정
-const PUT_RECORD_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}`;
+const PUT_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`;
 // 특정 기록 삭제
-const DELETE_RECORD_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}`;
+const DELETE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`;
 
 
 //          function: 특정 기록 조회 요청 API          //
-export const getDetailRecordRequest = async (recordId: number | string) => {
+export const getDetailRecordRequest = async (recordId: number) => {
     const result = await axios.get(GET_DETAIL_RECORD_URL(recordId))
         .then(response => {
             const responseBody: GetDetailRecordResponseDto = response.data;
@@ -120,7 +117,6 @@ export const getRecordRequest = async (page: number, size: number): Promise<GetR
     );
     return response.data;
 };
-
 
 //          function: 기록 생성 요청 API          //
 
@@ -148,7 +144,7 @@ export const postRecordRequest = async (formData: FormData, accessToken: string)
 
 
 //          function: 특정 게시물 수정 요청 API          //
-export const putRecord = async (recordId: number | string, requestBody: PutRecordRequestDto, accessToken: string) => {
+export const putRecord = async (recordId: number, requestBody: PutRecordRequestDto, accessToken: string) => {
     const result = await axios.post(PUT_RECORD_URL(recordId), requestBody, authorization(accessToken))
         .then(response => {
             const responseBody: PutRecordResponseDto = response.data;
@@ -163,7 +159,7 @@ export const putRecord = async (recordId: number | string, requestBody: PutRecor
 }
 
 //          function: 특정 기록 삭제 요청 API          //
-export const deleteRecord = async (recordId: number | string, accessToken: string) => {
+export const deleteRecord = async (recordId: number, accessToken: string) => {
     const result = await axios.post(DELETE_RECORD_URL(recordId), authorization(accessToken))
         .then(response => {
             const responseBody: DeleteRecordResponseDto = response.data;

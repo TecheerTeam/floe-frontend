@@ -57,24 +57,24 @@ export default function SignIn() {
     }
     console.log(responseBody);
 
-    const { accessToken, refreshToken, expires } = responseBody;
-    console.log('ex', expires);
+    const { accessToken, refreshToken, expirationTime } = responseBody;
+    console.log('ex', expirationTime);
     const now = new Date().getTime();
-    const expirationTime = new Date(now + expires * 1000);
-
+    const expires = new Date(now + expirationTime * 1000); 
+    console.log('expires:', expirationTime);
     console.log('Access Token:', accessToken);
     console.log('Refresh Token:', refreshToken);
 
     // 쿠키에 accessToken 저장
     setCookie('accessToken', accessToken, {
-      expires: expirationTime,
+      expires,
       path: '/',
     });
     setCookie('refreshToken', refreshToken, {
-      expires: expirationTime,
+      expires,
       path: '/',
     });
-
+    console.log('ex', expires);
     // 로그인 후 홈 페이지로 리디렉션
     router.push('/');
   };
