@@ -6,7 +6,6 @@ import { useState, KeyboardEvent, useRef, ChangeEvent, useEffect } from 'react';
 import { ResponseDto } from '@/apis/response';
 import { SignInRequestDto } from '@/apis/request/auth';
 import { signInRequest } from '@/apis';
-import { SignInResponseDto } from '@/apis/response/auth';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation'; // App Router 전용
 export default function SignIn() {

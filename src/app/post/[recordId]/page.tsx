@@ -5,9 +5,6 @@ import Header from '../../header/page';
 import NavBar from '../../navBar/page';
 import Comment from '@/components/comment/page';
 import { useParams } from 'next/navigation';
-import mockRecord from '../../mock/mockRecord'; // 목데이터 가져오기
-import mockLike from '../../mock/mockLike';
-import mockComment from '../../mock/mockComment';
 import { CommentItem, LikeItem } from '@/types/interface';
 
 export default function PostDetail() {
