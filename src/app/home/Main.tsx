@@ -34,7 +34,6 @@ export default function Main() {
     queryKey: ['records'],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getRecordRequest(pageParam, 5);
-      // console.log(response);
       return response;
     },
     getNextPageParam: (lastPage: GetRecordResponseDto) => {
@@ -71,7 +70,6 @@ export default function Main() {
   //          effect: 스크롤 감지해서 다음 페이지로 넘기기(무한 스크롤)          //
   useEffect(() => {
     if (!observerRef.current || !hasNextPage) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -135,13 +133,11 @@ export default function Main() {
                     <div className={styles['card-view']}>
                       {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
                         data?.pages.map((page, pageIndex) => {
-                          console.log('Page:', page); // 페이지 데이터 출력
-
+                          console.log('Page:', page.data.content); // 페이지 데이터 출력
                           // content가 존재하고 배열인지 확인
-                          if (page.content && Array.isArray(page.content)) {
-                            return page.content.length > 0 ? (
-                              page.content.map((recordListItem) => {
-                                // console.log('Record:', recordListItem); // 각 레코드 출력
+                          if (page.data.content && Array.isArray(page.data.content)) {
+                            return page.data.content.length > 0 ? (
+                              page.data.content.map((recordListItem) => {
                                 return (
                                   <PostItemCardType
                                     key={recordListItem.recordId}
@@ -167,9 +163,9 @@ export default function Main() {
                           console.log('Page:', page); // 페이지 데이터 출력
 
                           // content가 존재하고 배열인지 확인
-                          if (page.content && Array.isArray(page.content)) {
-                            return page.content.length > 0 ? (
-                              page.content.map((recordListItem) => {
+                          if (page.data.content && Array.isArray(page.data.content)) {
+                            return page.data.content.length > 0 ? (
+                              page.data.content.map((recordListItem) => {
                                 // console.log('Record:', recordListItem); // 각 게시글글 출력
                                 return (
                                   <PostItemListType

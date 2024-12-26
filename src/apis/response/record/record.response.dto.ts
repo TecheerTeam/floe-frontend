@@ -27,8 +27,8 @@ export default interface GetRecordResponseDto extends ResponseDto {
 
 //          interface: 게시물 생성 DTO       <완>   //
 export default interface PostRecordResponseDto extends ResponseDto<{
-    
-}> { recordId: number;}
+
+}> { recordId: number; }
 
 
 //          interface: 게시물 수정 DTO      <완>     //

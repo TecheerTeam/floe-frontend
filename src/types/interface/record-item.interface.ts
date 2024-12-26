@@ -1,3 +1,5 @@
+import { RecordType } from "@/apis/request/record/record.request.dto";
+
 export default interface RecordItem {
     recordId: number;
     user: {
@@ -7,8 +9,8 @@ export default interface RecordItem {
     };
     title: string;
     content: string;
+    recordType: RecordType;
     medias: { mediaId: number; mediaUrl: string }[];
     tagNames: string[];
     createdAt: string;
-    
 }

@@ -5,20 +5,15 @@ import Header from '../../header/page';
 import NavBar from '../../navBar/page';
 import Comment from '@/components/comment/page';
 import { useParams } from 'next/navigation';
-import { CommentItem, LikeItem } from '@/types/interface';
-
+import { CommentItem, LikeItem, RecordItem } from '@/types/interface';
+import { useRouter } from 'next/navigation';
+import { getDetailRecordRequest } from '@/apis';
+import { GetDetailRecordResponseDto } from '@/apis/response/record';
+import { ResponseDto } from '@/apis/response';
 export default function PostDetail() {
+  const router = useRouter();
   const { recordId } = useParams(); // URL에서 recordId를 가져옴
-  const record = recordId
-    ? mockRecord.find((item) => item.recordId === Number(recordId))
-    : undefined;
-
-  if (!record) {
-    return (
-      <div className={styles['error-message']}>게시글을 찾을 수 없습니다.</div>
-    );
-  }
-
+  const [record, setRecord] = useState<RecordItem | null>(null);
   // 좋아요와 댓글 데이터
   const [likeCount, setLikeCount] = useState<LikeItem[]>([]);
   const [comments, setComments] = useState<CommentItem[]>([]);
@@ -37,7 +32,46 @@ export default function PostDetail() {
     setShowCommentSection((prev) => !prev);
   };
 
+  //         function: get Detail Record Response 처리 함수      //
+  const getDetailRecordResponse = (
+    responseBody: GetDetailRecordResponseDto | ResponseDto | null,
+  ) => {
+    if (!responseBody) return;
+    const { code, data } = responseBody;
+    if (code !== 'R003') {
+      router.push('/');
+      return;
+    }
+    const record: RecordItem = {
+      recordId: data.recordId,
+      user: data.user,
+      title: data.title,
+      content: data.content,
+      recordType: data.recordType,
+      medias: data.medias,
+      tagNames: data.tagNames,
+      createdAt: data.createdAt,
+    };
+
+    setRecord(record);
+  };
+  //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터 불러오기      //
+  useEffect(() => {
+    if (!recordId) {
+      router.push('/');
+      return;
+    }
+    const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
+    if (isNaN(id)) {
+      console.error('Invalid recordId:', recordId);
+      router.push('/');
+      return;
+    }
+    getDetailRecordRequest(id).then(getDetailRecordResponse);
+  }, [recordId]);
+
   //          render: 렌더링          //
+  if (!record) return <></>;
   return (
     <>
       <Header />
