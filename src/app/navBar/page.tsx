@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import styles from './NavBar.module.css';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLoginUserStore } from '@/store';
 
 export default function NavBar() {
+  const router = useRouter();
   const { user } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
@@ -145,7 +146,15 @@ export default function NavBar() {
         <button
           className={`${styles['Save-Button']} ${
             isActive('/mypage') ? styles['active'] : ''
-          }`}>
+          }`}
+          onClick={(e) => {
+            e.preventDefault(); // 기본 동작 방지
+            if (user) {
+              router.push('/mypage'); // 로그인 상태면 /mypage로 이동
+            } else {
+              router.push('/auth'); // 비로그인 상태면 /auth로 이동
+            }
+          }}>
           <div
             className={`${styles['Save-Icon']} ${
               isActive('/mypage') ? styles['active-icon'] : ''
@@ -187,12 +196,15 @@ export default function NavBar() {
           </button>
         </div>
       )}
-      <Link href="/auth" passHref style={{ textDecoration: 'none' }}>
+      <Link
+        href={user ? '/mypage' : '/auth'}
+        passHref
+        style={{ textDecoration: 'none' }}>
         <button className={styles['Profile-Button']}>
           {user?.profileImage !== null ? (
             <div
               className={styles['user-profile-image']}
-              style={{ backgroundImage: `url($${user?.profileImage})` }}></div>
+              style={{ backgroundImage: `url(${user?.profileImage})` }}></div>
           ) : (
             <div className={styles['Guest-Icon']}></div>
           )}

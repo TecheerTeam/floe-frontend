@@ -40,13 +40,11 @@ export default function RootLayout({
           console.log('login');
         } else {
           logout(); // 로그인 정보가 없으면 로그아웃 처리
-          router.push('/auth/signin'); // 로그인 페이지로 리다이렉트
         }
       })
       .catch((error) => {
         console.error('로그인 오류:', error);
         logout(); // 오류가 있으면 로그아웃 처리
-        router.push('/auth/login');
       });
   }, [cookies.accessToken, setUser, logout]);
 

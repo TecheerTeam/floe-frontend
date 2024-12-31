@@ -8,9 +8,9 @@ import PostItemListType from '@/components/post/postItemListType/page';
 export default function SaveContents() {
   return (
     <div className={styles['saveContentWrapper']}>
+      {/* <PostItemListType />
       <PostItemListType />
-      <PostItemListType />
-      <PostItemListType />
+      <PostItemListType /> */}
     </div>
   );
 }

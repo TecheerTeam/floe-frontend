@@ -174,7 +174,7 @@ export const deleteRecord = async (recordId: number, accessToken: string) => {
 }
 
 // 댓글 작성
-const POST_COMMENT_URL = (recordId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
+const POST_COMMENT_URL = () => `${API_DOMAIN}/comments`;
 // 댓글 수정
 // const PUT_COMMENT_URL = (recordId: number | string, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
 // 댓글 조회
@@ -182,20 +182,23 @@ const GET_COMMENT_URL = (recordId: number | string) => `${API_DOMAIN}/comments/$
 // 댓글 삭제
 const DELETE_COMMENT_URL = (recordId: number | string, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}/${commentId}`;
 
-// //          function: 댓글 작성 요청 API          //
-// export const postComment = async (recordId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
-//     const result = await axios.post(POST_COMMENT_URL(recordId), requestBody, authorization(accessToken))
-//         .then(response => {
-//             const responseBody: PostCommentResponseDto = response.data;
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             if (!error.response) return null;
-//             const responseBody: ResponseDto = error.response.data;
-//             return responseBody;
-//         })
-//     return result;
-// }
+//          function: 댓글 작성 요청 API          //
+export const postCommentRequest = async (requestBody: PostCommentRequestDto, accessToken: string) => {
+    try {
+        const response = await axios.post(POST_COMMENT_URL(), requestBody, authorization(accessToken));
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
 
 //          function: 댓글 수정 요청 API          //
 // export const putComment = async (recordId: number | string, commentId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
@@ -211,20 +214,20 @@ const DELETE_COMMENT_URL = (recordId: number | string, commentId: number | strin
 //         })
 //     return result;
 // }
-// //          function: 댓글 조회 요청 API          //
-// export const getComment = async (recordId: number | string, accessToken: string) => {
-//     const result = await axios.post(GET_COMMENT_URL(recordId), authorization(accessToken))
-//         .then(response => {
-//             const responseBody: GetCommentResponseDto = response.data;
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             if (!error.response) return null;
-//             const responseBody: ResponseDto = error.response.data;
-//             return responseBody;
-//         })
-//     return result;
-// }
+//          function: 댓글 조회 요청 API          //
+export const getCommentRequest = async (recordId: number | string) => {
+    const result = await axios.post(GET_COMMENT_URL(recordId))
+        .then(response => {
+            const responseBody: GetCommentResponseDto = response.data;
+            return responseBody;
+        })
+        .catch(error => {
+            if (!error.response) return null;
+            const responseBody: ResponseDto = error.response.data;
+            return responseBody;
+        })
+    return result;
+}
 // //          function: 댓글 삭제 요청 API          //
 // export const deleteComment = async (recordId: number | string, commentId: number | string, accessToken: string) => {
 //     const result = await axios.post(DELETE_COMMENT_URL(recordId, commentId), authorization(accessToken))
@@ -324,28 +327,22 @@ export const getLikeListRequest = async (recordId: number | string) => {
 };
 
 
-const GET_USER_URL = (userEmail: string) => `${API_DOMAIN}/user/${userEmail}/comments`;
+const GET_USER_URL = () => `${API_DOMAIN}/users/`;
 
+export const getUserRequest = async (accessToken: string) => {
+    const result = await axios
+        .get(GET_USER_URL(), {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then((response) => {
+            const responseBody: GetUserResponseDto = response.data;
+            return responseBody;
+        })
+        .catch((error) => {
+            if (!error.response) return null;
+            const responseBody: ResponseDto = error.response.data;
+            return responseBody;
+        });
 
-
-
-
-// 파일 업로드 api
-const FILE_DOMAIN = `${DOMAIN}/file`;
-
-const FILE_UPLOAD_URL = () => `${FILE_DOMAIN}/upload`;
-
-// const multipartFormData = { headers: { 'Content-Type': 'multipart/form-data' } };
-
-// export const fileUploadRequest = async (data: FormData) => {
-//     const result = await axios.post(FILE_UPLOAD_URL(), data, multipartFormData)
-//         .then(response => {
-//             const responseBody: string = response.data;
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             return null;
-//         })
-//     return result;
-// }
-
+    return result;
+};

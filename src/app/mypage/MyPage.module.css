@@ -36,7 +36,7 @@
 .user-Image {
   width: 7rem;
   height: 7rem;
-  background-image: var(--mypage-image-userInitialImage);
+  background-image: var(--nav-bar-Guest-icon);
   cursor: pointer;
   background-size: cover;
   background-position: center;
