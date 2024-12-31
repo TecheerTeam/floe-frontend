@@ -8,9 +8,9 @@ import PostItemListType from '@/components/post/postItemListType/page';
 export default function PostsContents() {
   return (
     <div className={styles['postContentWrapper']}>
+      {/* <PostItemListType />
       <PostItemListType />
-      <PostItemListType />
-      <PostItemListType />
+      <PostItemListType /> */}
     </div>
   );
 }

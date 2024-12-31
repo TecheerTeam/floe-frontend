@@ -185,9 +185,13 @@ export default function PostWrite() {
     }
   };
 
-  // const medias: { mediaId: number; mediaUrl: string }[] = [];
-
-  useEffect(() => {});
+  //          effect: 마운트 시 실행할 함수          //
+  useEffect(() => {
+    if (!cookies.accessToken && !user) {
+      alert('로그인이 필요합니다');
+      router.push('/auth');
+    }
+  }, [cookies.accessToken]);
 
   return (
     <>

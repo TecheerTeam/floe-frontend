@@ -83,8 +83,7 @@ export default function Main() {
 
     return () => observer.disconnect();
   }, [observerRef, hasNextPage, isFetchingNextPage]);
-
-  //          effect: 첫 마운트시 게시글 불러오기(게시글 없다면 빈 영역역)          //
+  
 
   //          render: 렌더링          //  /
   return (

@@ -1,23 +1,41 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 import styles from './PostDetail.module.css';
 import Header from '../../header/page';
 import NavBar from '../../navBar/page';
 import Comment from '@/components/comment/page';
-import { useParams } from 'next/navigation';
 import { CommentItem, LikeItem, RecordItem } from '@/types/interface';
+import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { getDetailRecordRequest } from '@/apis';
-import { GetDetailRecordResponseDto } from '@/apis/response/record';
+import {
+  getCommentRequest,
+  getDetailRecordRequest,
+  postCommentRequest,
+} from '@/apis';
+import {
+  GetCommentResponseDto,
+  GetDetailRecordResponseDto,
+} from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
+import { useCookies } from 'react-cookie';
+import { useLoginUserStore } from '@/store';
+import { PostCommentRequestDto } from '@/apis/request/record';
 export default function PostDetail() {
+  const [cookies] = useCookies(); // 쿠
+  //        state : 라우팅     //
   const router = useRouter();
+  //        state: record Id varibale 상태        //
   const { recordId } = useParams(); // URL에서 recordId를 가져옴
+  //        state: 유저 로그인 상태        //
+  const { user } = useLoginUserStore();
+  //        state: 게시물 상태(zustand)        //
   const [record, setRecord] = useState<RecordItem | null>(null);
-  // 좋아요와 댓글 데이터
+  //       state : 좋아요 개수 상태        //
   const [likeCount, setLikeCount] = useState<LikeItem[]>([]);
-  const [comments, setComments] = useState<CommentItem[]>([]);
-  const [commentCount, setCommentCount] = useState<CommentItem[]>([]);
+  //       state: 댓글 입력 상태         //
+  const [newComment, setNewComment] = useState<string>('');
+  // 댓글 목록 상태
+  const [commentList, setCommentList] = useState<CommentItem[]>([]);
   //          state: 좋아요 아이콘 버튼 클릭 상태          //
   const [likeClick, setLikeClick] = useState<boolean>(false);
   //          state: 댓글 아이콘 버튼 클릭 상태          //
@@ -26,36 +44,101 @@ export default function PostDetail() {
   const [saveClick, setSaveClick] = useState<boolean>(false);
   //          state: 댓글창 팝업 상태          //
   const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
-
-  //          function: 댓글창 팝업 여부 관리 함수          //
+  //          state: 댓글 입력 참조 상태          //
+  const commentRef = useRef<HTMLInputElement | null>(null);
+  //          event handler: 댓글창 팝업 이벤트 처리          //
   const toggleCommentSection = () => {
     setShowCommentSection((prev) => !prev);
   };
-
-  //         function: get Detail Record Response 처리 함수      //
-  const getDetailRecordResponse = (
-    responseBody: GetDetailRecordResponseDto | ResponseDto | null,
-  ) => {
-    if (!responseBody) return;
-    const { code, data } = responseBody;
-    if (code !== 'R003') {
+  //          event handler: 댓글 입력값 변경 이벤트 처리          //
+  const onCommentChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if (!commentRef.current) return;
+    setNewComment(value);
+    console.log('입력중인 댓글:', newComment);
+  };
+  //          event handler: 댓글 입력 버튼 처리 함수          //
+  const onApplyClickHandler = async () => {
+    if (!newComment.trim()) {
+      alert('댓글을 입력해주세요.');
+      return;
+    }
+    if (!user || !cookies.accessToken) {
+      alert('로그인 먼저 해주세요');
+      return;
+    }
+    if (!recordId) {
+      alert('존재하지 않는 게시물입니다');
+      return;
+    }
+    // const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
+    const requestBody = {
+      recordId: record?.recordId,
+      content: newComment,
+    } as PostCommentRequestDto;
+    try {
+      const response = await postCommentRequest(
+        requestBody,
+        cookies.accessToken,
+      );
+      if (response?.code === 'C001') {
+        alert('댓글 작성에 성공했습니다.');
+        setCommentList((prev) => [
+          {
+            commentId: response.data.commentId,
+            user: { nickname: user.nickname, profileImage: user.profileImage },
+            content: newComment,
+            createdAt: new Date().toISOString(),
+          },
+          ...prev,
+        ]);
+        setNewComment(''); // 댓글 입력란 초기화
+        console.log('comment:', requestBody);
+      } else {
+        alert('댓글 작성에 실패했습니다.');
+        console.log('comment:', requestBody);
+      }
+    } catch (error) {
+      console.error('댓글 작성 오류:', error);
+    }
+  };
+  const getRecordDetails = async () => {
+    if (!recordId) return;
+    const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
+    if (isNaN(id)) {
+      console.error('옳바르지 않은 게시물 번호입니다.:', recordId);
       router.push('/');
       return;
     }
-    const record: RecordItem = {
-      recordId: data.recordId,
-      user: data.user,
-      title: data.title,
-      content: data.content,
-      recordType: data.recordType,
-      medias: data.medias,
-      tagNames: data.tagNames,
-      createdAt: data.createdAt,
-    };
 
-    setRecord(record);
+    const response = await getDetailRecordRequest(id);
+    if (response?.code === 'R003') {
+      setRecord(response.data);
+    } else {
+      router.push('/');
+    }
   };
+
+  // const fetchComments = async () => {
+  //   if (!recordId || !cookies.accessToken) return;
+  //   const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
+  //   if (isNaN(id)) {
+  //     console.error("Invalid recordId:", recordId);
+  //     return;
+  //   }
+
+  //   const response = await getCommentsRequest(id, cookies.accessToken);
+  //   if (response) {
+  //     setCommentList(response);
+  //   }
+  // };
+
   //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터 불러오기      //
+
+  useEffect(() => {
+    getRecordDetails();
+    // fetchComments();
+  }, [recordId]);
   useEffect(() => {
     if (!recordId) {
       router.push('/');
@@ -67,9 +150,7 @@ export default function PostDetail() {
       router.push('/');
       return;
     }
-    getDetailRecordRequest(id).then(getDetailRecordResponse);
   }, [recordId]);
-
   //          render: 렌더링          //
   if (!record) return <></>;
   return (
@@ -139,7 +220,7 @@ export default function PostDetail() {
                 className={styles['post-detail-comment-icon']}
                 onClick={toggleCommentSection}></div>
               <div className={styles['post-detail-comment-count']}>
-                {comments.length}
+                {commentList.length}
               </div>
             </div>
 
@@ -163,19 +244,34 @@ export default function PostDetail() {
 
               <div className={styles['comment-input-container']}>
                 <div className={styles['user-profile-box']}>
-                  <div className={styles['user-profile-image']}></div>
+                  {record.user.profileImage ? (
+                    <img
+                      src={record.user.profileImage}
+                      alt="프로필 이미지"
+                      className={styles['user-profile-image']}
+                    />
+                  ) : (
+                    <div className={styles['default-profile-image']}></div>
+                  )}
                   <div className={styles['user-profile-nickname']}>
-                    {'Kgccm'}
+                    {user?.nickname}
                   </div>
                 </div>
                 <input
+                  ref={commentRef}
                   type="text"
                   placeholder="댓글 추가..."
+                  value={newComment}
                   className={styles['comment-input']}
+                  onChange={onCommentChangeHandler}
                 />
-                <div className={styles['comment-Apply-Button']}>Apply</div>
+                <div
+                  className={styles['comment-Apply-Button']}
+                  onClick={onApplyClickHandler}>
+                  Apply
+                </div>
               </div>
-              <Comment />
+              <Comment comments={commentList} />
             </div>
           )}
         </div>
