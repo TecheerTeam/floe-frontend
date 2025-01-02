@@ -199,6 +199,39 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
         }
     }
 }
+//          function: 댓글 조회 요청 API  토큰X        //
+// export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
+//     const response = await axios.get<GetCommentResponseDto>(
+//         `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`
+//     );
+//     console.log('ddd', response)
+//     return response.data;
+
+// };
+//          function: 댓글 조회 요청 API  토큰O        //
+export const getCommentRequest = async (recordId: number, page: number,size: number, accessToken: string ): Promise<GetCommentResponseDto> => {
+    try {
+        const response = await axios.get<GetCommentResponseDto>(
+            `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        console.log('ddd', response);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+};
 
 //          function: 댓글 수정 요청 API          //
 // export const putComment = async (recordId: number | string, commentId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
@@ -217,15 +250,7 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
 
 
 
-//          function: 댓글 조회 요청 API          //
-export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
-    const response = await axios.get<GetCommentResponseDto>(
-        `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`
-    );
-    console.log('ddd', response.data)
-    return response.data;
 
-};
 
 // //          function: 댓글 삭제 요청 API          //
 // export const deleteComment = async (recordId: number | string, commentId: number | string, accessToken: string) => {

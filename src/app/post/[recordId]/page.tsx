@@ -53,7 +53,11 @@ export default function PostDetail() {
   const commentRef = useRef<HTMLInputElement | null>(null);
 
   //     function: recordId가 string|string[] 형식일 경우 number로 변환     //
-
+  const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
+  if (!id || isNaN(id)) {
+    console.error('Invalid recordId:', recordId);
+    return undefined;
+  }
   console.log('recordId:', recordId);
   //     function: 댓글 무한 스크롤     //
   // const {
@@ -140,7 +144,7 @@ export default function PostDetail() {
   const fetchComments = async () => {
     if (!recordId) return;
     try {
-      const response = await getCommentRequest(Number(recordId), 0, 5);
+      const response = await getCommentRequest(id, 0, 5, cookies.accessToken);
       console.log('Fetched Comments:', response.code);
       if (response && response.code === 'C002') {
         setCommentList(response.data.content); // 서버에서 가져온 댓글 상태 업데이트
@@ -155,7 +159,24 @@ export default function PostDetail() {
       console.error('Error fetching comments:', error);
     }
   };
-
+  // const fetchComments = async () => {  //토큰X
+  //   if (!recordId) return;
+  //   try {
+  //     const response = await getCommentRequest(id, 0, 5);
+  //     console.log('Fetched Comments:', response.code);
+  //     if (response && response.code === 'C002') {
+  //       setCommentList(response.data.content); // 서버에서 가져온 댓글 상태 업데이트
+  //       console.log('comme', commentList);
+  //     } else {
+  //       console.error(
+  //         'Failed to fetch comments:',
+  //         response?.message || 'Unknown error',
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching comments:', error);
+  //   }
+  // };
   //    function: 상세 게시물 데이터 불러오기 처리 함수      //
   const getRecordDetails = async () => {
     if (!recordId) return;
