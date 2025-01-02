@@ -14,6 +14,7 @@ import { getRecordRequest } from '@/apis';
 import { RecordListItem } from '@/types/interface';
 import { GetRecordResponseDto } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
+import { useInView } from 'react-intersection-observer';
 export default function Main() {
   //          state: Splash Screen 상태          //
   const [showSplash, setShowSplash] = useState(true);
@@ -21,7 +22,7 @@ export default function Main() {
   const [fadeOut, setFadeOut] = useState(false);
   //          state: View Mode(카드형 or 리스트형) 상태         //
   const [viewMode, setViewMode] = useState('card');
-  const observerRef = useRef<HTMLDivElement | null>(null);
+  const { ref, inView } = useInView();
   const [recordList, setRecordList] = useState<RecordListItem[]>([]);
 
   const {
@@ -34,14 +35,16 @@ export default function Main() {
     queryKey: ['records'],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getRecordRequest(pageParam, 5);
+      console.log(response);
       return response;
     },
-    getNextPageParam: (lastPage: GetRecordResponseDto) => {
-      if (!lastPage || lastPage.last) {
-        // 마지막 페이지면 undefined 반환
+    getNextPageParam: (last: GetRecordResponseDto) => {
+      if (!last || last.data.last) {
         return undefined;
       }
-      return lastPage.pageable?.pageNumber + 1 || 0;
+
+      const nextPage = last.data.pageable.pageNumber + 1;
+      return nextPage;
     },
     initialPageParam: 0,
   });
@@ -69,22 +72,8 @@ export default function Main() {
 
   //          effect: 스크롤 감지해서 다음 페이지로 넘기기(무한 스크롤)          //
   useEffect(() => {
-    if (!observerRef.current || !hasNextPage) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(observerRef.current);
-
-    return () => observer.disconnect();
-  }, [observerRef, hasNextPage, isFetchingNextPage]);
-  
-
+    fetchNextPage();
+  }, [inView]);
   //          render: 렌더링          //  /
   return (
     <>
@@ -132,9 +121,10 @@ export default function Main() {
                     <div className={styles['card-view']}>
                       {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
                         data?.pages.map((page, pageIndex) => {
-                          console.log('Page:', page.data.content); // 페이지 데이터 출력
-                          // content가 존재하고 배열인지 확인
-                          if (page.data.content && Array.isArray(page.data.content)) {
+                          if (
+                            page.data.content &&
+                            Array.isArray(page.data.content)
+                          ) {
                             return page.data.content.length > 0 ? (
                               page.data.content.map((recordListItem) => {
                                 return (
@@ -159,13 +149,12 @@ export default function Main() {
                     <div className={styles['list-view']}>
                       {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
                         data?.pages.map((page, pageIndex) => {
-                          console.log('Page:', page); // 페이지 데이터 출력
-
-                          // content가 존재하고 배열인지 확인
-                          if (page.data.content && Array.isArray(page.data.content)) {
+                          if (
+                            page.data.content &&
+                            Array.isArray(page.data.content)
+                          ) {
                             return page.data.content.length > 0 ? (
                               page.data.content.map((recordListItem) => {
-                                // console.log('Record:', recordListItem); // 각 게시글글 출력
                                 return (
                                   <PostItemListType
                                     key={recordListItem.recordId}
@@ -186,10 +175,11 @@ export default function Main() {
                     </div>
                   )}
                   {isFetchingNextPage && <p>Loading more...</p>}
-                  <div ref={observerRef} style={{ height: '1px' }} />
+                  <div ref={ref} style={{ height: '1px' }} />
                 </>
               )}
             </main>
+
             <aside className={styles['sidebar']}>
               <SideBar />
             </aside>

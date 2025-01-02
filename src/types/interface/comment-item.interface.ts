@@ -2,6 +2,7 @@ export default interface CommentItem {
     commentId: number; // 댓글 ID
     user: {
         nickname: string;
+        email: string;
         profileImage: string | null;
     }; // 댓글 작성자 정보
     content: string; // 댓글 내용

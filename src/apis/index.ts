@@ -176,11 +176,11 @@ export const deleteRecord = async (recordId: number, accessToken: string) => {
 // 댓글 작성
 const POST_COMMENT_URL = () => `${API_DOMAIN}/comments`;
 // 댓글 수정
-// const PUT_COMMENT_URL = (recordId: number | string, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
+const PUT_COMMENT_URL = (recordId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
 // 댓글 조회
-const GET_COMMENT_URL = (recordId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
+const GET_COMMENT_URL = (recordId: number) => `${API_DOMAIN}/comments/${recordId}`;
 // 댓글 삭제
-const DELETE_COMMENT_URL = (recordId: number | string, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}/${commentId}`;
+const DELETE_COMMENT_URL = (recordId: number, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}/${commentId}`;
 
 //          function: 댓글 작성 요청 API          //
 export const postCommentRequest = async (requestBody: PostCommentRequestDto, accessToken: string) => {
@@ -214,20 +214,19 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
 //         })
 //     return result;
 // }
+
+
+
 //          function: 댓글 조회 요청 API          //
-export const getCommentRequest = async (recordId: number | string) => {
-    const result = await axios.post(GET_COMMENT_URL(recordId))
-        .then(response => {
-            const responseBody: GetCommentResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
-    return result;
-}
+export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
+    const response = await axios.get<GetCommentResponseDto>(
+        `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`
+    );
+    console.log('ddd', response.data)
+    return response.data;
+
+};
+
 // //          function: 댓글 삭제 요청 API          //
 // export const deleteComment = async (recordId: number | string, commentId: number | string, accessToken: string) => {
 //     const result = await axios.post(DELETE_COMMENT_URL(recordId, commentId), authorization(accessToken))
