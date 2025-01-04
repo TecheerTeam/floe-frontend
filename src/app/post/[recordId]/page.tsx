@@ -22,10 +22,8 @@ import { useLoginUserStore } from '@/store';
 import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useQueryClient } from '@tanstack/react-query';
 export default function PostDetail() {
   // React Query Client 가져오기
-  const queryClient = useQueryClient();
   //     state: 쿠키     //
   const [cookies] = useCookies();
   //     state: 무한 스크롤 view 참조 상태     //
@@ -115,6 +113,7 @@ export default function PostDetail() {
     }
     if (!user || !cookies.accessToken) {
       alert('로그인 먼저 해주세요');
+      router.push('/auth');
       return;
     }
     if (!recordId) {

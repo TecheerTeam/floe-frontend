@@ -179,6 +179,8 @@ const POST_COMMENT_URL = () => `${API_DOMAIN}/comments`;
 const PUT_COMMENT_URL = (recordId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
 // 댓글 조회
 const GET_COMMENT_URL = (recordId: number) => `${API_DOMAIN}/comments/${recordId}`;
+// 대대댓글 조회
+const GET_REPLY_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/replies`;
 // 댓글 삭제
 const DELETE_COMMENT_URL = (recordId: number, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}/${commentId}`;
 
@@ -231,7 +233,28 @@ export const getCommentRequest = async (recordId: number, page: number, size: nu
         throw error;
     }
 };
-
+export const getReplyRequest = async (commentId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
+    try {
+        const response = await axios.get<GetCommentResponseDto>(
+            `${GET_COMMENT_URL(commentId)}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );console.log('Fetching replies for commentId:', commentId);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+};
 //          function: 댓글 수정 요청 API          //
 // export const putComment = async (recordId: number | string, commentId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
 //     const result = await axios.post(PUT_COMMENT_URL(recordId, commentId), requestBody, authorization(accessToken))

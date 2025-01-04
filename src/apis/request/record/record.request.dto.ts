@@ -20,7 +20,7 @@ export default interface PutRecordRequestDto {
 export default interface PostCommentRequestDto {
     recordId: number;
     content: string;
-    parentCommentId?: number | null; // 대댓글인 경우 부모 댓글 ID (없으면 null)
+    parentId?: number | null; // 대댓글인 경우 부모 댓글 ID (없으면 null)
 }
 
 //          interface: 댓글 수정 DTO          //
