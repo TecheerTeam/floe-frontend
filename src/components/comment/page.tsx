@@ -46,6 +46,7 @@ export default function Comment({ commentsList }: Props) {
   //     function: 댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
+    refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
   } = useInfiniteQuery({
     queryKey: ['reply', commentId],
@@ -136,6 +137,7 @@ export default function Comment({ commentsList }: Props) {
           ...prev,
         ]);
         setNewReply(''); // 댓글 입력란 초기화
+        await refetch();
         console.log('reply requestBody:', requestBody);
         console.log('reply response.data:', response.data);
         console.log('reply response:', response.data.data);

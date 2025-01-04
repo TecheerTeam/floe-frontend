@@ -64,6 +64,7 @@ export default function PostDetail() {
   //     function: 댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
+    refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
   } = useInfiniteQuery({
     queryKey: ['comments', recordId],
@@ -123,7 +124,7 @@ export default function PostDetail() {
     const requestBody = {
       recordId: record?.recordId,
       content: newComment,
-      parentId:null
+      parentId: null,
     } as PostCommentRequestDto;
     try {
       const response = await postCommentRequest(
@@ -145,6 +146,7 @@ export default function PostDetail() {
           ...prev,
         ]);
         setNewComment(''); // 댓글 입력란 초기화
+        await refetch();
         console.log('comment:', requestBody);
       } else {
         alert('댓글 작성에 실패했습니다.');
@@ -284,7 +286,8 @@ export default function PostDetail() {
                       className={styles['user-profile-image']}
                     />
                   ) : (
-                    <div className={styles['comment-default-profile-image']}></div>
+                    <div
+                      className={styles['comment-default-profile-image']}></div>
                   )}
                   <div className={styles['user-profile-nickname']}>
                     {user?.nickname}
