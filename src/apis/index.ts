@@ -209,7 +209,7 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
 
 // };
 //          function: 댓글 조회 요청 API  토큰O        //
-export const getCommentRequest = async (recordId: number, page: number,size: number, accessToken: string ): Promise<GetCommentResponseDto> => {
+export const getCommentRequest = async (recordId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
     try {
         const response = await axios.get<GetCommentResponseDto>(
             `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`,
@@ -219,7 +219,6 @@ export const getCommentRequest = async (recordId: number, page: number,size: num
                 },
             }
         );
-        console.log('ddd', response);
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {

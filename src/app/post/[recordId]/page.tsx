@@ -22,7 +22,10 @@ import { useLoginUserStore } from '@/store';
 import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 export default function PostDetail() {
+  // React Query Client 가져오기
+  const queryClient = useQueryClient();
   //     state: 쿠키     //
   const [cookies] = useCookies();
   //     state: 무한 스크롤 view 참조 상태     //
@@ -51,7 +54,8 @@ export default function PostDetail() {
   const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
   //          state: 댓글 입력 참조 상태          //
   const commentRef = useRef<HTMLInputElement | null>(null);
-
+  const accessToken = cookies.accessToken;
+  const [totalCommentCount, setTotalCommentCount] = useState<number>(0);
   //     function: recordId가 string|string[] 형식일 경우 number로 변환     //
   const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
   if (!id || isNaN(id)) {
@@ -60,28 +64,38 @@ export default function PostDetail() {
   }
   console.log('recordId:', recordId);
   //     function: 댓글 무한 스크롤     //
-  // const {
-  //   data, // 불러온 댓글 데이터
-  //   fetchNextPage, // 다음 페이지 요청
-  // } = useInfiniteQuery({
-  //   queryKey: ['comments', recordId],
-  //   queryFn: async ({ pageParam=0 }) => {
-  //     const response = await getCommentRequest(id, pageParam, 5);
-  //     console.log('API Response:', response?.data.content);
-  //     return response?.data; // data만 반환
-  //   },
-  //   getNextPageParam: (last: GetCommentResponseDto) => {
-  //     if (!last || last.data.last) {
-  //       console.log('No more pages available');
-  //       return undefined;
-  //     }
-  //     console.log('Next page:', last.data.pageable.pageNumber + 1);
-  //     return last.data.pageable.pageNumber + 1;
-  //   },
+  const {
+    data, // 불러온 댓글 데이터
+    fetchNextPage, // 다음 페이지 요청
+  } = useInfiniteQuery({
+    queryKey: ['comments', recordId],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await getCommentRequest(id, pageParam, 5, accessToken);
+      console.log('API response', response);
+      return response; // data만 반환
+    },
+    getNextPageParam: (last: GetCommentResponseDto) => {
+      if (!last || last.data.last) {
+        return undefined;
+      }
+      console.log('current page: ', last.data.pageable.pageNumber);
+      console.log('Next page:', last.data.pageable.pageNumber + 1);
+      return last.data.pageable.pageNumber + 1;
+    },
 
-  //   initialPageParam: 0,
-  // });
-
+    initialPageParam: 0,
+  });
+  //     function: Infinite Query로 불러온 전체 댓글 데이터 길이이     //
+  const totalComments = async () => {
+    const response = await getCommentRequest(
+      Number(recordId),
+      0,
+      5,
+      accessToken,
+    );
+    console.log('total', response.data.totalElements);
+    setTotalCommentCount(response.data.totalElements);
+  };
   //          event handler: 댓글창 팝업 이벤트 처리          //
   const toggleCommentSection = () => {
     setShowCommentSection((prev) => !prev);
@@ -126,12 +140,11 @@ export default function PostDetail() {
               profileImage: user.profileImage,
             },
             content: newComment,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
           },
           ...prev,
         ]);
         setNewComment(''); // 댓글 입력란 초기화
-        fetchComments();
         console.log('comment:', requestBody);
       } else {
         alert('댓글 작성에 실패했습니다.');
@@ -141,42 +154,7 @@ export default function PostDetail() {
       console.error('댓글 작성 오류:', error);
     }
   };
-  const fetchComments = async () => {
-    if (!recordId) return;
-    try {
-      const response = await getCommentRequest(id, 0, 5, cookies.accessToken);
-      console.log('Fetched Comments:', response.code);
-      if (response && response.code === 'C002') {
-        setCommentList(response.data.content); // 서버에서 가져온 댓글 상태 업데이트
-        console.log('comme', commentList);
-      } else {
-        console.error(
-          'Failed to fetch comments:',
-          response?.message || 'Unknown error',
-        );
-      }
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    }
-  };
-  // const fetchComments = async () => {  //토큰X
-  //   if (!recordId) return;
-  //   try {
-  //     const response = await getCommentRequest(id, 0, 5);
-  //     console.log('Fetched Comments:', response.code);
-  //     if (response && response.code === 'C002') {
-  //       setCommentList(response.data.content); // 서버에서 가져온 댓글 상태 업데이트
-  //       console.log('comme', commentList);
-  //     } else {
-  //       console.error(
-  //         'Failed to fetch comments:',
-  //         response?.message || 'Unknown error',
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching comments:', error);
-  //   }
-  // };
+
   //    function: 상세 게시물 데이터 불러오기 처리 함수      //
   const getRecordDetails = async () => {
     if (!recordId) return;
@@ -199,10 +177,11 @@ export default function PostDetail() {
     }
   };
 
-  //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터 불러오기      //
+  //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터, 댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     getRecordDetails();
-    fetchComments();
+    totalComments();
+    fetchNextPage();
   }, [recordId, inView]);
 
   //          render: 렌더링          //
@@ -274,7 +253,7 @@ export default function PostDetail() {
                 className={styles['post-detail-comment-icon']}
                 onClick={toggleCommentSection}></div>
               <div className={styles['post-detail-comment-count']}>
-                {commentList.length}
+                {totalCommentCount}
               </div>
             </div>
 
@@ -293,7 +272,7 @@ export default function PostDetail() {
           {showCommentSection && (
             <div className={styles['comment-section']}>
               <div className={styles['comment-header']}>
-                Comment <span>{commentList.length}</span>
+                Comment <span>{totalCommentCount}</span>
               </div>
 
               <div className={styles['comment-input-container']}>
@@ -325,7 +304,25 @@ export default function PostDetail() {
                   Apply
                 </div>
               </div>
-              {/* <Comment commentsList={commentList} /> */}
+              {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
+                <>
+                  {data.pages.map((page, pageIndex) => {
+                    if (page.data.content && Array.isArray(page.data.content)) {
+                      return page.data.content.map((comment) => (
+                        <Comment
+                          key={comment.commentId}
+                          commentsList={comment}
+                        />
+                      ));
+                    } else {
+                      return <p key={pageIndex}></p>; // content가 없을 때
+                    }
+                  })}
+                  <div ref={ref} style={{ height: '1px' }} />{' '}
+                </>
+              ) : (
+                <></> // 데이터가 없을 때
+              )}
             </div>
           )}
         </div>
