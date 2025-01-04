@@ -18,10 +18,18 @@
   gap: 10px;
   align-items: center;
 }
+.default-profile-image {
+  background-image: var(--default-profile-image);
+  border-radius: 50% 50%;
+  width: 28px;
+  height: 28px;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
 .comment-user-profile-image {
   width: 32px;
   height: 32px;
-  background-image: url(./../../assets/WR.png);
   background-size: cover;
   border-radius: 50%;
 }
@@ -75,7 +83,6 @@
 .user-profile-image {
   width: 28px;
   height: 28px;
-  background-image: url(./../../assets/WR.png);
   background-size: cover;
   border-radius: 50%;
 }
@@ -83,8 +90,8 @@
   font-size: 14px;
 }
 .reply-input {
-  /* flex: 1; */
-  
+  flex: 0.5;
+
   padding: 10px 0px;
   border: none;
   border-bottom: 1px solid var(--post-item-border-color);

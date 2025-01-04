@@ -91,7 +91,7 @@ export default function PostDetail() {
       5,
       accessToken,
     );
-    console.log('total', response.data.totalElements);
+    console.log('total comments', response.data.totalElements);
     setTotalCommentCount(response.data.totalElements);
   };
   //          event handler: 댓글창 팝업 이벤트 처리          //
@@ -123,6 +123,7 @@ export default function PostDetail() {
     const requestBody = {
       recordId: record?.recordId,
       content: newComment,
+      parentId:null
     } as PostCommentRequestDto;
     try {
       const response = await postCommentRequest(
@@ -283,7 +284,7 @@ export default function PostDetail() {
                       className={styles['user-profile-image']}
                     />
                   ) : (
-                    <div className={styles['default-profile-image']}></div>
+                    <div className={styles['comment-default-profile-image']}></div>
                   )}
                   <div className={styles['user-profile-nickname']}>
                     {user?.nickname}

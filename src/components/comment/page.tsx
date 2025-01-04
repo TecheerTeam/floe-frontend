@@ -106,6 +106,10 @@ export default function Comment({ commentsList }: Props) {
       alert('존재하지 않는 게시물입니다');
       return;
     }
+    if (!commentId) {
+      alert('존재하지 않는 댓글입니다.');
+      return;
+    }
     const requestBody = {
       recordId: Number(recordId), // 게시글 ID
       content: newReply,
@@ -132,7 +136,9 @@ export default function Comment({ commentsList }: Props) {
           ...prev,
         ]);
         setNewReply(''); // 댓글 입력란 초기화
-        console.log('reply:', requestBody);
+        console.log('reply requestBody:', requestBody);
+        console.log('reply response.data:', response.data);
+        console.log('reply response:', response.data.data);
       } else {
         alert('댓글 작성에 실패했습니다.');
         console.log('reply:', requestBody);
@@ -153,11 +159,15 @@ export default function Comment({ commentsList }: Props) {
         <div className={styles['comment-item-list']}>
           <div className={styles['comment-item']}>
             <div className={styles['comment-item-top']}>
-              <div
-                className={styles['comment-user-profile-image']}
-                style={{
-                  backgroundImage: `url(${user.profileImage || ''})`,
-                }}></div>
+              {record?.user.profileImage ? (
+                <img
+                  src={record.user.profileImage}
+                  alt="프로필 이미지"
+                  className={styles['comment-user-profile-image']}
+                />
+              ) : (
+                <div className={styles['default-profile-image']}></div>
+              )}
               <div className={styles['comment-user-nickname']}>
                 {user.nickname}
               </div>
@@ -194,12 +204,12 @@ export default function Comment({ commentsList }: Props) {
                     </div>
                   </div>
                   <input
+                    ref={replyRef}
                     type="text"
                     placeholder="대댓글 추가..."
-                    className={styles['reply-input']}
                     value={newReply}
+                    className={styles['reply-input']}
                     onChange={onReplyChangeHandler}
-                    ref={replyRef}
                   />
                   <div
                     className={styles['reply-Apply-Button']}

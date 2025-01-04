@@ -24,9 +24,9 @@
 }
 /* 라이트모드 */
 :root {
-/* 사용자 기본 이미지 */
---default-profile-image : url('./../assets/GuestIcon_Dark.png');
---default-profile-image-hover : url('./../assets/GuestIcon_White.png');
+  /* 사용자 기본 이미지 */
+  --default-profile-image: url('./../assets/GuestIcon_Dark.png');
+  --default-profile-image-hover: url('./../assets/GuestIcon_White.png');
 
   --splash-screen-background-color: #ffffff;
   --header-logo-image: url('./../assets/floelogo.png');
@@ -97,6 +97,7 @@
   --nav-bar-Issue-icon: url('./../assets/IssueIcon_Dark.png');
   --nav-bar-More-icon: url('./../assets/MoreIcon_Dark.png');
   --nav-bar-Guest-icon: url('./../assets/GuestIcon_Dark.png');
+  --nav-bar-logout-icon: url('./../assets/LogoutIcon_Dark.png');
   --nav-bar-Home-icon-Hover: url('./../assets/HomeIcon_White.png');
   --nav-bar-Alarm-icon-Hover: url('./../assets/HeartIcon_White.png');
   --nav-bar-Add-icon-Hover: url('./../assets/AddIcon_White.png');
@@ -104,7 +105,7 @@
   --nav-bar-Issue-icon-Hover: url('./../assets/IssueIcon_White.png');
   --nav-bar-More-icon-Hover: url('./../assets/MoreIcon_White.png');
   --nav-bar-Guest-icon-Hover: url('./../assets/GuestIcon_White.png');
-
+  --nav-bar-logout-icon-Hover: url('./../assets/LogoutIcon_White.png');
   --nav-active-button-background-color: #000000;
   --nav-active-button-text-color: #ffffff;
 
@@ -194,9 +195,9 @@ body {
 
 /* 다크 모드 변수 설정 */
 .dark-mode {
-/* 사용자 기본 이미지 */
---default-profile-image : url('./../assets/GuestIcon_White.png');
---default-profile-image-hover : url('./../assets/GuestIcon_Dark.png');
+  /* 사용자 기본 이미지 */
+  --default-profile-image: url('./../assets/GuestIcon_White.png');
+  --default-profile-image-hover: url('./../assets/GuestIcon_Dark.png');
 
   --splash-screen-background-color: #000000;
   --header-logo-image: url('./../assets/floelogo-dark.png');
@@ -266,6 +267,7 @@ body {
   --nav-bar-Issue-icon: url('./../assets/IssueIcon_White.png');
   --nav-bar-More-icon: url('./../assets/MoreIcon_White.png');
   --nav-bar-Guest-icon: url('./../assets/GuestIcon_White.png');
+  --nav-bar-logout-icon: url('./../assets/LogoutIcon_White.png');
 
   --nav-bar-Home-icon-Hover: url('./../assets/HomeIcon_Dark.png');
   --nav-bar-Alarm-icon-Hover: url('./../assets/HeartIcon_Dark.png');
@@ -274,7 +276,7 @@ body {
   --nav-bar-Issue-icon-Hover: url('./../assets/IssueIcon_Dark.png');
   --nav-bar-More-icon-Hover: url('./../assets/MoreIcon_Dark.png');
   --nav-bar-Guest-icon-Hover: url('./../assets/GuestIcon_Dark.png');
-
+  --nav-bar-logout-icon-Hover: url('./../assets/LogoutIcon_Dark.png');
   --nav-active-button-background-color: #ffffff;
   --nav-active-button-text-color: #000000;
 

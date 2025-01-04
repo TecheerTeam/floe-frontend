@@ -236,13 +236,14 @@ export const getCommentRequest = async (recordId: number, page: number, size: nu
 export const getReplyRequest = async (commentId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
     try {
         const response = await axios.get<GetCommentResponseDto>(
-            `${GET_COMMENT_URL(commentId)}?page=${page}&size=${size}`,
+            `${GET_REPLY_URL(commentId)}?page=${page}&size=${size}`,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
                 },
             }
-        );console.log('Fetching replies for commentId:', commentId);
+        );
+        console.log('reply API Response:', response); // 응답 전체 확인
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
