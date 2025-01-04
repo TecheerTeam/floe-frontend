@@ -18,10 +18,18 @@
   gap: 10px;
   align-items: center;
 }
+.default-profile-image {
+  background-image: var(--default-profile-image);
+  border-radius: 50% 50%;
+  width: 28px;
+  height: 28px;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
 .comment-user-profile-image {
   width: 32px;
   height: 32px;
-  background-image: url(./../../assets/WR.png);
   background-size: cover;
   border-radius: 50%;
 }
@@ -48,6 +56,56 @@
   transition: color 0.2s ease;
 }
 .comment-reply-button:hover {
+  color: var(--comment-item-text-color-hover);
+  transition: color 0.2s ease;
+}
+.reply-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 150px;
+  gap: 10px;
+  width: 1010px;
+  margin-top: 10px;
+}
+.reply-item-input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.user-profile-box {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+.user-profile-image {
+  width: 28px;
+  height: 28px;
+  background-size: cover;
+  border-radius: 50%;
+}
+.user-profile-nickname {
+  font-size: 14px;
+}
+.reply-input {
+  flex: 0.5;
+
+  padding: 10px 0px;
+  border: none;
+  border-bottom: 1px solid var(--post-item-border-color);
+  background-color: var(--post-item-background-color); /* 배경색 추가 */
+  outline: none; /* 포커스 시 기본 outline 제거 */
+  color: var(--post-item-text-color);
+  font-size: 14px;
+}
+.reply-Apply-Button {
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-size: 14px;
+}
+.reply-Apply-Button:hover {
   color: var(--comment-item-text-color-hover);
   transition: color 0.2s ease;
 }

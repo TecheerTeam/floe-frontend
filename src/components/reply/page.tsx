@@ -1,34 +1,41 @@
-import React from 'react';
+'use client';
+import React, { useRef, useState, useEffect, ChangeEvent } from 'react';
 import styles from './Reply.module.css';
+import { useCookies } from 'react-cookie';
+import { useLoginUserStore } from '@/store';
+import { useInView } from 'react-intersection-observer';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { CommentItem, RecordItem } from '@/types/interface';
 
-export default function Reply() {
+interface Props {
+  replyList: CommentItem; // 댓글 데이터
+}
+//        state: 게시물 상태(zustand)        //
+
+export default function Reply({ replyList }: Props) {
+  const [record, setRecord] = useState<RecordItem | null>(null);
+  const { commentId, content, createdAt, parentId, user } = replyList;
   return (
     <div className={styles['reply-container']}>
-      <div className={styles['reply-item-input-container']}>
-        <div className={styles['user-profile-box']}>
-          <div className={styles['user-profile-image']}></div>
-          <div className={styles['user-profile-nickname']}>{'Kgccm'}</div>
-        </div>
-        <input
-          type="text"
-          placeholder="대댓글 추가..."
-          className={styles['reply-input']}
-        />
-        <div className={styles['reply-Apply-Button']}>Apply</div>
-      </div>
       <div className={styles['reply-item-list-container']}>
         <div className={styles['reply-item-list']}>
           <div className={styles['reply-item']}>
-            <div className={styles['reply-user-profile-image']}></div>
-            <div className={styles['reply-user-nickname']}>{'Kgccm'}</div>
-            <div className={styles['reply-text']}>{'댓글입니다'}</div>
-            <div className={styles['reply-write-time']}>{'3분전'}</div>
-          </div>
-          <div className={styles['reply-item']}>
-            <div className={styles['reply-user-profile-image']}></div>
-            <div className={styles['reply-user-nickname']}>{'Kgccm'}</div>
-            <div className={styles['reply-text']}>{'댓글입니다'}</div>
-            <div className={styles['reply-write-time']}>{'3분전'}</div>
+            {record?.user.profileImage ? (
+              <img
+                src={record.user.profileImage}
+                alt="프로필 이미지"
+                className={styles['reply-user-profile-image']}
+              />
+            ) : (
+              <div className={styles['default-profile-image']}></div>
+            )}
+            <div className={styles['reply-user-nickname']}>
+              {user?.nickname}
+            </div>
+            <div className={styles['reply-text']}>{content}</div>
+            <div className={styles['reply-write-time']}>{}</div>
           </div>
         </div>
       </div>

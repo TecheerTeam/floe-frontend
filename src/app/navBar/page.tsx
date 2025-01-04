@@ -8,7 +8,7 @@ import { useLoginUserStore } from '@/store';
 
 export default function NavBar() {
   const router = useRouter();
-  const { user } = useLoginUserStore(); // Zustand로 로그인
+  const { user, logout } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //
@@ -36,7 +36,17 @@ export default function NavBar() {
     localStorage.setItem('theme', newMode ? 'dark' : 'light');
     setShowSeeMorePopup(false); // 팝업 닫기
   };
+  //     event handler: 로그아웃 이벤트 처리     //
+  const onLogoutButtonClickHandler = () => {
+    logout();
 
+    // 로컬 스토리지 초기화
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
+    // 홈으로 리디렉션
+    router.push('/');
+  };
   //          effect: 페이지 로드 시 다크모드 여부를 로컬 스토리지에서 확인 //
   useEffect(() => {
     const savedMode = localStorage.getItem('theme') === 'dark';
@@ -184,9 +194,18 @@ export default function NavBar() {
 
       {showSeeMorePopup && (
         <div className={styles['popup-container']}>
-          <button className={styles['option-button']}>
-            <div className={styles['Option-Icon']}></div> Option
-          </button>
+          {user && (
+            <button className={styles['option-button']}>
+              <div className={styles['Option-Icon']}></div> Option
+            </button>
+          )}
+          {user && ( // 유저가 로그인된 상태에서만 렌더링
+            <button
+              className={styles['logout-button']}
+              onClick={onLogoutButtonClickHandler}>
+              <div className={styles['logout-Icon']}></div> Logout
+            </button>
+          )}
           <button className={styles['mode-button']} onClick={toggleDarkMode}>
             <div
               className={

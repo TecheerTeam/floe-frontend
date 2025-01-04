@@ -22,10 +22,8 @@ import { useLoginUserStore } from '@/store';
 import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useQueryClient } from '@tanstack/react-query';
 export default function PostDetail() {
   // React Query Client 가져오기
-  const queryClient = useQueryClient();
   //     state: 쿠키     //
   const [cookies] = useCookies();
   //     state: 무한 스크롤 view 참조 상태     //
@@ -93,7 +91,7 @@ export default function PostDetail() {
       5,
       accessToken,
     );
-    console.log('total', response.data.totalElements);
+    console.log('total comments', response.data.totalElements);
     setTotalCommentCount(response.data.totalElements);
   };
   //          event handler: 댓글창 팝업 이벤트 처리          //
@@ -115,6 +113,7 @@ export default function PostDetail() {
     }
     if (!user || !cookies.accessToken) {
       alert('로그인 먼저 해주세요');
+      router.push('/auth');
       return;
     }
     if (!recordId) {
@@ -124,6 +123,7 @@ export default function PostDetail() {
     const requestBody = {
       recordId: record?.recordId,
       content: newComment,
+      parentId:null
     } as PostCommentRequestDto;
     try {
       const response = await postCommentRequest(
@@ -284,7 +284,7 @@ export default function PostDetail() {
                       className={styles['user-profile-image']}
                     />
                   ) : (
-                    <div className={styles['default-profile-image']}></div>
+                    <div className={styles['comment-default-profile-image']}></div>
                   )}
                   <div className={styles['user-profile-nickname']}>
                     {user?.nickname}

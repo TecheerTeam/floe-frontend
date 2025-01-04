@@ -236,3 +236,12 @@
   color: var(--post-detail-comment-apply-button-text-color-hover);
   cursor: pointer;
 }
+.comment-default-profile-image {
+  background-image: var(--default-profile-image);
+  border-radius: 50% 50%;
+  width: 32px;
+  height: 32px;
+
+  background-position: 50% 50%;
+  background-size: 100% 100%;
+}
