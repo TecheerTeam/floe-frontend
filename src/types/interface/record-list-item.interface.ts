@@ -9,7 +9,7 @@ export default interface RecordListItem {
     content: string;
     medias: { mediaId: number; mediaUrl: string }[];
     tagNames: string[];
-    createdAt: string;
+    createdAt: Date;
     likeCount: number;
     commentCount: number;
     saveCount: number;
