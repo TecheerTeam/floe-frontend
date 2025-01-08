@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.7",
-    "@tanstack/react-query-devtools": "^5.62.7",
+    "@tanstack/react-query-devtools": "^5.62.15",
     "@tiptap/extension-placeholder": "^2.10.2",
     "@tiptap/react": "^2.10.2",
     "@tiptap/starter-kit": "^2.10.2",

@@ -128,6 +128,7 @@ export const postRecordRequest = async (formData: FormData, accessToken: string)
                 'Content-Type': 'multipart/form-data'
             },
         });
+        console.log('post ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -322,58 +323,97 @@ export const getReplyRequest = async (commentId: number, page: number, size: num
 // 유저 정보 조회
 
 //         좋아요 추가 API         //
-const POST_LIKE_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}/likes`;
+const POST_LIKE_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
 //         좋아요 수 조회 API         //
-const GET_LIKE_COUNT_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}/likes`;
-//         좋아요 리스트 조회 API          //
-const GET_LIKE_LIST_URL = (recordId: number | string) => `${API_DOMAIN}/records/${recordId}/like-list`;
+const GET_LIKE_COUNT_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
+//         좋아요 유저 리스트 조회 API          //
+const GET_LIKE_LIST_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/like-list`;
 
+const DELETE_LIKE_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
 //         function: 좋아요 추가 API         //
-export const postLikeRequest = async (recordId: number | string, accessToken: string) => {
-    const result = await axios.put(POST_LIKE_URL(recordId), {}, authorization(accessToken))
-        .then(response => {
-            const responseBody = response.data;
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
-    return result;
+export const postLikeRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const response = await axios.post(POST_LIKE_URL(recordId), {}, authorization(accessToken))
+        console.log('post like request api response', response);
+        return response;
+    }
+    catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
 }
 
 //         function: 좋아요 수 조회 API         //
-export const getLikeCountRequest = async (recordId: number | string) => {
-    const result = await axios.get(GET_LIKE_COUNT_URL(recordId)) // GET 요청 URL
-        .then(response => {
-            const responseBody: GetRecordLikeCountResponseDto = response.data; // 응답 DTO 타입 지정
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data; // 오류 응답 처리
-            return responseBody;
-        });
-    return result;
+export const getLikeCountRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const response = await axios.get<GetRecordLikeCountResponseDto>(
+            `${GET_LIKE_COUNT_URL(recordId)}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            }
+        }
+        )
+        console.log('get Like Count API Response:', response); // 응답 전체 확인
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
 };
 
 //         function: 좋아요 리스트 조회 API          //
-export const getLikeListRequest = async (recordId: number | string) => {
-    const result = await axios.get(GET_LIKE_LIST_URL(recordId)) // GET 요청 URL
-        .then(response => {
-            const responseBody: GetRecordLikeListResponseDto = response.data; // 응답 DTO 타입 지정
-            return responseBody;
-        })
-        .catch(error => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data; // 오류 처리
-            return responseBody;
-        });
-    return result;
+export const getLikeListRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const response = await axios.get<GetRecordLikeListResponseDto>(
+            `${GET_LIKE_LIST_URL(recordId)}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            }
+        }
+        )
+        console.log('get Like List API Response:', response); // 응답 전체 확인
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
 };
-
-
+//         function: 좋아요 삭제 API          //
+export const deleteLikeRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(DELETE_LIKE_URL(recordId), authorization(accessToken))
+        console.log('delete like request api response', response);
+        return response;
+    }
+    catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+}
 const GET_USER_URL = () => `${API_DOMAIN}/users/`;
 
 export const getUserRequest = async (accessToken: string) => {

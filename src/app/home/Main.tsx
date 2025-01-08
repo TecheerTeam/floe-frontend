@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Home.module.css';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+
 import Banner from '@/assets/Banner.gif';
 import Header from '@/app/header/page';
 import NavBar from '@/app/navBar/page';
@@ -22,11 +24,13 @@ export default function Main() {
   const [fadeOut, setFadeOut] = useState(false);
   //          state: View Mode(카드형 or 리스트형) 상태         //
   const [viewMode, setViewMode] = useState('card');
+  const pathname = usePathname(); // 현재 경로 감지
   const { ref, inView } = useInView();
   const [recordList, setRecordList] = useState<RecordListItem[]>([]);
-
+  const queryClient = useQueryClient();
   const {
     data, // 불러온 데이터
+    refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
     hasNextPage, // 다음 페이지 여부
     isFetchingNextPage, // 다음 페이지 로드 중인지 여부
@@ -36,18 +40,21 @@ export default function Main() {
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getRecordRequest(pageParam, 5);
       console.log(response);
+      console.log('queryKey:', ['records']);
       return response;
     },
     getNextPageParam: (last: GetRecordResponseDto) => {
       if (!last || last.data.last) {
         return undefined;
       }
-
       const nextPage = last.data.pageable.pageNumber + 1;
       return nextPage;
     },
     initialPageParam: 0,
+    
+    refetchOnMount: true, // 마운트 시 데이터 자동 요청
   });
+
   //          effect: 스플래쉬 스크린           //
   useEffect(() => {
     // 0.75초 후에 페이드아웃 시작
@@ -70,6 +77,11 @@ export default function Main() {
   const toggleViewCardMode = () => setViewMode('card');
   const toggleViewListMode = () => setViewMode('list');
 
+  //          effect: 게시글 데이터 최신화          //
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['records'], refetchType: 'all' });
+    refetch();
+  }, [refetch]);
   //          effect: 스크롤 감지해서 다음 페이지로 넘기기(무한 스크롤)          //
   useEffect(() => {
     fetchNextPage();
