@@ -7,9 +7,18 @@ import Comment from '@/components/comment/page';
 import { CommentItem, LikeItem, RecordItem } from '@/types/interface';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import {  getCommentRequest, getDetailRecordRequest, postCommentRequest,
+import {
+  deleteLikeRequest,
+  getCommentRequest,
+  getDetailRecordRequest,
+  getLikeCountRequest,
+  getLikeListRequest,
+  postCommentRequest,
+  postLikeRequest,
 } from '@/apis';
-import {  GetCommentResponseDto,  GetDetailRecordResponseDto,
+import {
+  GetCommentResponseDto,
+  GetDetailRecordResponseDto,
 } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useCookies } from 'react-cookie';
@@ -32,13 +41,13 @@ export default function PostDetail() {
   //        state: 게시물 상태(zustand)        //
   const [record, setRecord] = useState<RecordItem | null>(null);
   //       state : 좋아요 개수 상태        //
-  const [likeCount, setLikeCount] = useState<LikeItem[]>([]);
+  const [likeCount, setLikeCount] = useState<number>(0);
   //       state: 댓글 입력 상태         //
   const [newComment, setNewComment] = useState<string>('');
-  // 댓글 목록 상태
+  //       state: 댓글 목록 상태        //
   const [commentList, setCommentList] = useState<CommentItem[]>([]);
   //          state: 좋아요 아이콘 버튼 클릭 상태          //
-  const [likeClick, setLikeClick] = useState<boolean>(false);
+  const [isLike, setIsLike] = useState<boolean>(false);
   //          state: 댓글 아이콘 버튼 클릭 상태          //
   const [commentClick, setCommentClick] = useState<boolean>(false);
   //          state: 저장 아이콘 버튼 클릭 상태          //
@@ -47,8 +56,8 @@ export default function PostDetail() {
   const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
   //          state: 댓글 입력 참조 상태          //
   const commentRef = useRef<HTMLInputElement | null>(null);
-  const accessToken = cookies.accessToken;
   const [totalCommentCount, setTotalCommentCount] = useState<number>(0);
+
   //     function: recordId가 string|string[] 형식일 경우 number로 변환     //
   const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
   if (!id || isNaN(id)) {
@@ -64,7 +73,12 @@ export default function PostDetail() {
   } = useInfiniteQuery({
     queryKey: ['comments', recordId],
     queryFn: async ({ pageParam = 0 }) => {
-      const response = await getCommentRequest(id, pageParam, 5, accessToken);
+      const response = await getCommentRequest(
+        id,
+        pageParam,
+        5,
+        cookies.accessToken,
+      );
       console.log('API response', response);
       return response; // data만 반환
     },
@@ -85,7 +99,7 @@ export default function PostDetail() {
       Number(recordId),
       0,
       5,
-      accessToken,
+      cookies.accessToken,
     );
     console.log('total comments', response.data.totalElements);
     setTotalCommentCount(response.data.totalElements);
@@ -100,6 +114,60 @@ export default function PostDetail() {
     if (!commentRef.current) return;
     setNewComment(value);
     console.log('입력중인 댓글:', newComment);
+  };
+  //          event handler: 좋아요 버튼 클릭 이벤트 처리          //
+  const onLikeClickHandler = async () => {
+    console.log('Current user:', user);
+    console.log('Access token:', cookies.accessToken);
+    if (!user || !cookies.accessToken) {
+      alert('로그인이 필요합니다.');
+      return; // 로그인 X / 게시물 X / 토큰 X 시 return;
+    }
+    try {
+      if (isLike) {
+        // 좋아요 삭제제
+        await deleteLikeRequest(id, cookies.accessToken);
+        setIsLike(false);
+        setLikeCount((prev) => prev - 1); // 좋아요 개수 감소
+      } else {
+        // 좋아요 추가
+        await postLikeRequest(id, cookies.accessToken);
+        setIsLike(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('좋아요 api 실패', error);
+    }
+  };
+
+  const fetchLikeCount = async () => {
+    if (!recordId || !cookies.accessToken) return;
+
+    try {
+      const response = await getLikeCountRequest(id, cookies.accessToken);
+      if (response.code === 'RL01') {
+        setLikeCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  //          function : 좋아요 리스트 처리 함수  (좋아요 목록에서 현재 유저를 찾아 중복처리)        //
+  const fetchLikeStatus = async () => {
+    if (!recordId || !cookies.accessToken) return;
+
+    try {
+      const response = await getLikeListRequest(id, cookies.accessToken);
+      console.log('like likelikedatadtdd', response.data);
+      const isLiked = response.data.likeList.some(
+        (like: { userName: string }) => like.userName === user?.nickname,
+      );
+      setIsLike(isLiked); // isLike 상태 업데이트
+    
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
   };
   //          function : 댓글 입력 버튼 처리 함수          //
   const onApplyClickHandler = async () => {
@@ -174,6 +242,11 @@ export default function PostDetail() {
     }
   };
 
+  useEffect(() => {
+    fetchLikeCount();
+    fetchLikeStatus();
+  }, [recordId, cookies.accessToken]);
+
   //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터, 댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     getRecordDetails();
@@ -239,9 +312,11 @@ export default function PostDetail() {
           <div className={styles['post-detail-bottom']}>
             <div className={styles['post-detail-like-box']}>
               {/* 좋아요 아이콘 클릭시 해당 게시글의 좋아요 count 증감 */}
-              <div className={styles['post-detail-like-icon']}></div>
+              <div
+                className={styles['post-detail-like-icon']}
+                onClick={onLikeClickHandler}></div>
               <div className={styles['post-detail-like-count']}>
-                {'likeCount'}
+                {likeCount}
               </div>
             </div>
 

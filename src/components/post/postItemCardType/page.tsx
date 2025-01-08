@@ -4,7 +4,7 @@ import React from 'react';
 import styles from './Post.Card.module.css';
 import { RecordListItem } from '@/types/interface';
 import { useQuery } from '@tanstack/react-query';
-import { getCommentRequest } from '@/apis';
+import { getCommentRequest, getLikeCountRequest } from '@/apis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -41,7 +41,7 @@ export default function PostItemCardType({
     // recordId를 기반으로 게시글 상세 페이지로 이동
     router.push(`/post/${recordId}`);
   };
-
+  //          function: 댓글 개수 업데이트          //
   const { data: commentData } = useQuery({
     queryKey: ['comments', recordId],
     queryFn: async () => {
@@ -53,6 +53,17 @@ export default function PostItemCardType({
       ); // 첫 번째 페이지에서 댓글 데이터 요청
       console.log('comment count: ', response.data.totalElements);
       return response.data.totalElements; // 총 댓글 수 반환
+    },
+    staleTime: 10000, // 캐시 유지 시간 (10초)
+    refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
+  });
+  //          function: 좋아요요 개수 업데이트          //
+  const { data: likeData } = useQuery({
+    queryKey: ['like', recordId],
+    queryFn: async () => {
+      const response = await getLikeCountRequest(recordId, cookies.accessToken); // 첫 번째 페이지에서 댓글 데이터 요청
+      console.log('like count in query: ', response.data.count);
+      return response.data.count; // 총 댓글 수 반환
     },
     staleTime: 10000, // 캐시 유지 시간 (10초)
     refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
@@ -121,7 +132,9 @@ export default function PostItemCardType({
         <div className={styles['card-like-box']}>
           {/* 좋아요 아이콘 클릭시 해당 게시글의 좋아요 count 증감 */}
           <div className={styles['card-like-icon']}></div>
-          <div className={styles['card-like-count']}>{likeCount}</div>
+          <div className={styles['card-like-count']}>
+            {likeData ?? likeCount}
+          </div>
         </div>
 
         <div className={styles['card-comment-box']}>
