@@ -7,14 +7,9 @@ import Comment from '@/components/comment/page';
 import { CommentItem, LikeItem, RecordItem } from '@/types/interface';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import {
-  getCommentRequest,
-  getDetailRecordRequest,
-  postCommentRequest,
+import {  getCommentRequest, getDetailRecordRequest, postCommentRequest,
 } from '@/apis';
-import {
-  GetCommentResponseDto,
-  GetDetailRecordResponseDto,
+import {  GetCommentResponseDto,  GetDetailRecordResponseDto,
 } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useCookies } from 'react-cookie';

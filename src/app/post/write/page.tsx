@@ -14,16 +14,16 @@ import NavBar from '../../navBar/page';
 import { useLoginUserStore, useRecordTypeStore } from '@/store';
 import { useRecordStore } from '@/store';
 import { postRecordRequest } from '@/apis';
-import { PostRecordRequestDto } from '@/apis/request/record';
 import { useCookies } from 'react-cookie';
-import { PostRecordResponseDto } from '@/apis/response/record';
-import { ResponseDto } from '@/apis/response';
 import { useRouter } from 'next/navigation';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { PostRecordResponseDto } from '@/apis/response/record';
 //          component: 게시물 작성 화면 컴포넌트          //
 export default function PostWrite() {
   const router = useRouter(); // 페이지 리다이렉트 사용
-  const { user, logout } = useLoginUserStore(); // zustand 상태 관리
+  const { user } = useLoginUserStore(); // zustand 상태 관리
   const [cookies] = useCookies(); // 쿠키 상태 관리
+  const queryClient = useQueryClient();
   //          state: 제목 영역 요소 참조 상태          //
   const titleRef = useRef<HTMLInputElement | null>(null);
   //          state: 이미지 입력 요소 참조 상태          //
@@ -147,7 +147,6 @@ export default function PostWrite() {
   const onUploadButtonClickHandler = async () => {
     const accessToken = cookies.accessToken;
     if (!accessToken) return;
-
     const formData = new FormData();
     // console.log('dd', );
     // 1. 이미지 데이터를 FormData에 추가
@@ -177,7 +176,7 @@ export default function PostWrite() {
       const response = await postRecordRequest(formData, accessToken);
 
       if (response) {
-        console.log(response);
+        queryClient.invalidateQueries({ queryKey: ['records'] }); // 캐시를 무효화
         router.push('/');
       }
     } catch (error) {

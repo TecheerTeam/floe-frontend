@@ -3,9 +3,12 @@ import { useRouter } from 'next/navigation'; // Next.js 라우터
 import React from 'react';
 import styles from './Post.Card.module.css';
 import { RecordListItem } from '@/types/interface';
+import { useQuery } from '@tanstack/react-query';
+import { getCommentRequest } from '@/apis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { useCookies } from 'react-cookie';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 interface PostItemCardTypeProps {
@@ -28,12 +31,32 @@ export default function PostItemCardType({
     saveCount,
   } = recordListItem;
 
-  const router = useRouter(); // Next.js 라우터 훅
+  //     state: 쿠키     //
+  const [cookies] = useCookies();
+  //        state : 라우팅     //
+  const router = useRouter();
 
+  //     event handler: 클릭 이벤트 처리     //
   const handleCardClick = () => {
     // recordId를 기반으로 게시글 상세 페이지로 이동
     router.push(`/post/${recordId}`);
   };
+
+  const { data: commentData } = useQuery({
+    queryKey: ['comments', recordId],
+    queryFn: async () => {
+      const response = await getCommentRequest(
+        recordId,
+        0,
+        1,
+        cookies.accessToken,
+      ); // 첫 번째 페이지에서 댓글 데이터 요청
+      console.log('comment count: ', response.data.totalElements);
+      return response.data.totalElements; // 총 댓글 수 반환
+    },
+    staleTime: 10000, // 캐시 유지 시간 (10초)
+    refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
+  });
   //          function: 작성일 경과시간 함수          //
   const getElapsedTime = () => {
     const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
@@ -104,7 +127,9 @@ export default function PostItemCardType({
         <div className={styles['card-comment-box']}>
           {/* 댓글 아이콘 클릭시 해당 게시글 디테일 페이지로 이동 */}
           <div className={styles['card-comment-icon']}></div>
-          <div className={styles['card-comment-count']}>{commentCount}</div>
+          <div className={styles['card-comment-count']}>
+            {commentData ?? commentCount}
+          </div>
         </div>
 
         <div className={styles['card-save-box']}>

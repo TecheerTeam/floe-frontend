@@ -6,6 +6,7 @@ import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store/'; // zustand import
 import { getSignInUserRequest, signInRequest } from '@/apis'; // 로그인된 사용자 정보를 가져오는 API
 import { useRouter } from 'next/navigation'; // 로그인되지 않은 상태에서 리다이렉트하기 위해 사용
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 export default function RootLayout({
@@ -53,6 +54,7 @@ export default function RootLayout({
       <body>
         <QueryClientProvider client={queryClient}>
           {children}
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>
     </html>

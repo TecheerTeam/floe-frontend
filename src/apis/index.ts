@@ -128,6 +128,7 @@ export const postRecordRequest = async (formData: FormData, accessToken: string)
                 'Content-Type': 'multipart/form-data'
             },
         });
+        console.log('post ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
