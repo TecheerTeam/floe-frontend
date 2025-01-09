@@ -74,6 +74,8 @@
 
   /* search-bar */
   --search-bar-border-color: rgba(0, 0, 0, 0.5);
+  --search-icon: url('./../assets/SearchIcon_Dark.png');
+  --search-icon-Hover: url('./../assets/SearchIcon_Hover.png');
   /* navbar */
   --nav-background-color: #f9fafa;
   --nav-bar-button-text-color: #000000;
@@ -216,7 +218,10 @@ body {
   --hover-background-color: #ffffff;
   --google-text-hover-color: #000000;
 
+  /* search-bar */
   --search-bar-border-color: rgba(255, 255, 255, 0.5);
+  --search-icon: url('./../assets/SearchIcon_White.png');
+  --search-icon-Hover: url('./../assets/SearchIcon_Hover.png');
 
   --main-background-color: #000000;
 
@@ -308,7 +313,7 @@ body {
   --post-item-Comment-icon-hover: url('./../assets/CommentIcon_Hover.png');
   --post-item-Save-icon-hover: url('./../assets/SaveIcon_Hover.png');
 
-  --post-item-Heart-icon-active: url('./../assets/HeartIcon_Dark.png');
+  --post-item-Heart-icon-active: url('./../assets/HeartIcon_Active.png');
   --post-item-Comment-icon-active: url('./../assets/CommentIcon_Dark.png');
   --post-item-Save-icon-active: url('./../assets/SaveIcon_Dark.png');
 

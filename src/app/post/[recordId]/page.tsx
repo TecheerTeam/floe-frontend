@@ -159,12 +159,10 @@ export default function PostDetail() {
 
     try {
       const response = await getLikeListRequest(id, cookies.accessToken);
-      console.log('like likelikedatadtdd', response.data);
       const isLiked = response.data.likeList.some(
         (like: { userName: string }) => like.userName === user?.nickname,
       );
       setIsLike(isLiked); // isLike 상태 업데이트
-    
     } catch (error) {
       console.error('fetch Like Count Error', error);
     }
@@ -312,9 +310,16 @@ export default function PostDetail() {
           <div className={styles['post-detail-bottom']}>
             <div className={styles['post-detail-like-box']}>
               {/* 좋아요 아이콘 클릭시 해당 게시글의 좋아요 count 증감 */}
-              <div
-                className={styles['post-detail-like-icon']}
-                onClick={onLikeClickHandler}></div>
+              {isLike ? (
+                <div
+                  className={styles['post-detail-like-icon-active']}
+                  onClick={onLikeClickHandler}></div>
+              ) : (
+                <div
+                  className={styles['post-detail-like-icon']}
+                  onClick={onLikeClickHandler}></div>
+              )}
+
               <div className={styles['post-detail-like-count']}>
                 {likeCount}
               </div>

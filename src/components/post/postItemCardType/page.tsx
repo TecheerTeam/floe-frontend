@@ -4,7 +4,11 @@ import React from 'react';
 import styles from './Post.Card.module.css';
 import { RecordListItem } from '@/types/interface';
 import { useQuery } from '@tanstack/react-query';
-import { getCommentRequest, getLikeCountRequest } from '@/apis';
+import {
+  getCommentRequest,
+  getLikeCountRequest,
+  getLikeListRequest,
+} from '@/apis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -57,9 +61,9 @@ export default function PostItemCardType({
     staleTime: 10000, // 캐시 유지 시간 (10초)
     refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
   });
-  //          function: 좋아요요 개수 업데이트          //
+  //          function: 좋아요 개수 업데이트          //
   const { data: likeData } = useQuery({
-    queryKey: ['like', recordId],
+    queryKey: ['likes', recordId],
     queryFn: async () => {
       const response = await getLikeCountRequest(recordId, cookies.accessToken); // 첫 번째 페이지에서 댓글 데이터 요청
       console.log('like count in query: ', response.data.count);
@@ -68,6 +72,20 @@ export default function PostItemCardType({
     staleTime: 10000, // 캐시 유지 시간 (10초)
     refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
   });
+  //          function: 좋아요 여부 업데이트          //
+  const { data: likeListData } = useQuery({
+    queryKey: ['likeList', recordId],
+    queryFn: async () => {
+      const response = await getLikeListRequest(recordId, cookies.accessToken);
+      console.log('likeListData: ', response.data.likeList);
+      console.log('likeListDataddd ', response.data);
+      return response.data.likeList; // 좋아요한 사용자 목록 반환
+    },
+    staleTime: 10000,
+  });
+  const isLikedByUser = likeListData?.some(
+    (like: { userName: string }) => like.userName === user.nickname,
+  );
   //          function: 작성일 경과시간 함수          //
   const getElapsedTime = () => {
     const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
