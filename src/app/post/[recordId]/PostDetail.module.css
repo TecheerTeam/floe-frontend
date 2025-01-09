@@ -137,6 +137,12 @@
 .post-detail-like-icon:hover {
   background-image: url('./../../../assets/HeartIcon_Hover.png');
 }
+.post-detail-like-icon-active {
+  width: 32px;
+  height: 32px;
+  background-image: var(--post-item-Heart-icon-active);
+  cursor: pointer;
+}
 .post-detail-comment-box {
   display: flex;
   height: 45px;

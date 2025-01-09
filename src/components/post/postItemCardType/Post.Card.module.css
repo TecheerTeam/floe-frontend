@@ -117,6 +117,12 @@
   background-image: var(--post-item-Heart-icon);
   cursor: pointer;
 }
+.card-like-icon-active {
+  width: 32px;
+  height: 32px;
+  background-image: var(--post-item-Heart-icon-active);
+  cursor: pointer;
+}
 .card-like-icon:hover {
   background-image: url('./../../../assets/HeartIcon_Hover.png');
 }

@@ -56,30 +56,100 @@
 .searchBar-wrapper {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 좌측 정렬 */
+  justify-content: space-between;
   border: 1px solid var(--search-bar-border-color);
   border-radius: 10px;
-  padding: 8px 16px;
-  max-width: 950px; /* 최대 너비 제한 */
-  min-width: 400px;
-  width: 100%;
+  padding: 0 8px; /* 초기 padding 최소화 */
+  max-width: 0; /* 초기 너비: 0 (아이콘만 표시) */
+  overflow: hidden;
   height: 48px;
   background-color: var(--background-color);
+  transition:
+    max-width 0.4s ease,
+    padding 0.4s ease,
+    opacity 0.4s ease; /* 애니메이션 효과 */
+  opacity: 0; /* 기본 상태에서 숨김 */
+  gap: 20px;
 }
-.searchBar-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
+
+/* 검색창 확장 상태 */
+.searchBar-wrapper.expanded {
+  max-width: 950px; /* 확장 시 최대 너비 */
+  padding: 8px 16px; /* 확장 시 padding 복원 */
+  opacity: 1; /* 확장 시 표시 */
+  transform: scaleX(1); /* 확장 상태 */
 }
-.searchBar-input {
-  width: 100%;
+.searchBar-wrapper.closing {
+  transform: scaleX(0); /* 닫힐 때 오른쪽에서 왼쪽으로 사라짐 */
+  opacity: 0; /* 닫힐 때 사라짐 */
+}
+.searchBar-button {
+  margin-left: 8px;
+  padding: 5px 10px;
+  background-color: #0070f3;
+  color: white;
   border: none;
-  outline: none;
-  font-size: 16px;
-  text-align: left;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0; /* 기본 상태에서 숨김 */
+  transition: opacity 0.4s ease; /* 애니메이션 효과 */
+}
+/* 검색창 입력 필드 */
+.searchBar-input {
+  flex: 1;
+  margin-right: 8px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: var(--background-color);
+  transition: opacity 0.3s ease; /* 필드가 자연스럽게 나타나도록 */
+  opacity: 0; /* 기본 상태: 숨김 */
+}
+
+/* 확장 상태에서 입력 필드 표시 */
+.searchBar-wrapper.expanded .searchBar-input {
+  opacity: 1; /* 확장 시 표시 */
+}
+
+/* 검색 버튼 */
+
+.searchBar-wrapper.expanded .searchBar-button {
+  opacity: 1; /* 확장 시 표시 */
+}
+.searchBar-select {
   background-color: var(--background-color);
   color: var(--text-color);
 }
-#searchBar-wrapper:focus-within {
-  border: 1px solid #000000;
+/* 검색 아이콘 */
+.searchBar-icon {
+  width: 30px;
+  height: 30px;
+  background-image: var(--search-icon);
+  background-size: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease; /* 클릭 시 살짝 확대 */
+}
+/* 닫기 버튼 */
+.close-button {
+  margin-left: 8px;
+  padding: 5px 10px;
+  background-color: transparent;
+  border: none;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0; /* 기본 상태에서 숨김 */
+  transition: opacity 0.3s ease; /* 애니메이션 효과 */
+}
+
+.searchBar-wrapper.expanded .close-button {
+  opacity: 1; /* 확장 시 표시 */
+}
+.close-button:hover {
+  color: #000; /* 닫기 버튼 호버 효과 */
+}
+
+.searchBar-icon:hover {
+  transform: scale(1.1); /* 아이콘 확대 효과 */
+  background-image: var(--search-icon-Hover);
 }

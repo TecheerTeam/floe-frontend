@@ -106,6 +106,12 @@
   background-image: var(--post-item-Heart-icon);
   cursor: pointer;
 }
+.list-like-icon-active {
+  width: 32px;
+  height: 32px;
+  background-image: var(--post-item-Heart-icon-active);
+  cursor: pointer;
+}
 .list-like-icon:hover {
   background-image: var(--post-item-Heart-icon-hover);
 }

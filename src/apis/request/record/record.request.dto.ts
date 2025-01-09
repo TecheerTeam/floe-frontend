@@ -27,3 +27,4 @@ export default interface PostCommentRequestDto {
 export default interface PutCommentRequestDto {
     content: string;
 }
+
