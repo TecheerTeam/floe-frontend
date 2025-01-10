@@ -49,10 +49,10 @@ export default function Header() {
     const queryParams = new URLSearchParams();
     queryParams.append('recordType', recordType);
     if (Title) queryParams.append('title', Title);
+    else queryParams.delete('title'); // 명시적으로 삭제
     if (Tag) queryParams.append('tagNames', Tag);
+    else queryParams.delete('tag'); // 명시적으로 삭제
 
-
-  
     try {
       // API 호출
       const response = await getSearchRecordRequest(

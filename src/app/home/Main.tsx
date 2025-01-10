@@ -17,6 +17,8 @@ import { RecordListItem } from '@/types/interface';
 import { GetRecordResponseDto } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useInView } from 'react-intersection-observer';
+
+
 export default function Main() {
   //          state: Splash Screen 상태          //
   const [showSplash, setShowSplash] = useState(true);
