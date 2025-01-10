@@ -77,9 +77,9 @@ export default function SearchResult() {
         <main className={styles['main-content']}>
           <div className={styles['search-keyword-result']}>
             <h2>
-              {recordType && `Category: '${recordType}'`}
-              {title && `, Title: '${title}'`}
-              {tag && `, Tag: '${tag}'`} 에 대한 검색 결과입니다.
+              {recordType && `Category: '${recordType}'`}{' '}
+              {tag && `, Tag: '${tag}'`}
+              {title && `, Title: '${title}'`}에 대한 검색 결과입니다.
             </h2>
           </div>
           {isFetching ? (

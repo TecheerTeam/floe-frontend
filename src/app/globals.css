@@ -144,6 +144,8 @@
   --post-item-Save-icon-active: url('./../assets/SaveIcon_Dark.png');
 
   /* post detail page */
+  --edit-icon: url('./../assets/EditIcon_Dark.png');
+  --edit-icon-hover: url('./../assets/EditIcon_Hover.png');
   --post-detail-item-top-border-color: #2222;
   --post-detail-item-title-text-color: #4cbfe5;
   --post-detail-upload-time-text-color: rgba(0, 0, 0, 0.6);
@@ -301,10 +303,13 @@ body {
   --side-bar-intro-box-background-color: #eaeaea;
   --side-bar-box-background-color: rgba(211, 211, 211, 0.8);
   /* post page */
+
+  --edit-icon: url('./../assets/EditIcon_White.png');
+  --edit-icon-hover: url('./../assets/EditIcon_Hover.png');
+
   --post-item-background-color: #000000;
   --post-item-text-color: #ffffff;
   --post-item-border-color: rgba(211, 211, 211, 0.8);
-
   --post-item-Heart-icon: url('./../assets/HeartIcon_White.png');
   --post-item-Comment-icon: url('./../assets/CommentIcon_White.png');
   --post-item-Save-icon: url('./../assets/SaveIcon_White.png');
