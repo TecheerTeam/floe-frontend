@@ -5,10 +5,11 @@ import Header from '../../header/page';
 import NavBar from '../../navBar/page';
 import Comment from '@/components/comment/page';
 import { CommentItem, LikeItem, RecordItem } from '@/types/interface';
-import { useParams } from 'next/navigation';
+import { redirect, useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import {
   deleteLikeRequest,
+  deleteRecordRequest,
   getCommentRequest,
   getDetailRecordRequest,
   getLikeCountRequest,
@@ -25,9 +26,11 @@ import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
 import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { access } from 'fs';
 export default function PostDetail() {
-  // React Query Client 가져오기
+  //    state: React Query Client 가져오기     //
+  const queryClient = useQueryClient();
   //     state: 쿠키     //
   const [cookies] = useCookies();
   //     state: 무한 스크롤 view 참조 상태     //
@@ -56,15 +59,21 @@ export default function PostDetail() {
   const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
   //          state: 댓글 입력 참조 상태          //
   const commentRef = useRef<HTMLInputElement | null>(null);
+  //          state: 댓글 총 개수 상태          //
   const [totalCommentCount, setTotalCommentCount] = useState<number>(0);
+  //          state: 더보기 버튼 클릭 상태          //
+  const [viewEdit, setViewEdit] = useState<boolean>(false);
 
+  //   event handler: 더보기 버튼 클릭 이벤트 처리     //
+  const onClickViewEditButton = () => {
+    setViewEdit((prev) => !prev); // 상태를 토글
+  };
   //     function: recordId가 string|string[] 형식일 경우 number로 변환     //
   const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
   if (!id || isNaN(id)) {
     console.error('Invalid recordId:', recordId);
     return undefined;
   }
-  console.log('recordId:', recordId);
   //     function: 댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
@@ -153,6 +162,15 @@ export default function PostDetail() {
     }
   };
 
+  //     event handler: 게시물 수정 버튼 이벤트 처리     //
+  const onEditButtonClickHandler = () => {
+    if (record?.user.email !== user?.email) {
+      alert('수정 권한이 없습니다.');
+      return;
+    }
+    router.push(`/post/${id}/update`);
+  };
+
   //          function : 좋아요 리스트 처리 함수  (좋아요 목록에서 현재 유저를 찾아 중복처리)        //
   const fetchLikeStatus = async () => {
     if (!recordId || !cookies.accessToken) return;
@@ -239,7 +257,23 @@ export default function PostDetail() {
       console.error('게시물 데이터 불러오기 오류:', error);
     }
   };
+  const onDeleteButtonHandler = async () => {
+    if (record?.user.email !== user?.email) {
+      alert('삭제 권한이 없습니다.');
+      return;
+    }
 
+    try {
+      const response = await deleteRecordRequest(id, cookies.accessToken);
+      if (response.data.code === 'R002') {
+        router.push('/'); // 성공 시 라우팅 처리
+      } else {
+        alert('게시물 삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('게시물 데이터 불러오기 오류:', error);
+    }
+  };
   useEffect(() => {
     fetchLikeCount();
     fetchLikeStatus();
@@ -277,6 +311,27 @@ export default function PostDetail() {
             <div className={styles['user-nickname']}>
               {record.user.nickname}
             </div>
+            {record.user.email === user?.email && (
+              <div
+                className={styles['edit-button']}
+                onClick={onClickViewEditButton}>
+                {viewEdit && (
+                  <div className={styles['edit-card']}>
+                    <div
+                      className={styles['edit-button']}
+                      onClick={onEditButtonClickHandler}>
+                      {'Edit'}
+                    </div>
+                    <div
+                      className={styles['delete-button']}
+                      onClick={onDeleteButtonHandler}>
+                      {'Delete'}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* profileimgae-box와 user-nickname 클릭시 해당 유저의 프로필로 이동해야함 */}
           </div>
 

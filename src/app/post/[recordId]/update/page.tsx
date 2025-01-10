@@ -10,20 +10,32 @@ import Code from '@tiptap/extension-code';
 import Placeholder from '@tiptap/extension-placeholder';
 import Header from '@/app/header/page';
 import NavBar from '@/app/navBar/page';
-import styles from './PostWrite.module.css';
+import styles from './PostUpdate.module.css';
 import { useLoginUserStore, useRecordTypeStore } from '@/store';
 import { useRecordStore } from '@/store';
-import { postRecordRequest } from '@/apis';
+import {
+  getDetailRecordRequest,
+  postRecordRequest,
+  putRecordRequest,
+} from '@/apis';
 import { useCookies } from 'react-cookie';
-import { useRouter } from 'next/navigation';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useParams, useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { PostRecordResponseDto } from '@/apis/response/record';
-//          component: 게시물 작성 화면 컴포넌트          //
-export default function PostWrite() {
+import { RecordItem } from '@/types/interface';
+
+//          component: 게시물 수정 화면 컴포넌트          //
+export default function PostUpdate() {
+  //      state: 라우팅     //
   const router = useRouter(); // 페이지 리다이렉트 사용
+  //     state: 로그인 유저 상태     //
   const { user } = useLoginUserStore(); // zustand 상태 관리
-  const [cookies] = useCookies(); // 쿠키 상태 관리
+  //     state: 쿠키 상태 관리리     //
+  const [cookies] = useCookies();
+  //     state: 리액트 쿼리 상태     //
   const queryClient = useQueryClient();
+  //     state: url params 상태    //
+  const { recordId } = useParams(); // URL에서 recordId 가져오기
   //          state: 제목 영역 요소 참조 상태          //
   const titleRef = useRef<HTMLInputElement | null>(null);
   //          state: 이미지 입력 요소 참조 상태          //
@@ -33,7 +45,8 @@ export default function PostWrite() {
 
   //          state: 게시물 이미지 미리보기 URL 상태          //
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-
+  //        state: 게시물 상태(zustand)        //
+  const [record, setRecord] = useState<RecordItem | null>(null);
   //          state: content 상태          //
   const { content, setContent } = useRecordStore();
   //          state: 초기화 상태          //
@@ -46,6 +59,13 @@ export default function PostWrite() {
   const { title, setTitle } = useRecordStore();
   //          state: 이미지 상태          //
   const { images, setImages } = useRecordStore();
+
+  //     function: recordId가 string|string[] 형식일 경우 number로 변환     //
+  const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
+  if (!id || isNaN(id)) {
+    console.error('Invalid recordId:', recordId);
+    return undefined;
+  }
 
   //         event handler: Stack Tag 처리 이벤트          //
   const onTagChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -135,58 +155,105 @@ export default function PostWrite() {
         placeholder: '내용을 입력해주세요...', // 표시할 placeholder 내용
       }),
     ],
-    content: content || '',
+    content: '',
     autofocus: true,
     onUpdate: ({ editor }) => {
       setContent(editor.getHTML()); // TipTap 에디터의 HTML 내용을 상태로 저장
-      console.log(editor.getHTML()); // 콘솔에 에디터 내용 확인
     },
   });
+
+  //     effect: 에디터 컴포넌트에 현재 게시물 content 넣어주기     //
+  useEffect(() => {
+    if (editor && content) {
+      editor.commands.setContent(content); // editor에 최신 content를 설정
+    }
+  }, [content, editor]);
 
   //         function: 업로드 버튼 클릭 함수          //
   const onUploadButtonClickHandler = async () => {
     const accessToken = cookies.accessToken;
     if (!accessToken) return;
     const formData = new FormData();
-    // console.log('dd', );
+
     // 1. 이미지 데이터를 FormData에 추가
-    const dto = {
-      title: title,
-      content: content,
-      recordType: recordType,
-      tagNames: tagNames,
+    const updateDto = {
+      title,
+      content,
+      recordType,
+      tagNames,
+      medias: images.map((image, index) => {
+        if (typeof image === 'string') {
+          return { mediaId: index + 1, mediaUrl: image };
+        }
+        return null;
+      }),
     };
-    const blob = new Blob([JSON.stringify(dto)], {
+
+    const dtoBlob = new Blob([JSON.stringify(updateDto)], {
       type: 'application/json',
     });
-    formData.append('dto', blob);
+    formData.append('updateDto', dtoBlob);
     // 이미지 파일들을 formData에 추가
+
     if (images.length > 0) {
-      for (const file of images) {
-        formData.append('files', file);
-      }
+      images.forEach((image) => {
+        if (image instanceof File) {
+          formData.append('updateFiles', image);
+        }
+      });
     } else {
-      // 파일이 없을 경우 빈 Blob 객체를 추가
       const emptyBlob = new Blob([], { type: 'application/json' });
-      formData.append('files', emptyBlob);
+      formData.append('updateFiles', emptyBlob);
     }
 
     // 3. API 호출: 서버에 FormData 보내기
     try {
-      const response = await postRecordRequest(formData, accessToken);
+      const response = await putRecordRequest(id, formData, accessToken);
 
-      if (response) {
+      if (response.code === 'R005') {
         queryClient.invalidateQueries({ queryKey: ['records'] }); // 캐시를 무효화
         router.push('/');
+        console.log('게시물 수정 완료');
       }
     } catch (error) {
       console.error('Error posting record', error);
     }
   };
 
+  //     function: 기존 게시물 데이터 불러오기 처리 함수     //
+  const fetchRecordData = async () => {
+    try {
+      const response = await getDetailRecordRequest(id);
+      if (response?.code === 'R003') {
+        const { title, recordType, tagNames, content, medias } = response.data;
+        setTitle(title);
+        setRecordType(recordType);
+        setTagNames(tagNames);
+        setContent(content);
+        // 이미지 처리
+        if (medias && medias.length > 0) {
+          const mediaUrls = medias.map(
+            (media: { mediaUrl: any }) => media.mediaUrl,
+          );
+          setImages([]); // 서버의 이미지는 업로드에서 처리되지 않으므로 빈 상태로 유지
+          setImageUrls(mediaUrls);
+        } else {
+          setImageUrls([]);
+        }
+      }
+    } catch (error) {
+      console.error('게시물 데이터 로드 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (recordId) {
+      fetchRecordData();
+    }
+  }, [recordId]);
+
   //          effect: 마운트 시 실행할 함수          //
   useEffect(() => {
-    resetRecord();
     if (!cookies.accessToken && !user) {
       alert('로그인이 필요합니다');
       router.push('/auth');
@@ -196,7 +263,7 @@ export default function PostWrite() {
   return (
     <>
       <Header />
-      <div className={styles['post-write-page-Container']}>
+      <div className={styles['post-update-page-Container']}>
         <aside className={styles['navbar']}>
           <NavBar />
         </aside>

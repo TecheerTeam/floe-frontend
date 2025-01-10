@@ -1,0 +1,385 @@
+.post-update-page-Container {
+  display: grid;
+  grid-template-columns: 400px 1fr 320px;
+  gap: 20px;
+  width: 100%;
+  max-width: 1920px; /* 전체 너비 제한 */
+  margin: 0 auto;
+  padding-top: 157px;
+  height: auto;
+  background-color: var(--main-background-color);
+}
+.navbar {
+  position: sticky;
+  top: 157px;
+  width: 170px; /* Navbar 너비 고정 */
+  align-self: start; /* 스크롤 시 시작 위치에 고정 */
+  height: calc(100vh - 157px);
+}
+.post-Section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+.top-Section {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+.stack-Section {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  max-width: 632px;
+  min-height: 100px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #dfdfdf;
+  gap: 27px;
+  padding-left: 10px;
+  background-color: var(--post-Page-Section-color);
+}
+.stack-Title-Box {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: end;
+}
+.stack-Title-Text {
+  font-size: 20px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.stack-Title-Intro-Text {
+  font-size: 16px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.stack-Search-Box {
+  width: auto;
+  height: 100%;
+}
+.stack-Search {
+  max-width: 267px;
+  max-height: 30px;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #b1b0b0;
+  border-radius: 10px;
+  background-color: var(--post-Page-Section-color);
+  color: var(--post-Page-text-color);
+}
+.category-Section {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  max-width: 521px;
+  min-height: 100px;
+  width: 100%;
+  height: 100px;
+  border-radius: 5px;
+  border: 1px solid #dfdfdf;
+  gap: 27px;
+  padding-left: 10px;
+  background-color: var(--post-Page-Section-color);
+}
+.category-Title-Box {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: end;
+}
+.category-Title-Text {
+  font-size: 20px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.category-Title-Intro-Text {
+  font-size: 16px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.category-Select-Box {
+  width: auto;
+  height: 100%;
+}
+.post-Category {
+  max-width: 267px;
+  max-height: 30px;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #b1b0b0;
+  border-radius: 10px;
+  background-color: var(--post-Page-Section-color);
+  color: var(--post-Page-text-color);
+}
+.title-Section {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #dfdfdf;
+  gap: 20px;
+  padding-left: 10px;
+  background-color: var(--post-Page-Section-color);
+}
+.title-Title-Box {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: end;
+}
+.title-Title-Text {
+  font-size: 20px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.title-Title-Intro-Text {
+  font-size: 16px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+
+.title-Input-Box {
+  width: auto;
+  height: 100%;
+}
+.title-Input {
+  max-height: 40px;
+  min-width: 99%;
+  height: 100%;
+  border: 1px solid #b1b0b0;
+  border-radius: 10px;
+  background-color: var(--post-Page-Section-color);
+  color: var(--post-Page-text-color);
+}
+.content-Section {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 450px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #dfdfdf;
+  gap: 20px;
+  padding-left: 10px;
+  background-color: var(--post-Page-Section-color);
+}
+.content-Title-Box {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: end;
+}
+.content-Title-Text {
+  font-size: 20px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.content-Title-Intro-Text {
+  font-size: 16px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.content-Input-Box {
+  width: auto;
+  height: 100%;
+}
+.editorContainer {
+  border: 1px solid var(--post-Page-border-color);
+  border-radius: 8px;
+  background-color: var(--post-Page-Section-color);
+  color: var(--post-Page-text-color);
+  padding: 16px;
+  max-width: 96%;
+  min-height: 300px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.divider {
+  width: 100%;
+  border: 1px solid var(--post-Page-border-color);
+}
+.toolbarButton {
+  background-color: var(--post-Page-Editor-Button-background-color);
+  color: var(--post-Page-Editor-Button-text-color);
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.toolbarButton:hover {
+  background-color: var(--post-Page-Editor-Button-background-color-hover);
+  color: var(--post-Page-Editor-Button-text-color-hover);
+}
+
+.editor {
+  min-height: 300px;
+  background-color: var(--post-Page-Section-color);
+  color: var(--post-Page-text-color);
+  padding: 16px;
+  border-radius: 8px;
+  outline: none; /* 강제 적용 */
+  box-shadow: none; /* 브라우저 기본 포커스 제거 */
+  overflow-y: auto;
+  font-family: 'Pretendard Variable';
+  width: 96%; /* 너비 고정 */
+  cursor: text;
+  max-width: 100%; /* 최대 너비를 100%로 설정 */
+  white-space: normal; /* 텍스트가 넘치지 않도록 설정 */
+  word-wrap: break-word; /* 긴 단어가 자동으로 줄 바꿈되도록 설정 */
+  word-break: break-all;
+}
+
+.editor [data-placeholder]::before {
+  content: attr(data-placeholder);
+  color: var(--post-Page-placeholder-text-color);
+  opacity: 0.6;
+  position: absolute;
+  pointer-events: none;
+}
+.editor [contenteditable='true'] {
+  flex: 1; /* 내용이 없을 때도 전체 영역이 클릭 가능 */
+  min-height: inherit; /* 부모의 최소 높이를 상속 */
+  outline: none;
+}
+.is-empty::before {
+  content: attr(data-placeholder);
+  color: var(--post-Page-placeholder-text-color);
+  opacity: 0.6;
+  position: absolute;
+  pointer-events: none;
+}
+
+.image-Section {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 450px;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #dfdfdf;
+  gap: 20px;
+  padding-left: 10px;
+  background-color: var(--post-Page-Section-color);
+}
+.image-Title-Box {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: end;
+}
+.image-Title-Text {
+  font-size: 20px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.image-Title-Intro-Text {
+  font-size: 16px;
+  font-family: 'Pretendard Variable';
+  width: auto;
+  color: var(--post-Page-text-color);
+}
+.image-Input-Box {
+  display: flex; /* Flexbox로 변경 */
+  flex-wrap: wrap; /* 이미지가 넘칠 경우 다음 줄로 이동 */
+  gap: 10px;
+  padding: 10px; /* 박스 안쪽 여백 */
+}
+.image-Input-button-box {
+  width: 100%;
+  height: 40px;
+}
+.image-Input-button {
+  background-image: var(--post-image-icon);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+.image-Input-button:hover {
+  background-image: var(--post-image-icon-hover);
+}
+.image-section-divider {
+  width: 99%;
+  border: 1px solid var(--post-Page-border-color);
+}
+
+.image-upload-section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.image-preview-box {
+  position: relative;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  margin-right: 10px; /* 이미지 박스 간 간격 조정 */
+  margin-bottom: 10px; /* 이미지 박스 간 간격 조정 */
+  overflow: hidden; /* 넘치는 이미지를 자르기 위해 overflow 속성 추가 */
+  width: 250px; /* 이미지 박스의 너비 조정 */
+  height: 250px; /* 이미지 박스의 높이 조정 */
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+}
+.image-close-button {
+  width: 32px;
+  height: 32px;
+  background-image: var(--post-image-close-icon);
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1; /* 버튼이 이미지 위에 보이도록 설정 */
+}
+.image-close-button:hover {
+  background-image: var(--post-image-close-icon-hover);
+}
+
+.upload-Section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 100px;
+  border-radius: 5px;
+  border: 1px solid #dfdfdf;
+  background-color: var(--post-Page-Section-color);
+  margin-bottom: 50px;
+}
+.upload-Button {
+  background-color: var(--post-Page-Upload-Button-background-color);
+  border: none;
+  width: 100%;
+  height: 100%;
+  color: var(--post-Page-Upload-Button-text-color);
+  cursor: pointer;
+}
+.upload-Button:hover {
+  background-color: var(--post-Page-Upload-Button-background-color-hover);
+}

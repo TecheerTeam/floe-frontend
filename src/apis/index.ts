@@ -114,86 +114,11 @@ export const getDetailRecordRequest = async (recordId: number) => {
 //          function: 전체 기록 조회(최신순 / 홈페이지) 요청 API          //
 export const getRecordRequest = async (page: number, size: number): Promise<GetRecordResponseDto> => {
     const response = await axios.get<GetRecordResponseDto>(
-        `${GET_RECORD_URL()}?page=${page}&size=${size}`
+        `${GET_RECORD_URL()}?page=${page}&size=${size}`,
     );
     return response.data;
 };
-// export const getSearchRecordRequest = async (searchRequest: SearchRecordRequestDto, page: number, size: number, accessToken: string): Promise<GetRecordResponseDto> => {
-//     try {
-//         const response = await axios.get<GetRecordResponseDto>(
-//             `${SEARCH_RECORD_URL()}?page=${page}&size=${size}`, {
-//             headers: {
-//                 Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-//             },
-//         });
-//         console.log('search api response ', response);
-//         return response.data;
-//     }
-//     catch (error) {
-//         if (axios.isAxiosError(error)) {
-//             // Axios 에러라면 response 데이터 확인
-//             console.error('Error fetching comments:', error.response?.data || error.message);
-//         } else {
-//             // 일반적인 에러 메시지 출력
-//             console.error('Unknown error:', error);
-//         }
-//         throw error;
-//     }
-
-// };
-
-export const getSearchRecordRequest = async (
-    searchRequest: SearchRecordRequestDto,
-    page: number,
-    size: number,
-    accessToken: string
-): Promise<GetRecordResponseDto> => {
-    try {
-        // 쿼리 파라미터 생성
-        const params = new URLSearchParams();
-
-        // 필수 파라미터
-        params.append('page', page.toString());
-        params.append('size', size.toString());
-
-        // 선택적 파라미터 추가 (값이 존재할 때만 추가)
-        if (searchRequest.recordType) {
-            params.append('recordType', searchRequest.recordType);
-        }
-        if (searchRequest.title) {
-            params.append('title', searchRequest.title);
-        }
-        if (searchRequest.tagNames && searchRequest.tagNames.length > 0) {
-            searchRequest.tagNames.forEach(tag => params.append('tagNames', tag));
-        }
-
-        // GET 요청
-        const response = await axios.get<GetRecordResponseDto>(
-            `${SEARCH_RECORD_URL()}?${params.toString()}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-                },
-            }
-        );
-        console.log('search api response', response);
-        console.log(`Request URL: ${SEARCH_RECORD_URL()}?${params.toString()}`);
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
-        } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
-        }
-        throw error;
-    }
-};
-
-
 //          function: 기록 생성 요청 API          //
-
 export const postRecordRequest = async (formData: FormData, accessToken: string) => {
     try {
         const result = await axios.post(POST_RECORD_URL(), formData, {
@@ -216,37 +141,94 @@ export const postRecordRequest = async (formData: FormData, accessToken: string)
         }
     }
 };
-
-
 //          function: 특정 게시물 수정 요청 API          //
-export const putRecord = async (recordId: number, requestBody: PutRecordRequestDto, accessToken: string) => {
-    const result = await axios.post(PUT_RECORD_URL(recordId), requestBody, authorization(accessToken))
-        .then(response => {
-            const responseBody: PutRecordResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
+export const putRecordRequest = async (recordId: number, formData: FormData, accessToken: string) => {
+    try {
+        const result = await axios.put(PUT_RECORD_URL(recordId), formData, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'multipart/form-data'
+            },
+        });
+        console.log('put: ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
             if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
-    return result;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
 }
 
 //          function: 특정 기록 삭제 요청 API          //
-export const deleteRecord = async (recordId: number, accessToken: string) => {
-    const result = await axios.post(DELETE_RECORD_URL(recordId), authorization(accessToken))
-        .then(response => {
-            const responseBody: DeleteRecordResponseDto = response.data;
-            return responseBody;
-        })
-        .catch(error => {
+export const deleteRecordRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const result = await axios.delete(DELETE_RECORD_URL(recordId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        console.log('rr', result);
+        return result;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
             if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
-        })
-    return result;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
 }
+
+//          function: 게시물 검색 요청 API(RecordType, Tag, Title을 query param으로 받는다.)          // 
+export const getSearchRecordRequest = async (searchRequest: SearchRecordRequestDto, page: number, size: number, accessToken: string): Promise<GetRecordResponseDto> => {
+    try {
+        // 쿼리 파라미터 생성
+        const params = new URLSearchParams();
+
+        // 필수 파라미터
+        params.append('page', page.toString());
+        params.append('size', size.toString());
+
+        // 선택적 파라미터 추가 (값이 존재할 때만 추가)
+        if (searchRequest.recordType) {
+            params.append('recordType', searchRequest.recordType);
+        }
+        if (searchRequest.title) {
+            params.append('title', searchRequest.title);
+        }
+        if (searchRequest.tagNames && searchRequest.tagNames.length > 0) {
+            searchRequest.tagNames.forEach(tag => params.append('tagNames', tag));
+        }
+
+        const response = await axios.get<GetRecordResponseDto>(
+            `${SEARCH_RECORD_URL()}?${params.toString()}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+};
 
 // 댓글 작성
 const POST_COMMENT_URL = () => `${API_DOMAIN}/comments`;
@@ -308,6 +290,7 @@ export const getCommentRequest = async (recordId: number, page: number, size: nu
         throw error;
     }
 };
+//          function: 대댓글 조회 요청 API  토큰O        //
 export const getReplyRequest = async (commentId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
     try {
         const response = await axios.get<GetCommentResponseDto>(

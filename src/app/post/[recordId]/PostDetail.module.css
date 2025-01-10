@@ -40,6 +40,19 @@
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
+.edit-button {
+  position: relative;
+  left: 150px;
+  display: flex;
+  justify-content: flex-end;
+  background-image: var(--edit-icon);
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}
+.edit-button:hover {
+  background-image: var(--edit-icon-hover);
+}
 .profile-image-box {
   width: 36px;
   height: 36px;

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styles from './Home.module.css';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import Banner from '@/assets/Banner.gif';
 import Header from '@/app/header/page';
@@ -18,8 +18,9 @@ import { GetRecordResponseDto } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useInView } from 'react-intersection-observer';
 
-
 export default function Main() {
+  //        state : 라우팅     //
+  const router = useRouter();
   //          state: Splash Screen 상태          //
   const [showSplash, setShowSplash] = useState(true);
   //          state: Fade Out 효과 상태          //
@@ -29,6 +30,7 @@ export default function Main() {
   const pathname = usePathname(); // 현재 경로 감지
   const { ref, inView } = useInView();
   const [recordList, setRecordList] = useState<RecordListItem[]>([]);
+  const [queryKey, setQueryKey] = useState(['records', new Date().getTime()]);
   const queryClient = useQueryClient();
   const {
     data, // 불러온 데이터
@@ -38,7 +40,7 @@ export default function Main() {
     isFetchingNextPage, // 다음 페이지 로드 중인지 여부
     isLoading, // 데이터 로딩 중
   } = useInfiniteQuery({
-    queryKey: ['records'],
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getRecordRequest(pageParam, 5);
       console.log(response);
@@ -53,8 +55,8 @@ export default function Main() {
       return nextPage;
     },
     initialPageParam: 0,
-    
-    refetchOnMount: true, // 마운트 시 데이터 자동 요청
+    staleTime: 0, // 데이터를 항상 새로 가져옴
+    refetchOnMount: 'always', // 마운트 시 데이터 자동 요청
   });
 
   //          effect: 스플래쉬 스크린           //
@@ -81,9 +83,10 @@ export default function Main() {
 
   //          effect: 게시글 데이터 최신화          //
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ['records'], refetchType: 'all' });
-    refetch();
-  }, [refetch]);
+    if (pathname === '/') {
+      setQueryKey(['records', new Date().getTime()]); // queryKey 변경
+    }
+  }, [pathname]);
   //          effect: 스크롤 감지해서 다음 페이지로 넘기기(무한 스크롤)          //
   useEffect(() => {
     fetchNextPage();
