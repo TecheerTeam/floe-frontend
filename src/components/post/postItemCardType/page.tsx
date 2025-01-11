@@ -77,8 +77,7 @@ export default function PostItemCardType({
     queryKey: ['likeList', recordId],
     queryFn: async () => {
       const response = await getLikeListRequest(recordId, cookies.accessToken);
-      console.log('likeListData: ', response.data.likeList);
-      console.log('likeListDataddd ', response.data);
+
       return response.data.likeList; // 좋아요한 사용자 목록 반환
     },
     staleTime: 10000,

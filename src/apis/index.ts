@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { ResponseDto } from './response';
 import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, PostCommentResponseDto, GetCommentResponseDto, DeleteCommentResponseDto, GetRecordResponseDto, GetRecordLikeCountResponseDto, GetRecordLikeListResponseDto } from './response/record';
-import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto } from './request/record';
+import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto, PutCommentRequestDto } from './request/record';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
 import { SignUpResponseDto } from './response/auth';
 import GetDetailRecordResponseDto from './response/record/record.response.dto';
 import { GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
+import { comment } from 'postcss';
 const DOMAIN = 'http://localhost:8080';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
@@ -232,14 +233,14 @@ export const getSearchRecordRequest = async (searchRequest: SearchRecordRequestD
 
 // 댓글 작성
 const POST_COMMENT_URL = () => `${API_DOMAIN}/comments`;
-// 댓글 수정
-const PUT_COMMENT_URL = (recordId: number | string) => `${API_DOMAIN}/comments/${recordId}`;
 // 댓글 조회
 const GET_COMMENT_URL = (recordId: number) => `${API_DOMAIN}/comments/${recordId}`;
 // 대대댓글 조회
 const GET_REPLY_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/replies`;
+// 댓글 수정
+const PUT_COMMENT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}`;
 // 댓글 삭제
-const DELETE_COMMENT_URL = (recordId: number, commentId: number | string) => `${API_DOMAIN}/comments/${recordId}/${commentId}`;
+const DELETE_COMMENT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}`;
 
 //          function: 댓글 작성 요청 API          //
 export const postCommentRequest = async (requestBody: PostCommentRequestDto, accessToken: string) => {
@@ -315,38 +316,44 @@ export const getReplyRequest = async (commentId: number, page: number, size: num
     }
 };
 //          function: 댓글 수정 요청 API          //
-// export const putComment = async (recordId: number | string, commentId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
-//     const result = await axios.post(PUT_COMMENT_URL(recordId, commentId), requestBody, authorization(accessToken))
-//         .then(response => {
-//             const responseBody: PostCommentResponseDto = response.data;
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             if (!error.response) return null;
-//             const responseBody: ResponseDto = error.response.data;
-//             return responseBody;
-//         })
-//     return result;
-// }
+export const putCommentRequest = async (commentId: number, requestBody: PutCommentRequestDto, accessToken: string) => {
+    try {
+        const response = await axios.put(PUT_COMMENT_URL(commentId), requestBody, authorization(accessToken));
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+//          function: 댓글 삭제 요청 API          //
+export const deleteCommentRequest = async (commentId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(DELETE_COMMENT_URL(commentId), authorization(accessToken));
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
 
 
 
 
-
-// //          function: 댓글 삭제 요청 API          //
-// export const deleteComment = async (recordId: number | string, commentId: number | string, accessToken: string) => {
-//     const result = await axios.post(DELETE_COMMENT_URL(recordId, commentId), authorization(accessToken))
-//         .then(response => {
-//             const responseBody: DeleteCommentResponseDto = response.data;
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             if (!error.response) return null;
-//             const responseBody: ResponseDto = error.response.data;
-//             return responseBody;
-//         })
-//     return result;
-// }
 
 // // 대댓글 작성
 // const POST_REPLY_URL = (recordId: number | string, commentId: number | string) => `${API_DOMAIN}/records/${recordId}/comments/${commentId}/replies`;

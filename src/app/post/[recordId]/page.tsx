@@ -318,12 +318,12 @@ export default function PostDetail() {
                 {viewEdit && (
                   <div className={styles['edit-card']}>
                     <div
-                      className={styles['edit-button']}
+                      className={styles['edit']}
                       onClick={onEditButtonClickHandler}>
                       {'Edit'}
                     </div>
                     <div
-                      className={styles['delete-button']}
+                      className={styles['delete']}
                       onClick={onDeleteButtonHandler}>
                       {'Delete'}
                     </div>

@@ -39,19 +39,47 @@
   border-bottom: 1px solid var(--post-detail-item-top-border-color);
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
+  position: relative;
 }
 .edit-button {
-  position: relative;
-  left: 150px;
+  position: absolute;
+  right: 10px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   background-image: var(--edit-icon);
   width: 48px;
   height: 48px;
+  align-items: center;
   cursor: pointer;
 }
 .edit-button:hover {
   background-image: var(--edit-icon-hover);
+}
+.edit-card {
+  position: absolute;
+  top: 50px; /* edit-button 아래로 드롭다운 */
+  right: 0; /* edit-button과 우측 정렬 */
+  width: 80px;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0px 4px 16px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  cursor: default;
+}
+.edit,
+.delete {
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer; /* 텍스트에만 포인터 적용 */
+}
+.edit:hover,
+.delete:hover {
+  color: bisque; /* 호버 시 색상 변경 */
 }
 .profile-image-box {
   width: 36px;
