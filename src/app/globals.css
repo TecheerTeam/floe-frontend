@@ -159,7 +159,8 @@
   --comment-item-background-color: #ffffff;
   --comment-item-text-color: #000000;
   --comment-item-text-color-hover: rgba(0, 0, 0, 0.6);
-
+  --comment-edit-text-color: rgba(0, 0, 0, 0.5);
+  --comment-edit-text-color-hover: rgba(0, 0, 0, 0.8);
   /* main page toggle button */
   --toggle-Card-icon: url('./../assets/Card_Dark.png');
   --toggle-Card-icon-hover: url('./../assets/Card_Hover.png');
@@ -339,6 +340,8 @@ body {
   /* comment item */
   --comment-item-text-color: #ffffff;
   --comment-item-text-color-hover: rgba(255, 255, 255, 0.5);
+  --comment-edit-text-color: rgba(255, 255, 255, 0.5);
+  --comment-edit-text-color-hover: rgba(255, 255, 255, 0.8);
 
   /* main page toggle button */
   --toggle-Card-icon: url('./../assets/Card_White.png');

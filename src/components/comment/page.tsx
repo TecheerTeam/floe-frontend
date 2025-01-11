@@ -3,7 +3,11 @@ import styles from './Comment.module.css';
 import Reply from '../reply/page';
 import { CommentItem, RecordItem } from '@/types/interface';
 import { useInView } from 'react-intersection-observer';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useInfiniteQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -11,8 +15,17 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
-import { getCommentRequest, getReplyRequest, postCommentRequest } from '@/apis';
-import { PostCommentRequestDto } from '@/apis/request/record';
+import {
+  deleteCommentRequest,
+  getCommentRequest,
+  getReplyRequest,
+  postCommentRequest,
+  putCommentRequest,
+} from '@/apis';
+import {
+  PostCommentRequestDto,
+  PutCommentRequestDto,
+} from '@/apis/request/record';
 import { GetCommentResponseDto } from '@/apis/response/record';
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -21,12 +34,14 @@ interface Props {
 }
 
 export default function Comment({ commentsList }: Props) {
-  const { commentId, content, createdAt, user } = commentsList;
+  const { commentId, content, createdAt, user: commentWriter } = commentsList;
+  const { user: logInUser } = useLoginUserStore(); // 현재 로그인한 사용자
   const [clickReply, setClickReply] = useState<number | null>(null); // 클릭된 대댓글의 ID 관리
   const handleToggleReply = (commentId: number) => {
     setClickReply((prev) => (prev === commentId ? null : commentId));
   };
-
+  //     state: React Query Client 사용   //
+  const queryClient = useQueryClient();
   //     state: 대댓글 입력 참조 상태     //
   const replyRef = useRef<HTMLInputElement | null>(null);
   //     state: 쿠키     //
@@ -41,8 +56,14 @@ export default function Comment({ commentsList }: Props) {
   const { recordId } = useParams(); // URL에서 recordId를 가져옴
   //      state: 대댓글 입력 상태      //
   const [newReply, setNewReply] = useState<string>('');
-  //      state: 대댓글 목록 상태      /
+  //      state: 대댓글 목록 상태      //
   const [replyList, setReplyList] = useState<CommentItem[]>([]);
+  //      state: 수정 모드 여부 상태      //
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  //      state: 수정 중인 댓글 내용 상태      //
+  const [editContent, setEditContent] = useState<string>(content);
+  //      state: 수정 중인 댓글 참조 상태      //
+  const editCommentRef = useRef<HTMLInputElement | null>(null);
   //     function: 댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
@@ -51,15 +72,13 @@ export default function Comment({ commentsList }: Props) {
   } = useInfiniteQuery({
     queryKey: ['reply', commentId],
     queryFn: async ({ pageParam = 0 }) => {
-      console.log('Fetching replies for commentId:', commentId); // 디버깅
-
       const response = await getReplyRequest(
         commentId,
         pageParam,
         5,
         cookies.accessToken,
       );
-      console.log('대댓글 API response', response);
+
       return response; // data만 반환
     },
     getNextPageParam: (last: GetCommentResponseDto) => {
@@ -98,7 +117,7 @@ export default function Comment({ commentsList }: Props) {
       alert('대댓글을 입력해주세요.');
       return;
     }
-    if (!user || !cookies.accessToken) {
+    if (!commentWriter || !cookies.accessToken) {
       alert('로그인 먼저 해주세요.');
       router.push('/auth');
       return;
@@ -126,9 +145,9 @@ export default function Comment({ commentsList }: Props) {
           {
             commentId: response.commentId,
             user: {
-              nickname: user.nickname,
-              email: user.email,
-              profileImage: user.profileImage,
+              nickname: commentWriter.nickname,
+              email: commentWriter.email,
+              profileImage: commentWriter.profileImage,
             },
             content: newReply,
             createdAt: new Date(),
@@ -138,9 +157,6 @@ export default function Comment({ commentsList }: Props) {
         ]);
         setNewReply(''); // 댓글 입력란 초기화
         await refetch();
-        console.log('reply requestBody:', requestBody);
-        console.log('reply response.data:', response.data);
-        console.log('reply response:', response.data.data);
       } else {
         alert('댓글 작성에 실패했습니다.');
         console.log('reply:', requestBody);
@@ -150,9 +166,92 @@ export default function Comment({ commentsList }: Props) {
     }
   };
 
+  //     event handler: 댓글 수정 Input 열기 이벤트 처리     //
+  const onEditCommentClickHandler = () => {
+    if (logInUser?.email !== commentWriter.email) {
+      alert('댓글 수정 권한이 없습니다.');
+      return;
+    }
+    setIsEditing((prev) => !prev); // 수정 모드 활성화
+  };
+  //     event handler: 댓글 수정 적용 처리     //
+  const onEditCommentApplyClickHandler = async () => {
+    if (logInUser?.email !== commentWriter.email) {
+      alert('댓글 수정 권한이 없습니다.');
+      return;
+    }
+
+    try {
+      const requestBody = { content: editContent } as PutCommentRequestDto;
+      const response = await putCommentRequest(
+        commentId,
+        requestBody,
+        cookies.accessToken,
+      );
+      if (response.code === 'C004') {
+        setIsEditing(false); // 수정 모드 종료
+
+        queryClient.setQueryData(['comments', recordId], (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              data: {
+                ...page.data,
+                content: page.data.content.map((comment: CommentItem) =>
+                  comment.commentId === commentId
+                    ? { ...comment, content: editContent } // 수정된 댓글 업데이트
+                    : comment,
+                ),
+              },
+            })),
+          };
+        });
+      }
+    } catch (error) {
+      console.error('댓글 삭제 서버 오류:', error);
+    }
+  };
+  //     event handler: 댓글 삭제 버튼 클릭 처리     //
+  const onDeleteCommentClickHandler = async () => {
+    if (logInUser?.email !== commentWriter.email) {
+      alert('댓글 삭제 권한이 없습니다.');
+      return;
+    }
+
+    try {
+      const response = await deleteCommentRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      if (response.code === 'C003') {
+        queryClient.setQueryData(['comments', recordId], (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page: any) => ({
+              ...page,
+              data: {
+                ...page.data,
+                content: page.data.content.filter(
+                  (comment: CommentItem) => comment.commentId !== commentId,
+                ),
+              },
+            })),
+          };
+        });
+      }
+    } catch (error) {
+      console.error('댓글 삭제 서버 오류:', error);
+    }
+  };
+
   //          effect: comment Id path variable 바뀔떄마다 해당 대댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     fetchNextPage();
+    console.log('현재 로그인 이메일 :', logInUser?.email);
+    console.log('댓 작성 이메일 :', commentWriter.email);
   }, [commentId, inView]);
 
   return (
@@ -171,9 +270,48 @@ export default function Comment({ commentsList }: Props) {
                 <div className={styles['default-profile-image']}></div>
               )}
               <div className={styles['comment-user-nickname']}>
-                {user.nickname}
+                {commentWriter.nickname}
               </div>
-              <div className={styles['comment-text']}>{content}</div>
+              <div className={styles['comment-text']}>
+                {isEditing ? (
+                  <div className={styles['edit-mode']}>
+                    <input
+                      type="text"
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      className={styles['edit-input']}
+                      ref={editCommentRef}
+                    />
+                    <button
+                      onClick={onEditCommentApplyClickHandler}
+                      className={styles['save-button']}>
+                      Apply
+                    </button>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className={styles['cancel-button']}>
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  content
+                )}
+              </div>
+              {logInUser?.email === commentWriter.email && (
+                <div className={styles['comment-EditOrDelete']}>
+                  <div
+                    className={styles['comment-Edit']}
+                    onClick={onEditCommentClickHandler}>
+                    {'Edit'}
+                  </div>
+                  <div className={styles['comment-Divider']}>{'|'}</div>
+                  <div
+                    className={styles['comment-Delete']}
+                    onClick={onDeleteCommentClickHandler}>
+                    {' Delete'}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className={styles['comment-item-bottom']}>
@@ -202,7 +340,7 @@ export default function Comment({ commentsList }: Props) {
                       <div className={styles['default-profile-image']}></div>
                     )}
                     <div className={styles['user-profile-nickname']}>
-                      {user?.nickname}
+                      {commentWriter?.nickname}
                     </div>
                   </div>
                   <input

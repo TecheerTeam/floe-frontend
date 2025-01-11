@@ -41,7 +41,54 @@
   font-size: 16px;
   color: var(--comment-item-text-color);
 }
+.edit-mode {
+  display: flex;
+  gap: 10px;
+}
 
+.edit-input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.save-button,
+.cancel-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.comment-EditOrDelete {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--comment-edit-text-color);
+}
+
+.comment-Edit,
+.comment-Delete {
+  color: var(--comment-edit-text-color);
+  cursor: pointer;
+}
+.comment-Edit:hover,
+.comment-Delete:hover {
+  color: var(--comment-edit-text-color-hover);
+}
 .comment-item-bottom {
   display: flex;
   align-items: center;
