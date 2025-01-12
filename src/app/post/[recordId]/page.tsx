@@ -149,6 +149,7 @@ export default function PostDetail() {
     }
   };
 
+  //     function: 좋아요 개수 가져오기     //
   const fetchLikeCount = async () => {
     if (!recordId || !cookies.accessToken) return;
 

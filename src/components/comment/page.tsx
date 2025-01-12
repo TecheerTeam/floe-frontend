@@ -16,6 +16,8 @@ import timezone from 'dayjs/plugin/timezone';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
 import {
+  AddCommentLikeRequest,
+  DeleteCommentLikeRequest,
   deleteCommentRequest,
   getCommentRequest,
   getReplyRequest,
@@ -64,6 +66,10 @@ export default function Comment({ commentsList }: Props) {
   const [editContent, setEditContent] = useState<string>(content);
   //      state: 수정 중인 댓글 참조 상태      //
   const editCommentRef = useRef<HTMLInputElement | null>(null);
+  //      state: 댓글/대댓글 좋아요 아이콘 버튼 클릭 상태      //
+  const [isLike, setIsLike] = useState<boolean>(false);
+  //      state : 댓글/대댓글좋아요 개수 상태        //
+  const [likeCount, setLikeCount] = useState<number>(0);
   //     function: 대댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
@@ -248,6 +254,36 @@ export default function Comment({ commentsList }: Props) {
     }
   };
 
+  const onCommentLikeIconClickHandler = async () => {
+    if (!cookies.accessToken) return;
+
+    try {
+      if (isLike) {
+        await DeleteCommentLikeRequest(commentId, cookies.accessToken);
+        setIsLike(false);
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await AddCommentLikeRequest(commentId, cookies.accessToken);
+        setIsLike(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('댓 좋아요 서버 오류:', error);
+    }
+  };
+  // const fetchCommentLikeStatus = async () => {
+  //   if (!recordId || !cookies.accessToken) return;
+
+  //   try {
+  //     const response = await getLikeListRequest(id, cookies.accessToken);
+  //     const isLiked = response.data.likeList.some(
+  //       (like: { userName: string }) => like.userName === user?.nickname,
+  //     );
+  //     setIsLike(isLiked); // isLike 상태 업데이트
+  //   } catch (error) {
+  //     console.error('fetch Like Count Error', error);
+  //   }
+  // };
   //          effect: comment Id path variable 바뀔떄마다 해당 대댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     fetchNextPage();
@@ -296,6 +332,7 @@ export default function Comment({ commentsList }: Props) {
                   content
                 )}
               </div>
+
               {logInUser?.email === commentWriter.email && (
                 <div className={styles['comment-EditOrDelete']}>
                   <div
@@ -316,6 +353,12 @@ export default function Comment({ commentsList }: Props) {
             <div className={styles['comment-item-bottom']}>
               <div className={styles['comment-write-time']}>
                 {getElapsedTime()}
+              </div>
+              <div className={styles['comment-like-container']}>
+                <div className={styles['comment-like-count']}>{15}</div>
+                <div
+                  className={styles['comment-like-icon']}
+                  onClick={onCommentLikeIconClickHandler}></div>
               </div>
               <div className={styles['comment-reply-container']}>
                 <div

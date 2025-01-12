@@ -161,6 +161,11 @@
   --comment-item-text-color-hover: rgba(0, 0, 0, 0.6);
   --comment-edit-text-color: rgba(0, 0, 0, 0.5);
   --comment-edit-text-color-hover: rgba(0, 0, 0, 0.8);
+
+  --comment-like-icon: url('./../assets/ThumbIcon_Default.png');
+  --comment-like-icon-hover: url('./../assets/ThumbIcon_Hover.png');
+  --comment-like-icon-active: url('./../assets/ThumbIcon_Active.png');
+
   /* main page toggle button */
   --toggle-Card-icon: url('./../assets/Card_Dark.png');
   --toggle-Card-icon-hover: url('./../assets/Card_Hover.png');
@@ -343,6 +348,9 @@ body {
   --comment-edit-text-color: rgba(255, 255, 255, 0.5);
   --comment-edit-text-color-hover: rgba(255, 255, 255, 0.8);
 
+  --comment-like-icon: url('./../assets/ThumbIcon_Default.png');
+  --comment-like-icon-hover: url('./../assets/ThumbIcon_Hover.png');
+  --comment-like-icon-active: url('./../assets/ThumbIcon_Active.png');
   /* main page toggle button */
   --toggle-Card-icon: url('./../assets/Card_White.png');
   --toggle-Card-icon-hover: url('./../assets/Card_Hover.png');
