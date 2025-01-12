@@ -64,7 +64,7 @@ export default function Comment({ commentsList }: Props) {
   const [editContent, setEditContent] = useState<string>(content);
   //      state: 수정 중인 댓글 참조 상태      //
   const editCommentRef = useRef<HTMLInputElement | null>(null);
-  //     function: 댓글 무한 스크롤     //
+  //     function: 대댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
     refetch, // 데이터 최신화
@@ -78,7 +78,6 @@ export default function Comment({ commentsList }: Props) {
         5,
         cookies.accessToken,
       );
-
       return response; // data만 반환
     },
     getNextPageParam: (last: GetCommentResponseDto) => {
@@ -225,6 +224,8 @@ export default function Comment({ commentsList }: Props) {
         commentId,
         cookies.accessToken,
       );
+      const currentData = queryClient.getQueryData(['reply', commentId]);
+      console.log('삭제 전 데이터 reply:', currentData);
       if (response.code === 'C003') {
         queryClient.setQueryData(['comments', recordId], (oldData: any) => {
           if (!oldData) return oldData;
@@ -250,8 +251,6 @@ export default function Comment({ commentsList }: Props) {
   //          effect: comment Id path variable 바뀔떄마다 해당 대댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     fetchNextPage();
-    console.log('현재 로그인 이메일 :', logInUser?.email);
-    console.log('댓 작성 이메일 :', commentWriter.email);
   }, [commentId, inView]);
 
   return (
@@ -260,9 +259,9 @@ export default function Comment({ commentsList }: Props) {
         <div className={styles['comment-item-list']}>
           <div className={styles['comment-item']}>
             <div className={styles['comment-item-top']}>
-              {record?.user.profileImage ? (
+              {commentWriter.profileImage ? (
                 <img
-                  src={record.user.profileImage}
+                  src={commentWriter.profileImage}
                   alt="프로필 이미지"
                   className={styles['comment-user-profile-image']}
                 />
@@ -330,9 +329,9 @@ export default function Comment({ commentsList }: Props) {
               <div className={styles['reply-container']}>
                 <div className={styles['reply-item-input-container']}>
                   <div className={styles['user-profile-box']}>
-                    {record?.user.profileImage ? (
+                    {logInUser?.profileImage ? (
                       <img
-                        src={record.user.profileImage}
+                        src={logInUser.profileImage}
                         alt="프로필 이미지"
                         className={styles['user-profile-image']}
                       />
@@ -340,7 +339,7 @@ export default function Comment({ commentsList }: Props) {
                       <div className={styles['default-profile-image']}></div>
                     )}
                     <div className={styles['user-profile-nickname']}>
-                      {commentWriter?.nickname}
+                      {logInUser?.nickname}
                     </div>
                   </div>
                   <input

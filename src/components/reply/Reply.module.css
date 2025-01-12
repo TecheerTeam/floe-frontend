@@ -1,7 +1,6 @@
 .reply-container {
   display: flex;
   flex-direction: column;
-  margin-left: 80px;
   gap: 10px;
   width: 1010px;
   margin-top: 10px;
@@ -49,6 +48,53 @@
 }
 .reply-text {
   font-size: 14px;
+}
+.edit-mode {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.save-button,
+.cancel-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
+}
+.reply-EditOrDelete {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--comment-edit-text-color);
+}
+
+.reply-Edit,
+.reply-Delete {
+  color: var(--comment-edit-text-color);
+  cursor: pointer;
+}
+.reply-Edit:hover,
+.reply-Delete:hover {
+  color: var(--comment-edit-text-color-hover);
 }
 .reply-write-time {
   font-size: 14px;
