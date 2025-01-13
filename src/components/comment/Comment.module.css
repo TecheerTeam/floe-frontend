@@ -106,6 +106,30 @@
   color: var(--comment-item-text-color-hover);
   transition: color 0.2s ease;
 }
+
+.comment-like-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+.comment-like-icon {
+  background-image: var(--comment-like-icon);
+  width: 16px;
+  height: 16px;
+}
+.comment-like-icon:hover {
+  background-image: var(--comment-like-icon-hover);
+}
+.comment-like-icon-active {
+  width: 16px;
+  height: 16px;
+  background-image: var(--comment-like-icon-active);
+}
+.comment-like-icon-active:hover {
+  background-image: var(--comment-like-icon-hover);
+}
 .reply-container {
   display: flex;
   flex-direction: column;

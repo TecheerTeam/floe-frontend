@@ -8,6 +8,7 @@ import GetDetailRecordResponseDto from './response/record/record.response.dto';
 import { GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
 import { comment } from 'postcss';
+import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto } from './response/record/like.response.dto';
 const DOMAIN = 'http://localhost:8080';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
@@ -242,6 +243,11 @@ const PUT_COMMENT_URL = (commentId: number) => `${API_DOMAIN}/comments/${comment
 // 댓글 삭제
 const DELETE_COMMENT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}`;
 
+const ADD_COMMENT_LIKE_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes`;
+const DELETE_COMMENT_LIKE_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes`;
+const GET_COMMENT_LIKE_COUNT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes/count`;
+const GET_COMMENT_LIKE_LIST_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes/users`;
+
 //          function: 댓글 작성 요청 API          //
 export const postCommentRequest = async (requestBody: PostCommentRequestDto, accessToken: string) => {
     try {
@@ -258,6 +264,95 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
             return null;
         }
     }
+}
+//          function: 댓글 좋아요 요청 API  토큰O        //
+export const postCommentLikeRequest = async (commentId: number, accessToken: string) => {
+    try {
+        const response = await axios.post(ADD_COMMENT_LIKE_URL(commentId), {}, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            },
+        })
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+}
+//          function: 댓글 좋아요 삭제 요청 API  토큰O        //
+export const deleteCommentLikeRequest = async (commentId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(DELETE_COMMENT_LIKE_URL(commentId), {
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            },
+        })
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+}
+//          function: 댓글 좋아요 목록 요청 API  토큰O        //
+export const getCommentLikeListRequest = async(commentId:number,accessToken:string) => {
+    try {
+        const response = await axios.get<GetCommentLikeListResponseDto>(
+            `${GET_COMMENT_LIKE_LIST_URL(commentId)}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            }
+        }
+        )
+        console.log('get comment Like List API Response:', response); // 응답 전체 확인
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+}
+//          function: 댓글 좋아요 개수 요청 API  토큰O        //
+export const getCommentLikeCountRequest = async(commentId:number,accessToken:string)=>{
+    try{
+        const response = await axios.get<GetCommentLikeCountResponseDto>(
+            `${GET_COMMENT_LIKE_COUNT_URL(commentId)}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            }
+        }
+        )
+        console.log('get Like Count API Response:', response); // 응답 전체 확인
+        return response.data;
+    }catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+
 }
 //          function: 댓글 조회 요청 API  토큰X        //
 // export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
@@ -351,40 +446,6 @@ export const deleteCommentRequest = async (commentId: number, accessToken: strin
     }
 }
 
-
-
-
-
-// // 대댓글 작성
-// const POST_REPLY_URL = (recordId: number | string, commentId: number | string) => `${API_DOMAIN}/records/${recordId}/comments/${commentId}/replies`;
-// // 대댓글 수정
-// const PUT_REPLY_URL = (recordId: number | string, commentId: number | string, replyId: number | string) => `${API_DOMAIN}/records/${recordId}/comments/${commentId}/replies/${replyId}`;
-
-// //          function: 대댓글 작성 요청 API          //
-// export const postReply = async (recordId: number | string, commentId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
-//     const result = await axios.post(POST_REPLY_URL(recordId, commentId), requestBody, authorization(accessToken))
-//         .then(response => {
-//             const responseBody: PostCommentResponseDto = response.data;
-//             return responseBody;
-//         })
-//         .catch(error => {
-//             if (!error.response) return null;
-//             const responseBody: ResponseDto = error.response.data;
-//             return responseBody;
-//         })
-//     return result;
-// }
-// //          function: 대댓글 수정 요청 API          //
-// export const putReply = async (recordId: number | string, commentId: number | string, replyId: number | string, requestBody: PostCommentRequestDto, accessToken: string) => {
-//     const result = await axios.put(PUT_REPLY_URL(recordId, commentId, replyId), requestBody, authorization(accessToken))
-//         .then(response => response.data)
-//         .catch(error => {
-//             if (!error.response) return null;
-//             return error.response.data;
-//         });
-//     return result;
-// };
-// 유저 정보 조회
 
 //         좋아요 추가 API         //
 const POST_LIKE_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
@@ -497,3 +558,6 @@ export const getUserRequest = async (accessToken: string) => {
 
     return result;
 };
+
+
+//

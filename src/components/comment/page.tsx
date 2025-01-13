@@ -16,9 +16,14 @@ import timezone from 'dayjs/plugin/timezone';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
 import {
+  deleteCommentLikeRequest,
   deleteCommentRequest,
+  getCommentLikeCountRequest,
+  getCommentLikeListRequest,
   getCommentRequest,
+  getLikeListRequest,
   getReplyRequest,
+  postCommentLikeRequest,
   postCommentRequest,
   putCommentRequest,
 } from '@/apis';
@@ -27,6 +32,7 @@ import {
   PutCommentRequestDto,
 } from '@/apis/request/record';
 import { GetCommentResponseDto } from '@/apis/response/record';
+import { comment } from 'postcss';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 interface Props {
@@ -64,7 +70,11 @@ export default function Comment({ commentsList }: Props) {
   const [editContent, setEditContent] = useState<string>(content);
   //      state: 수정 중인 댓글 참조 상태      //
   const editCommentRef = useRef<HTMLInputElement | null>(null);
-  //     function: 댓글 무한 스크롤     //
+  //      state: 댓글/대댓글 좋아요 아이콘 버튼 클릭 상태      //
+  const [isLike, setIsLike] = useState<boolean>(false);
+  //      state : 댓글/대댓글좋아요 개수 상태        //
+  const [likeCount, setLikeCount] = useState<number>(0);
+  //     function: 대댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
     refetch, // 데이터 최신화
@@ -78,7 +88,6 @@ export default function Comment({ commentsList }: Props) {
         5,
         cookies.accessToken,
       );
-
       return response; // data만 반환
     },
     getNextPageParam: (last: GetCommentResponseDto) => {
@@ -225,6 +234,8 @@ export default function Comment({ commentsList }: Props) {
         commentId,
         cookies.accessToken,
       );
+      const currentData = queryClient.getQueryData(['reply', commentId]);
+      console.log('삭제 전 데이터 reply:', currentData);
       if (response.code === 'C003') {
         queryClient.setQueryData(['comments', recordId], (oldData: any) => {
           if (!oldData) return oldData;
@@ -247,11 +258,65 @@ export default function Comment({ commentsList }: Props) {
     }
   };
 
+  const onCommentLikeIconClickHandler = async () => {
+    if (!recordId || !cookies.accessToken || !commentId) return;
+
+    try {
+      if (isLike) {
+        await deleteCommentLikeRequest(commentId, cookies.accessToken);
+        setIsLike(false);
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await postCommentLikeRequest(commentId, cookies.accessToken);
+        setIsLike(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('댓 좋아요 서버 오류:', error);
+    }
+  };
+  
+  const fetchCommentLikeCount = async () => {
+    if (!recordId || !cookies.accessToken || !commentId) return;
+
+    try {
+      const response = await getCommentLikeCountRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      if (response.code === 'CL01') {
+        setLikeCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  const fetchCommentLikeStatus = async () => {
+    if (!recordId || !cookies.accessToken) return;
+
+    try {
+      const response = await getCommentLikeListRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      const isLiked = response.data.commentLikeUsers.some(
+        (like: { Nickname: string }) =>
+          like.Nickname === commentWriter?.nickname,
+      );
+      setIsLike(isLiked); // isLike 상태 업데이트
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommentLikeCount();
+    fetchCommentLikeStatus();
+  }, [commentId, cookies.accessToken]);
   //          effect: comment Id path variable 바뀔떄마다 해당 대댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     fetchNextPage();
-    console.log('현재 로그인 이메일 :', logInUser?.email);
-    console.log('댓 작성 이메일 :', commentWriter.email);
   }, [commentId, inView]);
 
   return (
@@ -260,9 +325,9 @@ export default function Comment({ commentsList }: Props) {
         <div className={styles['comment-item-list']}>
           <div className={styles['comment-item']}>
             <div className={styles['comment-item-top']}>
-              {record?.user.profileImage ? (
+              {commentWriter.profileImage ? (
                 <img
-                  src={record.user.profileImage}
+                  src={commentWriter.profileImage}
                   alt="프로필 이미지"
                   className={styles['comment-user-profile-image']}
                 />
@@ -297,6 +362,7 @@ export default function Comment({ commentsList }: Props) {
                   content
                 )}
               </div>
+
               {logInUser?.email === commentWriter.email && (
                 <div className={styles['comment-EditOrDelete']}>
                   <div
@@ -318,6 +384,18 @@ export default function Comment({ commentsList }: Props) {
               <div className={styles['comment-write-time']}>
                 {getElapsedTime()}
               </div>
+              <div className={styles['comment-like-container']}>
+                <div className={styles['comment-like-count']}>{likeCount}</div>
+                {isLike ? (
+                  <div
+                    className={styles['comment-like-icon-active']}
+                    onClick={onCommentLikeIconClickHandler}></div>
+                ) : (
+                  <div
+                    className={styles['comment-like-icon']}
+                    onClick={onCommentLikeIconClickHandler}></div>
+                )}
+              </div>
               <div className={styles['comment-reply-container']}>
                 <div
                   className={styles['comment-reply-button']}
@@ -330,9 +408,9 @@ export default function Comment({ commentsList }: Props) {
               <div className={styles['reply-container']}>
                 <div className={styles['reply-item-input-container']}>
                   <div className={styles['user-profile-box']}>
-                    {record?.user.profileImage ? (
+                    {logInUser?.profileImage ? (
                       <img
-                        src={record.user.profileImage}
+                        src={logInUser.profileImage}
                         alt="프로필 이미지"
                         className={styles['user-profile-image']}
                       />
@@ -340,7 +418,7 @@ export default function Comment({ commentsList }: Props) {
                       <div className={styles['default-profile-image']}></div>
                     )}
                     <div className={styles['user-profile-nickname']}>
-                      {commentWriter?.nickname}
+                      {logInUser?.nickname}
                     </div>
                   </div>
                   <input

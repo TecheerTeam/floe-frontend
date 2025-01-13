@@ -15,3 +15,18 @@ export interface GetRecordLikeListResponseDto extends ResponseDto {
         }[];
     };
 }
+
+export interface GetCommentLikeCountResponseDto extends ResponseDto {
+    data: {
+        count: number;
+    };
+}
+
+export interface GetCommentLikeListResponseDto extends ResponseDto {
+    data: {
+        commentLikeUsers: {
+            Nickname: string;
+            profileImage: string | null;
+        }[];
+    }
+}
