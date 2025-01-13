@@ -8,7 +8,14 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { CommentItem, RecordItem } from '@/types/interface';
-import { deleteCommentRequest, putCommentRequest } from '@/apis';
+import {
+  deleteCommentLikeRequest,
+  deleteCommentRequest,
+  getCommentLikeCountRequest,
+  getCommentLikeListRequest,
+  postCommentLikeRequest,
+  putCommentRequest,
+} from '@/apis';
 import { comment } from 'postcss';
 import { PutCommentRequestDto } from '@/apis/request/record';
 
@@ -39,7 +46,12 @@ export default function Reply({ replyList }: Props) {
   const [editContent, setEditContent] = useState<string>(content);
   //      state: 수정 중인 대댓글 참조 상태      //
   const editReplyRef = useRef<HTMLInputElement | null>(null);
+  //      state: 댓글/대댓글 좋아요 아이콘 버튼 클릭 상태      //
+  const [isLike, setIsLike] = useState<boolean>(false);
+  //      state : 댓글/대댓글좋아요 개수 상태        //
+  const [likeCount, setLikeCount] = useState<number>(0);
 
+  //   event handler: 댓글 수정 토글 버튼   //
   const onEditReplyClickHandler = async () => {
     if (logInUser?.email !== replyWriter.email) {
       alert('댓글 수정 권한이 없습니다.');
@@ -121,6 +133,61 @@ export default function Reply({ replyList }: Props) {
       console.error('댓글 삭제 서버 오류:', error);
     }
   };
+
+  const onCommentLikeIconClickHandler = async () => {
+    if (!cookies.accessToken || !commentId) return;
+
+    try {
+      if (isLike) {
+        await deleteCommentLikeRequest(commentId, cookies.accessToken);
+        setIsLike(false);
+        setLikeCount((prev) => prev - 1);
+      } else {
+        await postCommentLikeRequest(commentId, cookies.accessToken);
+        setIsLike(true);
+        setLikeCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('댓 좋아요 서버 오류:', error);
+    }
+  };
+  const fetchCommentLikeCount = async () => {
+    if (!cookies.accessToken || !commentId) return;
+
+    try {
+      const response = await getCommentLikeCountRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      if (response.code === 'CL01') {
+        setLikeCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  const fetchCommentLikeStatus = async () => {
+    if (!commentId || !cookies.accessToken) return;
+
+    try {
+      const response = await getCommentLikeListRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      const isLiked = response.data.commentLikeUsers.some(
+        (like: { Nickname: string }) => like.Nickname === replyWriter?.nickname,
+      );
+      setIsLike(isLiked); // isLike 상태 업데이트
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommentLikeCount();
+    fetchCommentLikeStatus();
+  }, [commentId, cookies.accessToken]);
   return (
     <div className={styles['reply-container']}>
       <div className={styles['reply-item-list-container']}>
@@ -161,6 +228,18 @@ export default function Reply({ replyList }: Props) {
                 </div>
               ) : (
                 content
+              )}
+            </div>
+            <div className={styles['reply-like-container']}>
+              <div className={styles['reply-like-count']}>{likeCount}</div>
+              {isLike ? (
+                <div
+                  className={styles['reply-like-icon-active']}
+                  onClick={onCommentLikeIconClickHandler}></div>
+              ) : (
+                <div
+                  className={styles['reply-like-icon']}
+                  onClick={onCommentLikeIconClickHandler}></div>
               )}
             </div>
             {logInUser?.email === replyWriter.email && (

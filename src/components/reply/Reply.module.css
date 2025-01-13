@@ -96,6 +96,30 @@
 .reply-Delete:hover {
   color: var(--comment-edit-text-color-hover);
 }
+
+.reply-like-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+.reply-like-icon {
+  background-image: var(--comment-like-icon);
+  width: 16px;
+  height: 16px;
+}
+.reply-like-icon:hover {
+  background-image: var(--comment-like-icon-hover);
+}
+.reply-like-icon-active {
+  width: 16px;
+  height: 16px;
+  background-image: var(--comment-like-icon-active);
+}
+.reply-like-icon-active:hover {
+  background-image: var(--comment-like-icon-hover);
+}
 .reply-write-time {
   font-size: 14px;
 }

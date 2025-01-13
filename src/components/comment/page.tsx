@@ -16,11 +16,14 @@ import timezone from 'dayjs/plugin/timezone';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
 import {
-  AddCommentLikeRequest,
-  DeleteCommentLikeRequest,
+  deleteCommentLikeRequest,
   deleteCommentRequest,
+  getCommentLikeCountRequest,
+  getCommentLikeListRequest,
   getCommentRequest,
+  getLikeListRequest,
   getReplyRequest,
+  postCommentLikeRequest,
   postCommentRequest,
   putCommentRequest,
 } from '@/apis';
@@ -29,6 +32,7 @@ import {
   PutCommentRequestDto,
 } from '@/apis/request/record';
 import { GetCommentResponseDto } from '@/apis/response/record';
+import { comment } from 'postcss';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 interface Props {
@@ -255,15 +259,15 @@ export default function Comment({ commentsList }: Props) {
   };
 
   const onCommentLikeIconClickHandler = async () => {
-    if (!cookies.accessToken) return;
+    if (!recordId || !cookies.accessToken || !commentId) return;
 
     try {
       if (isLike) {
-        await DeleteCommentLikeRequest(commentId, cookies.accessToken);
+        await deleteCommentLikeRequest(commentId, cookies.accessToken);
         setIsLike(false);
         setLikeCount((prev) => prev - 1);
       } else {
-        await AddCommentLikeRequest(commentId, cookies.accessToken);
+        await postCommentLikeRequest(commentId, cookies.accessToken);
         setIsLike(true);
         setLikeCount((prev) => prev + 1);
       }
@@ -271,19 +275,45 @@ export default function Comment({ commentsList }: Props) {
       console.error('댓 좋아요 서버 오류:', error);
     }
   };
-  // const fetchCommentLikeStatus = async () => {
-  //   if (!recordId || !cookies.accessToken) return;
+  
+  const fetchCommentLikeCount = async () => {
+    if (!recordId || !cookies.accessToken || !commentId) return;
 
-  //   try {
-  //     const response = await getLikeListRequest(id, cookies.accessToken);
-  //     const isLiked = response.data.likeList.some(
-  //       (like: { userName: string }) => like.userName === user?.nickname,
-  //     );
-  //     setIsLike(isLiked); // isLike 상태 업데이트
-  //   } catch (error) {
-  //     console.error('fetch Like Count Error', error);
-  //   }
-  // };
+    try {
+      const response = await getCommentLikeCountRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      if (response.code === 'CL01') {
+        setLikeCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  const fetchCommentLikeStatus = async () => {
+    if (!recordId || !cookies.accessToken) return;
+
+    try {
+      const response = await getCommentLikeListRequest(
+        commentId,
+        cookies.accessToken,
+      );
+      const isLiked = response.data.commentLikeUsers.some(
+        (like: { Nickname: string }) =>
+          like.Nickname === commentWriter?.nickname,
+      );
+      setIsLike(isLiked); // isLike 상태 업데이트
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCommentLikeCount();
+    fetchCommentLikeStatus();
+  }, [commentId, cookies.accessToken]);
   //          effect: comment Id path variable 바뀔떄마다 해당 대댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     fetchNextPage();
@@ -355,10 +385,16 @@ export default function Comment({ commentsList }: Props) {
                 {getElapsedTime()}
               </div>
               <div className={styles['comment-like-container']}>
-                <div className={styles['comment-like-count']}>{15}</div>
-                <div
-                  className={styles['comment-like-icon']}
-                  onClick={onCommentLikeIconClickHandler}></div>
+                <div className={styles['comment-like-count']}>{likeCount}</div>
+                {isLike ? (
+                  <div
+                    className={styles['comment-like-icon-active']}
+                    onClick={onCommentLikeIconClickHandler}></div>
+                ) : (
+                  <div
+                    className={styles['comment-like-icon']}
+                    onClick={onCommentLikeIconClickHandler}></div>
+                )}
               </div>
               <div className={styles['comment-reply-container']}>
                 <div

@@ -22,11 +22,11 @@ export interface GetCommentLikeCountResponseDto extends ResponseDto {
     };
 }
 
-export interface GetCommentLIkeListResponseDto extends ResponseDto {
+export interface GetCommentLikeListResponseDto extends ResponseDto {
     data: {
         commentLikeUsers: {
             Nickname: string;
             profileImage: string | null;
-        }
+        }[];
     }
 }

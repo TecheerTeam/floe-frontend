@@ -122,7 +122,14 @@
 .comment-like-icon:hover {
   background-image: var(--comment-like-icon-hover);
 }
-
+.comment-like-icon-active {
+  width: 16px;
+  height: 16px;
+  background-image: var(--comment-like-icon-active);
+}
+.comment-like-icon-active:hover {
+  background-image: var(--comment-like-icon-hover);
+}
 .reply-container {
   display: flex;
   flex-direction: column;
