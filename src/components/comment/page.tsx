@@ -94,8 +94,7 @@ export default function Comment({ commentsList }: Props) {
       if (!last || last.data.last) {
         return undefined;
       }
-      console.log('current page: ', last.data.pageable.pageNumber);
-      console.log('Next page:', last.data.pageable.pageNumber + 1);
+
       return last.data.pageable.pageNumber + 1;
     },
 
@@ -118,7 +117,6 @@ export default function Comment({ commentsList }: Props) {
     const { value } = event.target;
     if (!replyRef.current) return;
     setNewReply(value);
-    console.log('입력중인 대댓글: ', newReply);
   };
   //          function : 대댓글 입력 버튼 처리 함수          //
   const onApplyClickHandler = async () => {
@@ -235,7 +233,6 @@ export default function Comment({ commentsList }: Props) {
         cookies.accessToken,
       );
       const currentData = queryClient.getQueryData(['reply', commentId]);
-      console.log('삭제 전 데이터 reply:', currentData);
       if (response.code === 'C003') {
         queryClient.setQueryData(['comments', recordId], (oldData: any) => {
           if (!oldData) return oldData;
@@ -257,9 +254,9 @@ export default function Comment({ commentsList }: Props) {
       console.error('댓글 삭제 서버 오류:', error);
     }
   };
-
+  //     event handler: 댓글 좋아요 버튼 클릭 처리     //
   const onCommentLikeIconClickHandler = async () => {
-    if (!recordId || !cookies.accessToken || !commentId) return;
+    if (!cookies.accessToken || !commentId) return;
 
     try {
       if (isLike) {
@@ -275,9 +272,9 @@ export default function Comment({ commentsList }: Props) {
       console.error('댓 좋아요 서버 오류:', error);
     }
   };
-  
+
   const fetchCommentLikeCount = async () => {
-    if (!recordId || !cookies.accessToken || !commentId) return;
+    if (!cookies.accessToken || !commentId) return;
 
     try {
       const response = await getCommentLikeCountRequest(
@@ -293,17 +290,20 @@ export default function Comment({ commentsList }: Props) {
   };
 
   const fetchCommentLikeStatus = async () => {
-    if (!recordId || !cookies.accessToken) return;
+    if (!commentId || !cookies.accessToken) 
+     
+      return;
 
     try {
       const response = await getCommentLikeListRequest(
         commentId,
         cookies.accessToken,
       );
+      console.log('Fetched like list response:', response);
       const isLiked = response.data.commentLikeUsers.some(
-        (like: { Nickname: string }) =>
-          like.Nickname === commentWriter?.nickname,
+        (like: { nickName: string }) => like.nickName === logInUser?.nickname,
       );
+      console.log('Is liked:', isLiked);
       setIsLike(isLiked); // isLike 상태 업데이트
     } catch (error) {
       console.error('fetch Like Count Error', error);
@@ -317,6 +317,8 @@ export default function Comment({ commentsList }: Props) {
   //          effect: comment Id path variable 바뀔떄마다 해당 대댓글 데이터 불러오기 (무한스크롤)     //
   useEffect(() => {
     fetchNextPage();
+    fetchCommentLikeCount();
+    fetchCommentLikeStatus();
   }, [commentId, inView]);
 
   return (

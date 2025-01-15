@@ -25,7 +25,7 @@ export interface GetCommentLikeCountResponseDto extends ResponseDto {
 export interface GetCommentLikeListResponseDto extends ResponseDto {
     data: {
         commentLikeUsers: {
-            Nickname: string;
+            nickName: string;
             profileImage: string | null;
         }[];
     }
