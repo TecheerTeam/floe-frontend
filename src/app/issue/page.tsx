@@ -71,31 +71,6 @@ export default function Issue() {
             <div className={styles['main-banner']}>
               <Image src={Banner} alt="banner" className={styles['banner']} />
             </div>
-
-            {/* <div className={styles['list-view']}>
-              {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
-                data?.pages.map((page, pageIndex) => {
-                  if (page.data.content && Array.isArray(page.data.content)) {
-                    return page.data.content.length > 0 ? (
-                      page.data.content.map((recordListItem) => {
-                        return (
-                          <PostItemListType
-                            key={recordListItem.recordId}
-                            recordListItem={recordListItem}
-                          />
-                        );
-                      })
-                    ) : (
-                      <p key={pageIndex}></p> // 빈 페이지일 때
-                    );
-                  } else {
-                    return <p key={pageIndex}></p>; // content가 없을 때
-                  }
-                })
-              ) : (
-                <></> // 데이터가 없을 때
-              )}
-            </div> */}
             <div className={styles['list-view']}>
               {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
                 data?.pages.map((page, pageIndex) => {
