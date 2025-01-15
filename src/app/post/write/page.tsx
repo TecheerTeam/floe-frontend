@@ -153,7 +153,7 @@ export default function PostWrite() {
     const dto = {
       title: title,
       content: content,
-      recordType: recordType,
+      recordType: recordType.toUpperCase(),
       tagNames: tagNames,
     };
     const blob = new Blob([JSON.stringify(dto)], {
@@ -238,8 +238,8 @@ export default function PostWrite() {
                   onChange={onCategoryChangeHandler}
                   name="post-Category"
                   className={styles['post-Category']}>
-                  <option value="Floe">{'Floe'}</option>
-                  <option value="Issue">{'Issue'}</option>
+                  <option value="FLOE">{'Floe'}</option>
+                  <option value="ISSUE">{'Issue'}</option>
                 </select>
               </div>
             </div>

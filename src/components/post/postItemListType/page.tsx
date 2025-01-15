@@ -4,7 +4,11 @@ import React from 'react';
 import styles from './Post.List.module.css';
 import { RecordListItem } from '@/types/interface';
 import { useQuery } from '@tanstack/react-query';
-import { getCommentRequest } from '@/apis';
+import {
+  getCommentRequest,
+  getLikeCountRequest,
+  getLikeListRequest,
+} from '@/apis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -27,6 +31,7 @@ export default function PostItemListType({
     likeCount,
     commentCount,
     saveCount,
+    recordType,
   } = recordListItem;
 
   //     state: 쿠키     //
@@ -54,6 +59,30 @@ export default function PostItemListType({
     staleTime: 10000, // 캐시 유지 시간 (10초)
     refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
   });
+  //          function: 좋아요 개수 업데이트          //
+  const { data: likeData } = useQuery({
+    queryKey: ['likes', recordId],
+    queryFn: async () => {
+      const response = await getLikeCountRequest(recordId, cookies.accessToken); // 첫 번째 페이지에서 댓글 데이터 요청
+      console.log('like count in query: ', response.data.count);
+      return response.data.count; // 총 댓글 수 반환
+    },
+    staleTime: 10000, // 캐시 유지 시간 (10초)
+    refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
+  });
+  //          function: 좋아요 여부 업데이트          //
+  const { data: likeListData } = useQuery({
+    queryKey: ['likeList', recordId],
+    queryFn: async () => {
+      const response = await getLikeListRequest(recordId, cookies.accessToken);
+
+      return response.data.likeList; // 좋아요한 사용자 목록 반환
+    },
+    staleTime: 10000,
+  });
+  const isLikedByUser = likeListData?.some(
+    (like: { userName: string }) => like.userName === user.nickname,
+  );
   //          function: 작성일 경과시간 함수          //
   const getElapsedTime = () => {
     const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
@@ -117,7 +146,10 @@ export default function PostItemListType({
       <div className={styles['list-bottom']}>
         <div className={styles['list-like-box']}>
           <div className={styles['list-like-icon']}></div>
-          <div className={styles['list-like-count']}>{likeCount}</div>
+          <div className={styles['list-like-count']}>
+            {' '}
+            {likeData ?? likeCount}
+          </div>
         </div>
 
         <div className={styles['list-comment-box']}>

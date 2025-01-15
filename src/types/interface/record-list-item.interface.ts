@@ -1,4 +1,6 @@
+import { RecordType } from "@/apis/request/record/record.request.dto";
 export default interface RecordListItem {
+
     recordId: number;
     user: {
         nickname: string;
@@ -13,4 +15,5 @@ export default interface RecordListItem {
     likeCount: number;
     commentCount: number;
     saveCount: number;
+    recordType: RecordType;
 }
