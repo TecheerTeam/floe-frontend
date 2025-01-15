@@ -176,7 +176,7 @@ export default function Reply({ replyList }: Props) {
         cookies.accessToken,
       );
       const isLiked = response.data.commentLikeUsers.some(
-        (like: { Nickname: string }) => like.Nickname === replyWriter?.nickname,
+        (like: { nickName: string }) => like.nickName === logInUser?.nickname,
       );
       setIsLike(isLiked); // isLike 상태 업데이트
     } catch (error) {

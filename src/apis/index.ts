@@ -308,7 +308,7 @@ export const deleteCommentLikeRequest = async (commentId: number, accessToken: s
     }
 }
 //          function: 댓글 좋아요 목록 요청 API  토큰O        //
-export const getCommentLikeListRequest = async(commentId:number,accessToken:string) => {
+export const getCommentLikeListRequest = async (commentId: number, accessToken: string) => {
     try {
         const response = await axios.get<GetCommentLikeListResponseDto>(
             `${GET_COMMENT_LIKE_LIST_URL(commentId)}`, {
@@ -331,8 +331,8 @@ export const getCommentLikeListRequest = async(commentId:number,accessToken:stri
     }
 }
 //          function: 댓글 좋아요 개수 요청 API  토큰O        //
-export const getCommentLikeCountRequest = async(commentId:number,accessToken:string)=>{
-    try{
+export const getCommentLikeCountRequest = async (commentId: number, accessToken: string) => {
+    try {
         const response = await axios.get<GetCommentLikeCountResponseDto>(
             `${GET_COMMENT_LIKE_COUNT_URL(commentId)}`, {
             headers: {
@@ -342,7 +342,7 @@ export const getCommentLikeCountRequest = async(commentId:number,accessToken:str
         )
         console.log('get Like Count API Response:', response); // 응답 전체 확인
         return response.data;
-    }catch (error) {
+    } catch (error) {
         if (axios.isAxiosError(error)) {
             // Axios 에러라면 response 데이터 확인
             console.error('Error fetching comments:', error.response?.data || error.message);
@@ -397,7 +397,7 @@ export const getReplyRequest = async (commentId: number, page: number, size: num
                 },
             }
         );
-        console.log('reply API Response:', response); // 응답 전체 확인
+
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
