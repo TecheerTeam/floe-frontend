@@ -139,24 +139,19 @@ export default function Main() {
                     <div className={styles['card-view']}>
                       {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
                         data?.pages.map((page, pageIndex) => {
-                          if (
-                            page.data.content &&
-                            Array.isArray(page.data.content)
-                          ) {
-                            return page.data.content.length > 0 ? (
-                              page.data.content.map((recordListItem) => {
-                                return (
-                                  <PostItemCardType
-                                    key={recordListItem.recordId}
-                                    recordListItem={recordListItem}
-                                  />
-                                );
-                              })
-                            ) : (
-                              <p key={pageIndex}></p> // 빈 페이지일 때
-                            );
+                          const filteredContent = page.data.content.filter(
+                            (recordListItem) =>
+                              recordListItem.recordType === 'FLOE',
+                          );
+                          if (filteredContent.length > 0) {
+                            return filteredContent.map((recordListItem) => (
+                              <PostItemCardType
+                                key={recordListItem.recordId}
+                                recordListItem={recordListItem}
+                              />
+                            ));
                           } else {
-                            return <p key={pageIndex}></p>; // content가 없을 때
+                            return <p key={pageIndex}></p>; // 빈 페이지일 때
                           }
                         })
                       ) : (
@@ -167,24 +162,19 @@ export default function Main() {
                     <div className={styles['list-view']}>
                       {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
                         data?.pages.map((page, pageIndex) => {
-                          if (
-                            page.data.content &&
-                            Array.isArray(page.data.content)
-                          ) {
-                            return page.data.content.length > 0 ? (
-                              page.data.content.map((recordListItem) => {
-                                return (
-                                  <PostItemListType
-                                    key={recordListItem.recordId}
-                                    recordListItem={recordListItem}
-                                  />
-                                );
-                              })
-                            ) : (
-                              <p key={pageIndex}></p> // 빈 페이지일 때
-                            );
+                          const filteredContent = page.data.content.filter(
+                            (recordListItem) =>
+                              recordListItem.recordType === 'FLOE',
+                          );
+                          if (filteredContent.length > 0) {
+                            return filteredContent.map((recordListItem) => (
+                              <PostItemListType
+                                key={recordListItem.recordId}
+                                recordListItem={recordListItem}
+                              />
+                            ));
                           } else {
-                            return <p key={pageIndex}></p>; // content가 없을 때
+                            return <p key={pageIndex}></p>; // 빈 페이지일 때
                           }
                         })
                       ) : (

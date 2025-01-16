@@ -198,6 +198,9 @@
   --mypage-tab-color-active: #000000;
   --mypage-text-color: #000000;
   --mypage-text-color-active: #000000;
+
+  --mypage-pagination-text-color: rgba(0, 0, 0, 0.6);
+  --mypage-pagination-text-color-active: #000000;
 }
 body {
   background-color: #f9fafa;
@@ -384,4 +387,6 @@ body {
   --mypage-tab-color-active: #4cbfe5;
   --mypage-text-color: #ffffff;
   --mypage-text-color-active: #4cbfe5;
+  --mypage-pagination-text-color: #ffffff9a;
+  --mypage-pagination-text-color-active: #ffffff;
 }
