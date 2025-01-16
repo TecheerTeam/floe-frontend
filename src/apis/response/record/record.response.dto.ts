@@ -1,4 +1,5 @@
 import { RecordListItem, RecordItem } from '@/types/interface';
+import User from './../../../types/interface/user.interface';
 import ResponseDto from '../Response.dto';
 //          interface: 특정 게시물 조회 DTO          <완>//
 export default interface GetDetailRecordResponseDto extends ResponseDto {
@@ -42,4 +43,25 @@ export default interface PutRecordResponseDto extends ResponseDto {
 //          interface: 게시물 삭제 DTO     <완>     //
 export default interface DeleteRecordResponseDto extends ResponseDto {
 
+}
+
+export  interface GetUserRecordResponseDto extends ResponseDto{
+  data: {
+    content: RecordListItem[]; // 게시물 리스트
+    pageable: {
+      pageNumber: number; // 현재 페이지 번호
+      pageSize: number;   // 한 페이지에 포함된 요소 수
+      sort: {
+        sorted: boolean;
+        unsorted: boolean;
+        empty: boolean;
+      };
+    };
+    totalPages: number;
+    totalElements: number;
+    last: boolean;
+    first: boolean;
+    numberOfElements: number;
+    empty: boolean;
+  };
 }

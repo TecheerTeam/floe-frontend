@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import styles from './MyPage.module.css';
-
 import Header from '../header/page';
 import NavBar from '../navBar/page';
-
 import TabNavigation from '@/components/tab/tabNavigation/page';
 import PostsContents from '@/components/tab/tabContents/postsContents/page';
 import LikeContents from '@/components/tab/tabContents/likeContents/page';
@@ -14,52 +12,56 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useLoginUserStore } from '@/store';
 import { useCookies } from 'react-cookie';
-import { getUserRequest } from '@/apis';
-import { GetUserResponseDto } from '@/apis/response/user';
-import { ResponseDto } from '@/apis/response';
+import { getUserRequest, putUserProfileImageUpdateRequest } from '@/apis';
 
 export default function MyPage() {
   const router = useRouter();
   //        state: 유저 로그인 상태(zustand)        //
-  const { user } = useLoginUserStore();
+  const { user, setUser } = useLoginUserStore();
   //        state: cookie 상태        //
   const [cookies] = useCookies();
-  //          state: 파일 Input 참조 상태         //
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  //          state: 프로필 이미지 입력 요소 참조 상태          //
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+  //          state: 프로필 이미지 미리보기 URL 상태          //
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   //          state: Tab Navigation 선택 상태         //
   const [activeTab, setActivetab] = useState('POSTS');
-  //          state: 닉네임 상태          //
-  const [nickname, setNickname] = useState<string>('');
-  //          state: 프로필 이미지 상태          //
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  // 현재 이미지를 클릭했을때
-  const handleImageClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+
+  //          event handler: 이미지 업로드 버튼 클릭 이벤트 처리          //
+  const onImageUploadButtonClickHandler = () => {
+    if (!imageInputRef.current) return;
+    imageInputRef.current.click();
+  };
+
+  //          event handler: 프로필 이미지 변경 이벤트 처리          //
+  const onImageChangeHandler = async (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files.length) return;
+
+    const file = event.target.files[0];
+    const data = new FormData();
+    data.append('profileImage', file);
+    try {
+      const response = await putUserProfileImageUpdateRequest(
+        data,
+        cookies.accessToken,
+      );
+      if (response.code === 'U007') {
+        alert('프로필 이미지 수정 성공');
+        if (user) {
+          setUser({ ...user, profileImage: response.data.profileImage });
+        }
+        await getUserRequestAPI(); // 유저 프로필 이미지 변경 후 데이터 최신화
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
     }
   };
 
-  // Iamge 변경 함수
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        document.documentElement.style.setProperty(
-          '--mypage-image-userInitialImage',
-          `url(${reader.result})`,
-        );
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Tab 선택했을 때
+  //          event handler: 탭 버튼 클릭 이벤트 처리          //
   const handleTabClick = (tab: string) => {
     setActivetab(tab);
   };
-
+  //          event handler: 탭 버튼 클릭 라우팅 처리          //
   const TabContent = () => {
     switch (activeTab) {
       case 'POSTS':
@@ -73,18 +75,24 @@ export default function MyPage() {
     }
   };
 
-  //        function: getUserResponse 처리 함수       //
-  const getUserResponse = (
-    responseBody: GetUserResponseDto | ResponseDto | null,
-  ) => {
-    if (!responseBody) return;
-    const { code } = responseBody;
-    if (code === 'U001') alert('유저를 찾을 수 없음');
-    if (code !== 'U002') return;
+  //        function: getUser 처리 함수(사용자 정보를 받아온다다)       //
+  const getUserRequestAPI = async () => {
+    try {
+      const response = await getUserRequest(cookies.accessToken);
 
-    const { nickname, profileImage } = responseBody as GetUserResponseDto;
-    setNickname(nickname);
-    setProfileImage(profileImage);
+      if (response.code === 'U002') {
+        setUser({
+          email: response.data.email,
+          nickname: response.data.nickname,
+          experience: response.data.experience,
+          age: response.data.age,
+          field: response.data.field,
+          profileImage: response.data.profileImage,
+        });
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
   };
 
   //     effect: user email path variable 변경시 실행(user email에 따라 해당 유저의 데이터 마운트)     //
@@ -94,7 +102,7 @@ export default function MyPage() {
       router.push('/auth'); // 로그인 페이지로 이동
       return;
     }
-    getUserRequest(cookies.accessToken).then(getUserResponse); // 유저 정보 가져오기
+    getUserRequestAPI(); // 유저 정보 가져오기
   }, [cookies.accessToken]);
 
   //         render : 마이페이지 컴포넌트 렌더링         //
@@ -121,17 +129,17 @@ export default function MyPage() {
               <div
                 className={styles['user-profile-image']}
                 style={{ backgroundImage: `url(${user?.profileImage})` }}
-                onClick={handleImageClick}></div>
+                onClick={onImageUploadButtonClickHandler}></div>
             ) : (
               <div
                 className={styles['user-Image']}
-                onClick={handleImageClick}></div>
+                onClick={onImageUploadButtonClickHandler}></div>
             )}
             <input
               type="file"
               accept="image/*"
-              ref={fileInputRef}
-              onChange={handleFileChange}
+              ref={imageInputRef}
+              onChange={onImageChangeHandler}
               style={{ display: 'none' }}
             />
             <div className={styles['user-Data-Wrapper']}>

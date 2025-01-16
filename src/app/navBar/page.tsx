@@ -8,7 +8,7 @@ import { useLoginUserStore } from '@/store';
 
 export default function NavBar() {
   const router = useRouter();
-  const { user, logout } = useLoginUserStore(); // Zustand로 로그인
+  const { user,setUser, logout } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //

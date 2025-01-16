@@ -4,7 +4,7 @@ import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, P
 import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto, PutCommentRequestDto } from './request/record';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
 import { SignUpResponseDto } from './response/auth';
-import GetDetailRecordResponseDto from './response/record/record.response.dto';
+import GetDetailRecordResponseDto, { GetUserRecordResponseDto } from './response/record/record.response.dto';
 import { GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
 import { comment } from 'postcss';
@@ -242,16 +242,109 @@ const GET_REPLY_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId
 const PUT_COMMENT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}`;
 // 댓글 삭제
 const DELETE_COMMENT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}`;
-
+// 댓글 좋아요 추가
 const ADD_COMMENT_LIKE_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes`;
+// 댓글 좋아요 삭제
 const DELETE_COMMENT_LIKE_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes`;
+// 댓글 좋아요 카운트
 const GET_COMMENT_LIKE_COUNT_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes/count`;
+// 댓글 좋아요 목록 요청
 const GET_COMMENT_LIKE_LIST_URL = (commentId: number) => `${API_DOMAIN}/comments/${commentId}/likes/users`;
 
 //          function: 댓글 작성 요청 API          //
 export const postCommentRequest = async (requestBody: PostCommentRequestDto, accessToken: string) => {
     try {
         const response = await axios.post(POST_COMMENT_URL(), requestBody, authorization(accessToken));
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//          function: 댓글 조회 요청 API  토큰X        //
+// export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
+//     const response = await axios.get<GetCommentResponseDto>(
+//         `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`
+//     );
+//     console.log('ddd', response)
+//     return response.data;
+
+// };
+//          function: 댓글 조회 요청 API  토큰O        //
+export const getCommentRequest = async (recordId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
+    try {
+        const response = await axios.get<GetCommentResponseDto>(
+            `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+};
+//          function: 대댓글 조회 요청 API  토큰O        //
+export const getReplyRequest = async (commentId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
+    try {
+        const response = await axios.get<GetCommentResponseDto>(
+            `${GET_REPLY_URL(commentId)}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+};
+//          function: 댓글 수정 요청 API          //
+export const putCommentRequest = async (commentId: number, requestBody: PutCommentRequestDto, accessToken: string) => {
+    try {
+        const response = await axios.put(PUT_COMMENT_URL(commentId), requestBody, authorization(accessToken));
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//          function: 댓글 삭제 요청 API          //
+export const deleteCommentRequest = async (commentId: number, accessToken: string) => {
+    try {
+        const response = await axios.delete(DELETE_COMMENT_URL(commentId), authorization(accessToken));
         return response.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -354,106 +447,14 @@ export const getCommentLikeCountRequest = async (commentId: number, accessToken:
     }
 
 }
-//          function: 댓글 조회 요청 API  토큰X        //
-// export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
-//     const response = await axios.get<GetCommentResponseDto>(
-//         `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`
-//     );
-//     console.log('ddd', response)
-//     return response.data;
 
-// };
-//          function: 댓글 조회 요청 API  토큰O        //
-export const getCommentRequest = async (recordId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
-    try {
-        const response = await axios.get<GetCommentResponseDto>(
-            `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-                },
-            }
-        );
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
-        } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
-        }
-        throw error;
-    }
-};
-//          function: 대댓글 조회 요청 API  토큰O        //
-export const getReplyRequest = async (commentId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
-    try {
-        const response = await axios.get<GetCommentResponseDto>(
-            `${GET_REPLY_URL(commentId)}?page=${page}&size=${size}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-                },
-            }
-        );
-
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
-        } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
-        }
-        throw error;
-    }
-};
-//          function: 댓글 수정 요청 API          //
-export const putCommentRequest = async (commentId: number, requestBody: PutCommentRequestDto, accessToken: string) => {
-    try {
-        const response = await axios.put(PUT_COMMENT_URL(commentId), requestBody, authorization(accessToken));
-        return response.data;
-    } catch (error: unknown) {
-        // error가 AxiosError인지 확인하고 안전하게 접근
-        if (axios.isAxiosError(error)) {
-            if (!error.response) return null;
-            return error.response.data;
-        } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
-            return null;
-        }
-    }
-}
-
-//          function: 댓글 삭제 요청 API          //
-export const deleteCommentRequest = async (commentId: number, accessToken: string) => {
-    try {
-        const response = await axios.delete(DELETE_COMMENT_URL(commentId), authorization(accessToken));
-        return response.data;
-    } catch (error: unknown) {
-        // error가 AxiosError인지 확인하고 안전하게 접근
-        if (axios.isAxiosError(error)) {
-            if (!error.response) return null;
-            return error.response.data;
-        } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
-            return null;
-        }
-    }
-}
-
-
-//         좋아요 추가 API         //
+//         게시글 좋아요 추가 API         //
 const POST_LIKE_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
-//         좋아요 수 조회 API         //
+//         게시글 좋아요 수 조회 API         //
 const GET_LIKE_COUNT_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
-//         좋아요 유저 리스트 조회 API          //
+//         게시글 좋아요 유저 리스트 조회 API          //
 const GET_LIKE_LIST_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/like-list`;
-
+//         게시글 좋아요 삭제 API          //
 const DELETE_LIKE_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/likes`;
 //         function: 좋아요 추가 API         //
 export const postLikeRequest = async (recordId: number, accessToken: string) => {
@@ -473,7 +474,6 @@ export const postLikeRequest = async (recordId: number, accessToken: string) => 
         throw error;
     }
 }
-
 //         function: 좋아요 수 조회 API         //
 export const getLikeCountRequest = async (recordId: number, accessToken: string) => {
     try {
@@ -497,7 +497,6 @@ export const getLikeCountRequest = async (recordId: number, accessToken: string)
         throw error;
     }
 };
-
 //         function: 좋아요 리스트 조회 API          //
 export const getLikeListRequest = async (recordId: number, accessToken: string) => {
     try {
@@ -539,25 +538,84 @@ export const deleteLikeRequest = async (recordId: number, accessToken: string) =
         throw error;
     }
 }
-const GET_USER_URL = () => `${API_DOMAIN}/users/`;
+
+//         유저 정보 조회 API         //
+const GET_USER_URL = () => `${API_DOMAIN}/users`;
+//         타유저 정보 조회 API         //
+const GET_OTHER_USER_URL = () => `${API_DOMAIN}/users/`;
+//         회원 탈퇴 API         //
+const DELETE_USER_URL = () => `${API_DOMAIN}/users/`;
+//         유저 정보 수정 API         //
+const PATCH_USER_UPDATE_URL = () => `${API_DOMAIN}/users/update`;
+//         유저 프로필 이미지 수정 API         //
+const PUT_USER_PROFILE_IMAGE_UPDATE_URL = () => `${API_DOMAIN}/users/profile`;
+//         유저 게시글 조회 API       //
+const GET_USER_RECORD_URL = () => `${API_DOMAIN}/records/users`;
+
 
 export const getUserRequest = async (accessToken: string) => {
-    const result = await axios
-        .get(GET_USER_URL(), {
-            headers: { Authorization: `Bearer ${accessToken}` },
-        })
-        .then((response) => {
-            const responseBody: GetUserResponseDto = response.data;
-            return responseBody;
-        })
-        .catch((error) => {
-            if (!error.response) return null;
-            const responseBody: ResponseDto = error.response.data;
-            return responseBody;
+    try {
+        const result = await axios.get(GET_USER_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
         });
-
-    return result;
+        console.log('사용자 정보 추출출 api ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
 };
+export const putUserProfileImageUpdateRequest = async (formData: FormData, accessToken: string) => {
+    try {
+        const result = await axios.put(PUT_USER_PROFILE_IMAGE_UPDATE_URL(), formData, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'multipart/form-data'
+            },
+        });
+        console.log('프로필 이미지 변경 api ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+export const getUserRecordRequest = async( page: number, size: number, accessToken: string)=>{
+    try {
+        const response = await axios.get<GetUserRecordResponseDto>(
+            `${GET_USER_RECORD_URL()}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
 
-
-//
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+}

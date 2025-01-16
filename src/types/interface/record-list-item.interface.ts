@@ -1,3 +1,4 @@
+import { RecordType } from "@/apis/request/record/record.request.dto";
 export default interface RecordListItem {
     recordId: number;
     user: {
@@ -9,6 +10,7 @@ export default interface RecordListItem {
     content: string;
     medias: { mediaId: number; mediaUrl: string }[];
     tagNames: string[];
+    recordType: RecordType;
     createdAt: Date;
     likeCount: number;
     commentCount: number;
