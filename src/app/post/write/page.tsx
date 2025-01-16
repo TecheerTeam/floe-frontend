@@ -84,7 +84,6 @@ export default function PostWrite() {
   };
 
   //          event handler: 이미지 변경 이벤트 처리          //
-
   const onImageChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || !event.target.files.length) return;
     const files = Array.from(event.target.files); // Convert FileList to array

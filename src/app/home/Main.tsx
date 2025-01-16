@@ -18,6 +18,7 @@ import { GetRecordResponseDto } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useInView } from 'react-intersection-observer';
 
+//     component: 메인(홈) 페이지     //
 export default function Main() {
   //        state : 라우팅     //
   const router = useRouter();
