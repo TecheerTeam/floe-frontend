@@ -4,7 +4,7 @@ import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, P
 import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto, PutCommentRequestDto } from './request/record';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
 import { SignUpResponseDto } from './response/auth';
-import GetDetailRecordResponseDto, { GetUserRecordResponseDto } from './response/record/record.response.dto';
+import GetDetailRecordResponseDto, { GetCheckSavedRecordResponseDto, GetUserRecordResponseDto } from './response/record/record.response.dto';
 import { GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
 import { comment } from 'postcss';
@@ -42,7 +42,7 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
                 console.error('토큰 정보가 없습니다.');
                 return null;  // 또는 error 처리
             }
-
+            console.log('로그인 api 결과', responseBody);
             return responseBody;
         })
         .catch(error => {
@@ -98,7 +98,129 @@ const PUT_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`
 const DELETE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`;
 // 기록 검색 api
 const SEARCH_RECORD_URL = () => `${API_DOMAIN}/records/search`;
+// 기록 저장 및 취소소 api
+const SAVE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save`;
+// 기록 저장 횟수 조회 api
+const SAVE_COUNT_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save-count`;
+// 저장 기록 목록 조회 api
+const GET_SAVE_LIST_RECORD_URL = () => `${API_DOMAIN}/users/save/record-list`;
+// 저장 기록 여부 조회 api
+const GET_IS_SAVE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save`;
 
+//          function: 기록 저장 요청 API          //
+export const saveRecordRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const result = await axios.post(SAVE_RECORD_URL(recordId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        console.log('save result ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//          function: 기록 저장 취소 요청 API          //
+export const saveCancelRecordRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const result = await axios.delete(SAVE_RECORD_URL(recordId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        console.log('save cancel result ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//          function: 기록 저장 카운트 API          //
+export const getSaveCountRecordRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const result = await axios.get(SAVE_COUNT_RECORD_URL(recordId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        console.log('save count result ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//          function: 기록 저장 목록 조회 API          //
+export const getSaveListRecordRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.get(GET_SAVE_LIST_RECORD_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+        console.log('save List result ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+//          function: 기록 저장 여부 조회 API          //
+export const getIsSaveRecordRequest = async (recordId: number, accessToken: string) => {
+    try {
+        const response = await axios.get<GetCheckSavedRecordResponseDto>(
+            `${GET_IS_SAVE_RECORD_URL(recordId)}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        console.log('rr', response);
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
 //          function: 특정 기록 조회 요청 API          //
 export const getDetailRecordRequest = async (recordId: number) => {
     const result = await axios.get(GET_DETAIL_RECORD_URL(recordId))
@@ -596,7 +718,7 @@ export const putUserProfileImageUpdateRequest = async (formData: FormData, acces
         }
     }
 }
-export const getUserRecordRequest = async( page: number, size: number, accessToken: string)=>{
+export const getUserRecordRequest = async (page: number, size: number, accessToken: string) => {
     try {
         const response = await axios.get<GetUserRecordResponseDto>(
             `${GET_USER_RECORD_URL()}?page=${page}&size=${size}`,

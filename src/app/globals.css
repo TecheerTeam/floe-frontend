@@ -138,10 +138,9 @@
   --post-item-Heart-icon-hover: url('./../assets/HeartIcon_Hover.png');
   --post-item-Comment-icon-hover: url('./../assets/CommentIcon_Hover.png');
   --post-item-Save-icon-hover: url('./../assets/SaveIcon_Hover.png');
-
+  --post-item-Save-icon-active: url('./../assets/SaveIcon_Active.png');
   --post-item-Heart-icon-active: url('./../assets/HeartIcon_Active.png');
   --post-item-Comment-icon-active: url('./../assets/CommentIcon_Dark.png');
-  --post-item-Save-icon-active: url('./../assets/SaveIcon_Dark.png');
 
   /* post detail page */
   --edit-icon: url('./../assets/EditIcon_Dark.png');
@@ -322,14 +321,13 @@ body {
   --post-item-Heart-icon: url('./../assets/HeartIcon_White.png');
   --post-item-Comment-icon: url('./../assets/CommentIcon_White.png');
   --post-item-Save-icon: url('./../assets/SaveIcon_White.png');
-
   --post-item-Heart-icon-hover: url('./../assets/HeartIcon_Hover.png');
   --post-item-Comment-icon-hover: url('./../assets/CommentIcon_Hover.png');
   --post-item-Save-icon-hover: url('./../assets/SaveIcon_Hover.png');
-
+  
   --post-item-Heart-icon-active: url('./../assets/HeartIcon_Active.png');
   --post-item-Comment-icon-active: url('./../assets/CommentIcon_Dark.png');
-  --post-item-Save-icon-active: url('./../assets/SaveIcon_Dark.png');
+  --post-item-Save-icon-active: url('./../assets/SaveIcon_Active.png');
 
   /* post detail page */
   --post-detail-item-top-border-color: #222222;

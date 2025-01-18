@@ -55,26 +55,26 @@ export default function SignIn() {
       alert('네트워크 이상입니다.');
       return;
     }
-    console.log(responseBody);
 
     const { accessToken, refreshToken, expirationTime } = responseBody;
-    console.log('ex', expirationTime);
     const now = new Date().getTime();
-    const expires = new Date(now + expirationTime * 1000); 
-    console.log('expires:', expirationTime);
-    console.log('Access Token:', accessToken);
-    console.log('Refresh Token:', refreshToken);
+    const expires = new Date(now + expirationTime * 1000);
 
     // 쿠키에 accessToken 저장
     setCookie('accessToken', accessToken, {
       expires,
       path: '/',
+      secure: false, // 개발 환경에서 false로 설정
+      sameSite: 'strict', // CSRF 방지
     });
     setCookie('refreshToken', refreshToken, {
       expires,
       path: '/',
+      secure: false, // 개발 환경에서 false로 설정
+      sameSite: 'strict', // CSRF 방지
     });
     console.log('ex', expires);
+    console.log('Cookies set:', document.cookie);
     // 로그인 후 홈 페이지로 리디렉션
     router.push('/');
   };
