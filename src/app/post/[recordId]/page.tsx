@@ -138,7 +138,7 @@ export default function PostDetail() {
     }
     try {
       if (isLike) {
-        // 좋아요 삭제제
+        // 좋아요 삭제
         await deleteLikeRequest(id, cookies.accessToken);
         setIsLike(false);
         setLikeCount((prev) => prev - 1); // 좋아요 개수 감소
@@ -180,6 +180,7 @@ export default function PostDetail() {
       const response = await getLikeCountRequest(id, cookies.accessToken);
       if (response.code === 'RL01') {
         setLikeCount(response.data.count);
+        console.log('좋아요개수', likeCount);
       }
     } catch (error) {
       console.error('fetch Like Count Error', error);
@@ -192,7 +193,7 @@ export default function PostDetail() {
     try {
       const response = await getSaveCountRecordRequest(id, cookies.accessToken);
       if (response.code === 'RS01') {
-        setLikeCount(response.data.count);
+        setSaveCount(response.data.count);
       }
     } catch (error) {
       console.error('fetch Like Count Error', error);
@@ -227,8 +228,8 @@ export default function PostDetail() {
 
     try {
       const response = await getIsSaveRecordRequest(id, cookies.accessToken);
-      console.log('api response save: ', response);
-      // setIsLike(isLiked); // isLike 상태 업데이트
+      console.log('api response save: ', response.data.saved);
+      setIsSave(response.data.saved); // isLike 상태 업데이트
     } catch (error) {
       console.error('fetch Like Count Error', error);
     }
@@ -321,11 +322,10 @@ export default function PostDetail() {
       console.error('게시물 데이터 불러오기 오류:', error);
     }
   };
+
   useEffect(() => {
     fetchSaveStatus();
     fetchSaveCount();
-  }, [recordId, cookies.accessToken]);
-  useEffect(() => {
     fetchLikeStatus();
     fetchLikeCount();
   }, [recordId, cookies.accessToken]);

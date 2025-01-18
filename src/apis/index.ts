@@ -98,7 +98,7 @@ const PUT_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`
 const DELETE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}`;
 // 기록 검색 api
 const SEARCH_RECORD_URL = () => `${API_DOMAIN}/records/search`;
-// 기록 저장 및 취소소 api
+// 기록 저장 및 취소 api
 const SAVE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save`;
 // 기록 저장 횟수 조회 api
 const SAVE_COUNT_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save-count`;
@@ -110,7 +110,7 @@ const GET_IS_SAVE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${re
 //          function: 기록 저장 요청 API          //
 export const saveRecordRequest = async (recordId: number, accessToken: string) => {
     try {
-        const result = await axios.post(SAVE_RECORD_URL(recordId), {
+        const result = await axios.post(SAVE_RECORD_URL(recordId), {}, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
             },
@@ -137,7 +137,7 @@ export const saveCancelRecordRequest = async (recordId: number, accessToken: str
                 'Authorization': `Bearer ${accessToken}`,
             },
         });
-        console.log('save cancel result ', result);
+        console.log('save result ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
