@@ -16,6 +16,10 @@ import {
   getLikeListRequest,
   postCommentRequest,
   postLikeRequest,
+  saveRecordRequest,
+  saveCancelRecordRequest,
+  getIsSaveRecordRequest,
+  getSaveCountRecordRequest,
 } from '@/apis';
 import {
   GetCommentResponseDto,
@@ -45,6 +49,8 @@ export default function PostDetail() {
   const [record, setRecord] = useState<RecordItem | null>(null);
   //       state : 좋아요 개수 상태        //
   const [likeCount, setLikeCount] = useState<number>(0);
+  //       state : 저장 개수 상태        //
+  const [saveCount, setSaveCount] = useState<number>(0);
   //       state: 댓글 입력 상태         //
   const [newComment, setNewComment] = useState<string>('');
   //       state: 댓글 목록 상태        //
@@ -54,7 +60,7 @@ export default function PostDetail() {
   //          state: 댓글 아이콘 버튼 클릭 상태          //
   const [commentClick, setCommentClick] = useState<boolean>(false);
   //          state: 저장 아이콘 버튼 클릭 상태          //
-  const [saveClick, setSaveClick] = useState<boolean>(false);
+  const [isSave, setIsSave] = useState<boolean>(false);
   //          state: 댓글창 팝업 상태          //
   const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
   //          state: 댓글 입력 참조 상태          //
@@ -126,8 +132,6 @@ export default function PostDetail() {
   };
   //          event handler: 좋아요 버튼 클릭 이벤트 처리          //
   const onLikeClickHandler = async () => {
-    console.log('Current user:', user);
-    console.log('Access token:', cookies.accessToken);
     if (!user || !cookies.accessToken) {
       alert('로그인이 필요합니다.');
       return; // 로그인 X / 게시물 X / 토큰 X 시 return;
@@ -148,7 +152,26 @@ export default function PostDetail() {
       console.error('좋아요 api 실패', error);
     }
   };
-
+  //          event handler: 저장 버튼 클릭 이벤트 처리          //
+  const onSaveClickHandler = async () => {
+    if (!user || !cookies.accessToken) {
+      alert('로그인이 필요합니다.');
+      return; // 로그인 X / 게시물 X / 토큰 X 시 return;
+    }
+    try {
+      if (isSave) {
+        await saveCancelRecordRequest(id, cookies.accessToken);
+        setIsSave(false);
+        setSaveCount((prev) => prev - 1);
+      } else {
+        await saveRecordRequest(id, cookies.accessToken);
+        setIsSave(true);
+        setSaveCount((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error('저장 api 실패', error);
+    }
+  };
   //     function: 좋아요 개수 가져오기     //
   const fetchLikeCount = async () => {
     if (!recordId || !cookies.accessToken) return;
@@ -162,7 +185,19 @@ export default function PostDetail() {
       console.error('fetch Like Count Error', error);
     }
   };
+  //     function: 저장 개수 가져오기     //
+  const fetchSaveCount = async () => {
+    if (!recordId || !cookies.accessToken) return;
 
+    try {
+      const response = await getSaveCountRecordRequest(id, cookies.accessToken);
+      if (response.code === 'RS01') {
+        setLikeCount(response.data.count);
+      }
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
   //     event handler: 게시물 수정 버튼 이벤트 처리     //
   const onEditButtonClickHandler = () => {
     if (record?.user.email !== user?.email) {
@@ -182,6 +217,18 @@ export default function PostDetail() {
         (like: { userName: string }) => like.userName === user?.nickname,
       );
       setIsLike(isLiked); // isLike 상태 업데이트
+    } catch (error) {
+      console.error('fetch Like Count Error', error);
+    }
+  };
+  //          function : 저장 여부 체크 함수(저장 여부(true/false)에 따라 저장 상태 변경)        //
+  const fetchSaveStatus = async () => {
+    if (!recordId || !cookies.accessToken) return;
+
+    try {
+      const response = await getIsSaveRecordRequest(id, cookies.accessToken);
+      console.log('api response save: ', response);
+      // setIsLike(isLiked); // isLike 상태 업데이트
     } catch (error) {
       console.error('fetch Like Count Error', error);
     }
@@ -263,7 +310,6 @@ export default function PostDetail() {
       alert('삭제 권한이 없습니다.');
       return;
     }
-
     try {
       const response = await deleteRecordRequest(id, cookies.accessToken);
       if (response.data.code === 'R002') {
@@ -276,8 +322,12 @@ export default function PostDetail() {
     }
   };
   useEffect(() => {
-    fetchLikeCount();
+    fetchSaveStatus();
+    fetchSaveCount();
+  }, [recordId, cookies.accessToken]);
+  useEffect(() => {
     fetchLikeStatus();
+    fetchLikeCount();
   }, [recordId, cookies.accessToken]);
 
   //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터, 댓글 데이터 불러오기 (무한스크롤)     //
@@ -391,10 +441,17 @@ export default function PostDetail() {
             </div>
 
             <div className={styles['post-detail-save-box']}>
-              {/* 저장 아이콘 클릭시 해당 게시글 스크랩 */}
-              <div className={styles['post-detail-save-icon']}></div>
+              {isSave ? (
+                <div
+                  className={styles['post-detail-save-icon-active']}
+                  onClick={onSaveClickHandler}></div>
+              ) : (
+                <div
+                  className={styles['post-detail-save-icon']}
+                  onClick={onSaveClickHandler}></div>
+              )}
               <div className={styles['post-detail-save-count']}>
-                {'saveCount'}
+                {saveCount}
               </div>
             </div>
 

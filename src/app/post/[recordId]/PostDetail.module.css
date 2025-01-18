@@ -213,6 +213,12 @@
   background-image: var(--post-item-Save-icon);
   cursor: pointer;
 }
+.post-detail-save-icon-active {
+  width: 32px;
+  height: 32px;
+  background-image: var(--post-item-Save-icon-active);
+  cursor: pointer;
+}
 .post-detail-save-icon:hover {
   background-image: url('./../../../assets/SaveIcon_Hover.png');
 }

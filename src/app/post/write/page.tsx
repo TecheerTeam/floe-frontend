@@ -186,11 +186,11 @@ export default function PostWrite() {
   //          effect: 마운트 시 실행할 함수          //
   useEffect(() => {
     resetRecord();
-    if (!cookies.accessToken && !user) {
+    if (!cookies.accessToken || !cookies.refreshToken || !user) {
       alert('로그인이 필요합니다');
       router.push('/auth');
     }
-  }, [cookies.accessToken]);
+  }, [cookies.accessToken, cookies.refreshToken]);
 
   return (
     <>

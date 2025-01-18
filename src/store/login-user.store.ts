@@ -1,16 +1,49 @@
+// import { create } from 'zustand';
+// import { persist } from 'zustand/middleware';
+// import { User } from '@/types/interface'; // User 인터페이스 임포트
+
+// interface LoginUserStore {
+//   user: User | null;
+//   setUser: (user: User) => void;
+//   logout: () => void;
+// }
+
+// const useLoginUserStore = create<LoginUserStore>()(
+//   persist(
+//     (set) => ({
+//       user: null,
+//       setUser: (user) => set(() => ({ user })),
+//       logout: () => set(() => ({ user: null })),
+//     }),
+//     {
+//       name: 'user-storage', // localStorage에 저장
+
+//     }
+//   )
+// );
+
+// export default useLoginUserStore;
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { User } from '@/types/interface'; // User 인터페이스 임포트
 
 interface LoginUserStore {
-  user: User | null;  // User 타입을 사용하여 user 상태 설정
-  setUser: (user: User) => void; // setUser는 User 타입을 받음
-  logout: () => void; // 로그아웃 기능 추가
+  user: User | null;
+  setUser: (user: User) => void;
+  logout: () => void;
 }
 
-const useLoginUserStore = create<LoginUserStore>((set) => ({
-  user: null, // 기본값은 null
-  setUser: (user) => set(state => ({ ...state, user })),// 유저 정보를 받아 상태 업데이트
-  logout: () => set(state => ({ ...state, user: null })) // 로그아웃 시 상태 초기화
-}));
+const useLoginUserStore = create(
+  persist<LoginUserStore>(
+    (set, get) => ({
+      user: null,
+      setUser: (user) => set(() => ({ user })),
+      logout: () => set(() => ({ user: null })),
+    }),
+    {
+      name: 'user-storage', // localStorage에 저장
+    }
+  )
+);
 
 export default useLoginUserStore;
