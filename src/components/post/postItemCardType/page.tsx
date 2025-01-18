@@ -8,6 +8,7 @@ import {
   getCommentRequest,
   getLikeCountRequest,
   getLikeListRequest,
+  getSaveCountRecordRequest,
 } from '@/apis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -67,6 +68,19 @@ export default function PostItemCardType({
     queryFn: async () => {
       const response = await getLikeCountRequest(recordId, cookies.accessToken); // 첫 번째 페이지에서 댓글 데이터 요청
       console.log('like count in query: ', response.data.count);
+      return response.data.count; // 총 댓글 수 반환
+    },
+    staleTime: 10000, // 캐시 유지 시간 (10초)
+    refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
+  });
+  const { data: saveData } = useQuery({
+    queryKey: ['saves', recordId],
+    queryFn: async () => {
+      const response = await getSaveCountRecordRequest(
+        recordId,
+        cookies.accessToken,
+      ); // 첫 번째 페이지에서 댓글 데이터 요청
+      console.log('save count in query: ', response.data.count);
       return response.data.count; // 총 댓글 수 반환
     },
     staleTime: 10000, // 캐시 유지 시간 (10초)
@@ -165,7 +179,9 @@ export default function PostItemCardType({
         <div className={styles['card-save-box']}>
           {/* 저장 아이콘 클릭시 해당 게시글 스크랩 */}
           <div className={styles['card-save-icon']}></div>
-          <div className={styles['card-save-count']}>{saveCount}</div>
+          <div className={styles['card-save-count']}>
+            {saveData ?? saveCount}
+          </div>
         </div>
       </div>
     </div>
