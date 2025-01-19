@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useLoginUserStore } from '@/store';
 import { useCookies } from 'react-cookie';
 import {
+  getLikeListRecordRequest,
   getSaveListRecordRequest,
   getUserRecordRequest,
   getUserRequest,
@@ -100,19 +101,48 @@ export default function MyPage() {
   const maxButtons = 10; // 한 번에 보여질 최대 페이지 버튼 수
   const [currentPageGroup, setCurrentPageGroup] = useState<number>(0); // 현재 페이지 그룹
 
+ //      function: POST 데이터 가져오기      //
+  const fetchRecords = async (page: number) => {
+    setIsLoading(true);
+    try {
+      const response: GetUserRecordResponseDto = await getUserRecordRequest(
+        page,
+        5,
+        cookies.accessToken,
+      );
+      setRecordList(response.data.content);
+      setTotalPages(response.data.totalPages);
+      setCurrentPage(response.data.pageable.pageNumber);
+      console.log('fetch record tab success', response.data);
+    } catch (error) {
+      console.error('Error fetching user records:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   //      function:  데이터 가져오기      //
-  const fetchData = async () => {
+  const fetchData = async (page: number) => {
     setIsLoading(true);
     setRecordList([]); // 빈 배열로 초기화
     try {
       let response;
 
       if (activeTab === 'POSTS') {
-        response = await getUserRecordRequest(0, 5, cookies.accessToken);
+        response = await getUserRecordRequest(page, 5, cookies.accessToken);
+        setTotalPages(response.data.totalPages);
+        setCurrentPage(response.data.pageable.pageNumber);
         console.log('posts tab result', response.data);
       } else if (activeTab === 'SAVE') {
-        response = await getSaveListRecordRequest(0, 5, cookies.accessToken);
+        response = await getSaveListRecordRequest(page, 5, cookies.accessToken);
+        setTotalPages(response.data.totalPages);
+        setCurrentPage(response.data.pageable.pageNumber);
         console.log('save tab result', response.data);
+      } else if (activeTab === 'LIKE') {
+        response = await getLikeListRecordRequest(page, 5, cookies.accessToken);
+        setTotalPages(response.data.totalPages);
+        setCurrentPage(response.data.pageable.pageNumber);
+        console.log('like tab result', response.data);
       }
 
       if (response && response.data && Array.isArray(response.data.content)) {
@@ -131,8 +161,8 @@ export default function MyPage() {
   //     effect: 탭 변경에 따른 데이터 렌더링    //
   useEffect(() => {
     setRecordList([]); // 탭 변경 시 기존 데이터를 클리어
-    fetchData();
-  }, [activeTab]);
+    fetchData(currentPage);
+  }, [activeTab,currentPage]);
 
   //      function: 페이지 클릭 핸들러      //
   const handlePageClick = (pageNumber: number) => {
@@ -256,7 +286,10 @@ export default function MyPage() {
                     recordList.map((recordListItem) => (
                       <PostItemListType
                         key={recordListItem.recordId}
-                        recordListItem={{...recordListItem, tagNames:recordListItem.tagNames || []}}
+                        recordListItem={{
+                          ...recordListItem,
+                          tagNames: recordListItem.tagNames || [],
+                        }}
                       />
                     ))
                   ) : (

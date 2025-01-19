@@ -102,8 +102,6 @@ const SEARCH_RECORD_URL = () => `${API_DOMAIN}/records/search`;
 const SAVE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save`;
 // 기록 저장 횟수 조회 api
 const SAVE_COUNT_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save-count`;
-// 저장 기록 목록 조회 api
-const GET_SAVE_LIST_RECORD_URL = () => `${API_DOMAIN}/users/save/record-list`;
 // 저장 기록 여부 조회 api
 const GET_IS_SAVE_RECORD_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}/save`;
 
@@ -173,30 +171,7 @@ export const getSaveCountRecordRequest = async (recordId: number, accessToken: s
         }
     }
 }
-//          function: 기록 저장 목록 조회 API          //
-export const getSaveListRecordRequest = async (page: number, size: number, accessToken: string) => {
-    try {
-        const result = await axios.get<GetUserRecordResponseDto>(
-            `${GET_SAVE_LIST_RECORD_URL()}?page=${page}&size=${size}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-                },
-            }
-        );
-        return result.data;
-    } catch (error: unknown) {
-        // error가 AxiosError인지 확인하고 안전하게 접근
-        if (axios.isAxiosError(error)) {
-            if (!error.response) return null;
-            return error.response.data;
-        } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
-            return null;
-        }
-    }
-}
+
 //          function: 기록 저장 여부 조회 API          //
 export const getIsSaveRecordRequest = async (recordId: number, accessToken: string) => {
     try {
@@ -630,7 +605,6 @@ export const getLikeListRequest = async (recordId: number, accessToken: string) 
             }
         }
         )
-        console.log('get Like List API Response:', response); // 응답 전체 확인
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -674,8 +648,12 @@ const PATCH_USER_UPDATE_URL = () => `${API_DOMAIN}/users/update`;
 const PUT_USER_PROFILE_IMAGE_UPDATE_URL = () => `${API_DOMAIN}/users/profile`;
 //         유저 게시글 조회 API       //
 const GET_USER_RECORD_URL = () => `${API_DOMAIN}/records/users`;
+//       유저 저장 기록 목록 조회 api       //   
+const GET_SAVE_LIST_RECORD_URL = () => `${API_DOMAIN}/users/save/record-list`;
+//       유저 좋아요 기록 목록 조회 api       //
+const GET_LIKE_LIST_RECORD_URL = () => `${API_DOMAIN}/records/liked-list`;
 
-
+//         function: 유저 데이터 조회 API          //
 export const getUserRequest = async (accessToken: string) => {
     try {
         const result = await axios.get(GET_USER_URL(), {
@@ -697,6 +675,7 @@ export const getUserRequest = async (accessToken: string) => {
         }
     }
 };
+//         function: 프로필 이미지 변경 API          //
 export const putUserProfileImageUpdateRequest = async (formData: FormData, accessToken: string) => {
     try {
         const result = await axios.put(PUT_USER_PROFILE_IMAGE_UPDATE_URL(), formData, {
@@ -719,6 +698,7 @@ export const putUserProfileImageUpdateRequest = async (formData: FormData, acces
         }
     }
 }
+//         function: 유저 게시글 조회 API          //
 export const getUserRecordRequest = async (page: number, size: number, accessToken: string) => {
     try {
         const response = await axios.get<GetUserRecordResponseDto>(
@@ -740,5 +720,54 @@ export const getUserRecordRequest = async (page: number, size: number, accessTok
             console.error('Unknown error:', error);
         }
         throw error;
+    }
+}
+
+//          function: 유저 저장 기록 목록 조회 API          //
+export const getSaveListRecordRequest = async (page: number, size: number, accessToken: string) => {
+    try {
+        const result = await axios.get<GetUserRecordResponseDto>(
+            `${GET_SAVE_LIST_RECORD_URL()}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//          function: 유저 좋아요 기록 목록 조회 API          //
+export const getLikeListRecordRequest = async (page: number, size: number, accessToken: string) => {
+    try {
+        const result = await axios.get<GetUserRecordResponseDto>(
+            `${GET_LIKE_LIST_RECORD_URL()}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
     }
 }
