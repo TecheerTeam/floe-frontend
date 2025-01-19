@@ -174,14 +174,16 @@ export const getSaveCountRecordRequest = async (recordId: number, accessToken: s
     }
 }
 //          function: 기록 저장 목록 조회 API          //
-export const getSaveListRecordRequest = async (accessToken: string) => {
+export const getSaveListRecordRequest = async (page: number, size: number, accessToken: string) => {
     try {
-        const result = await axios.get(GET_SAVE_LIST_RECORD_URL(), {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-        console.log('save List result ', result);
+        const result = await axios.get<GetUserRecordResponseDto>(
+            `${GET_SAVE_LIST_RECORD_URL()}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -195,7 +197,6 @@ export const getSaveListRecordRequest = async (accessToken: string) => {
         }
     }
 }
-
 //          function: 기록 저장 여부 조회 API          //
 export const getIsSaveRecordRequest = async (recordId: number, accessToken: string) => {
     try {

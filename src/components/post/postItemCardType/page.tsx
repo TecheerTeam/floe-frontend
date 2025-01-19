@@ -73,6 +73,7 @@ export default function PostItemCardType({
     staleTime: 10000, // 캐시 유지 시간 (10초)
     refetchOnWindowFocus: true, // 창이 포커스될 때 다시 데이터 요청
   });
+  //          function: 저장 개수 업데이트          //
   const { data: saveData } = useQuery({
     queryKey: ['saves', recordId],
     queryFn: async () => {
