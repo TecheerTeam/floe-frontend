@@ -143,3 +143,32 @@
   flex-direction: column;
   justify-contnet: space-between;
 }
+.postContentWrapper {
+  width: 48rem;
+}
+.no-records {
+  padding-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+.paginationWrapper {
+  padding: 30px 0px;
+  display: flex;
+  justify-content: center;
+}
+.paginationButton {
+  padding: 5px 10px;
+  border: none;
+  color: var(--mypage-pagination-text-color);
+  background-color: var(--main-background-color);
+  cursor: pointer;
+}
+
+.paginationButtonActive {
+  border: none;
+  border-bottom: 2px solid var(--mypage-text-color);
+  padding: 5px 10px;
+  background-color: var(--main-background-color);
+  color: var(--mypage-pagination-text-color-active);
+  cursor: pointer;
+}
