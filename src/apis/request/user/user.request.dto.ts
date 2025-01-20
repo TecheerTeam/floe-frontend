@@ -1,7 +1,7 @@
-export default interface PutNickNameRequestDto {
-    nickname: string;
+export default interface patchUserRequestDto {
+    password: string | null;
+    nickname: string | null;
+    experience: number | null;
+    age: number | null;
+    field: string | null;
 }
-export default interface PutProfileImageRequestDto {
-    profileImage: string | null;
-}
-
