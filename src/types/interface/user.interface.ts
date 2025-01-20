@@ -3,6 +3,6 @@ export default interface User {
     nickname: string; // 유저 닉네임
     experience: number | null;
     age: number | null;
-    field : string | null;
+    field: string | null;
     profileImage: string | null; // 유저 프로필 이미지
 }

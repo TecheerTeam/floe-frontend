@@ -8,6 +8,7 @@
   padding-top: 157px;
   height: auto;
   background-color: var(--main-background-color);
+  font-family: 'Pretendard Variable';
 }
 .navbar {
   position: sticky;
@@ -171,4 +172,92 @@
   background-color: var(--main-background-color);
   color: var(--mypage-pagination-text-color-active);
   cursor: pointer;
+}
+/* 모달 배경 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* 다른 요소보다 위에 표시 */
+}
+
+/* 모달 창 */
+.modal-content {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 500px;
+  padding: 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+.modal-nickname,
+.modal-pw,
+.modal-age,
+.modal-exp,
+.modal-field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-nickname span,
+.modal-pw span,
+.modal-age span,
+.modal-exp span,
+.modal-field span {
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+}
+.modal-header {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: var(--mypage-text-color);
+}
+
+.modal-input {
+  width: 55%;
+  max-width: 400px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.modal-button {
+  width: 48%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.modal-button.save {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-button.cancel {
+  background-color: #f44336;
+  color: white;
 }

@@ -9,6 +9,8 @@ import { GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
 import { comment } from 'postcss';
 import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto } from './response/record/like.response.dto';
+import PatchUserResponseDto from './response/user/patch-user.resposne.dto';
+import { patchUserRequestDto } from './request/user';
 const DOMAIN = 'http://localhost:8080';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
@@ -698,6 +700,29 @@ export const putUserProfileImageUpdateRequest = async (formData: FormData, acces
         }
     }
 }
+//         function: 유저 정보 변경 API          //
+export const patchUserUpdateRequest = async (requestBody: patchUserRequestDto, accessToken: string) => {
+    try {
+        const response = await axios.patch<PatchUserResponseDto>(
+            `${PATCH_USER_UPDATE_URL()}`, requestBody,{
+            headers: {
+                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            }
+        }
+        )
+        return response.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+};
 //         function: 유저 게시글 조회 API          //
 export const getUserRecordRequest = async (page: number, size: number, accessToken: string) => {
     try {
