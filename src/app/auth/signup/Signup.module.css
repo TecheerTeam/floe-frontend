@@ -72,19 +72,13 @@
   justify-content: space-between;
   width: 49%;
 }
-.signUp-Profile-Image-section {
-  display: flex;
-  gap: 30px;
-  width: 49%;
-  align-items: center;
-}
+
 .email-input,
 .pw-input,
 .experience-input,
 .nickname-input,
 .Field-input,
-.Age-input,
-.profile-Image-input {
+.Age-input{
   outline: none;
   border: 1px solid lightgrey;
   border-radius: 5px;
@@ -100,46 +94,13 @@
 .Nickname,
 .Experience,
 .Age,
-.Field,
-.profile-Image {
+.Field {
   display: flex;
   font-family: 'Pretendard Variable';
   font-size: 20px;
   color: var(--text-color);
   justify-content: center;
   align-items: center;
-}
-.image-Input-button {
-  background-image: var(--post-image-icon);
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  object-fit: cover;
-}
-.profile-Image-Preview-Text {
-  font-size: 15px;
-  color: var(--text-color);
-}
-.profile-Image-preview {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-size: cover;
-  background-position: center;
-}
-.profile-Image-preview-default {
-  background-image: var(--nav-bar-Guest-icon);
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-size: cover;
-  background-position: center;
 }
 .divider {
   width: 100%;
