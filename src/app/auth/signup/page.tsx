@@ -130,19 +130,7 @@ export default function SignUp() {
     if (!fieldRef.current) return;
     fieldRef.current.focus();
   };
-  //          event handler: 이미지 변경 이벤트 처리//
-  const onImageChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]; // 첫 번째 파일만 가져오기
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // 이미지 URL 생성
-      setImageUrl(imageUrl); // 이미지 URL을 상태로 저장
-    }
-  };
-  //        event handler:  이미지 업로드 이벤트 처리        //
-  const onImageUploadButtonClickHandler = () => {
-    if (!imageInputRef.current) return;
-    imageInputRef.current.click();
-  };
+ 
 
   const onSignUpButtonClickHandler = () => {
     const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
@@ -168,7 +156,7 @@ export default function SignUp() {
       email,
       password,
       nickname,
-      profileImage: imageUrl,
+      profileImage: null,
       experience,
       field,
       age,
@@ -279,33 +267,6 @@ export default function SignUp() {
               value={field === null ? '' : field.toString()} // null인 경우 빈 문자열로 처리
               onChange={onFieldChangeHandler}
             />
-          </div>
-
-          <div className={styles['signUp-Profile-Image-section']}>
-            <div className={styles['profile-Image']}>{'Profile Image '} </div>
-            <div
-              className={styles['image-Input-button']}
-              onClick={onImageUploadButtonClickHandler}></div>
-            <input
-              ref={imageInputRef}
-              type="file"
-              className={styles['Profile-Image-input']}
-              style={{ display: 'none' }}
-              onChange={onImageChangeHandler}
-            />
-            <div className={styles['profile-Image-Preview-Text']}>
-              {'Image Previews'}
-            </div>
-            {imageUrl ? (
-              <div
-                className={styles['profile-Image-preview']}
-                style={{
-                  backgroundImage: `url(${imageUrl})`,
-                }}
-              />
-            ) : (
-              <div className={styles['profile-Image-preview-default']}></div>
-            )}
           </div>
         </div>
 
