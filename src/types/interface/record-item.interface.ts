@@ -6,6 +6,7 @@ export default interface RecordItem {
         nickname: string;
         email: string;
         profileImage: string | null;
+        userId: number;
     };
     title: string;
     content: string;

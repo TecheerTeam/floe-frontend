@@ -233,6 +233,7 @@ export default function MyPage() {
           age: UserResponse.data.age,
           field: UserResponse.data.field,
           profileImage: UserResponse.data.profileImage,
+          userId: UserResponse.data.userId,
         });
         setPostsCounts(PostsResposne.data.totalElements);
       }
