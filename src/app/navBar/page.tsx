@@ -8,7 +8,7 @@ import { useLoginUserStore } from '@/store';
 
 export default function NavBar() {
   const router = useRouter();
-  const { user,setUser, logout } = useLoginUserStore(); // Zustand로 로그인
+  const { user:loginUser,setUser, logout } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //
@@ -159,7 +159,7 @@ export default function NavBar() {
           }`}
           onClick={(e) => {
             e.preventDefault(); // 기본 동작 방지
-            if (user) {
+            if (loginUser) {
               router.push('/mypage'); // 로그인 상태면 /mypage로 이동
             } else {
               router.push('/auth'); // 비로그인 상태면 /auth로 이동
@@ -194,12 +194,12 @@ export default function NavBar() {
 
       {showSeeMorePopup && (
         <div className={styles['popup-container']}>
-          {user && (
+          {loginUser && (
             <button className={styles['option-button']}>
               <div className={styles['Option-Icon']}></div> Option
             </button>
           )}
-          {user && ( // 유저가 로그인된 상태에서만 렌더링
+          {loginUser && ( // 유저가 로그인된 상태에서만 렌더링
             <button
               className={styles['logout-button']}
               onClick={onLogoutButtonClickHandler}>
@@ -216,18 +216,18 @@ export default function NavBar() {
         </div>
       )}
       <Link
-        href={user ? '/mypage' : '/auth'}
+        href={loginUser ? '/mypage' : '/auth'}
         passHref
         style={{ textDecoration: 'none' }}>
         <button className={styles['Profile-Button']}>
-          {user?.profileImage !== null ? (
+          {loginUser?.profileImage !== null ? (
             <div
               className={styles['user-profile-image']}
-              style={{ backgroundImage: `url(${user?.profileImage})` }}></div>
+              style={{ backgroundImage: `url(${loginUser?.profileImage})` }}></div>
           ) : (
             <div className={styles['Guest-Icon']}></div>
           )}
-          {user ? user?.nickname : 'Guest'}
+          {loginUser ? loginUser?.nickname : 'Guest'}
         </button>
       </Link>
     </div>

@@ -32,6 +32,7 @@ import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { access } from 'fs';
+import Link from 'next/link';
 export default function PostDetail() {
   //    state: React Query Client 가져오기     //
   const queryClient = useQueryClient();
@@ -94,15 +95,12 @@ export default function PostDetail() {
         5,
         cookies.accessToken,
       );
-      console.log('API response', response);
       return response; // data만 반환
     },
     getNextPageParam: (last: GetCommentResponseDto) => {
       if (!last || last.data.last) {
         return undefined;
       }
-      console.log('current page: ', last.data.pageable.pageNumber);
-      console.log('Next page:', last.data.pageable.pageNumber + 1);
       return last.data.pageable.pageNumber + 1;
     },
 
@@ -116,7 +114,7 @@ export default function PostDetail() {
       5,
       cookies.accessToken,
     );
-    console.log('total comments', response.data.totalElements);
+
     setTotalCommentCount(response.data.totalElements);
   };
   //          event handler: 댓글창 팝업 이벤트 처리          //
@@ -128,7 +126,6 @@ export default function PostDetail() {
     const { value } = event.target;
     if (!commentRef.current) return;
     setNewComment(value);
-    console.log('입력중인 댓글:', newComment);
   };
   //          event handler: 좋아요 버튼 클릭 이벤트 처리          //
   const onLikeClickHandler = async () => {
@@ -180,7 +177,6 @@ export default function PostDetail() {
       const response = await getLikeCountRequest(id, cookies.accessToken);
       if (response.code === 'RL01') {
         setLikeCount(response.data.count);
-        console.log('좋아요개수', likeCount);
       }
     } catch (error) {
       console.error('fetch Like Count Error', error);
@@ -228,7 +224,6 @@ export default function PostDetail() {
 
     try {
       const response = await getIsSaveRecordRequest(id, cookies.accessToken);
-      console.log('api response save: ', response.data.saved);
       setIsSave(response.data.saved); // isLike 상태 업데이트
     } catch (error) {
       console.error('fetch Like Count Error', error);
@@ -275,7 +270,6 @@ export default function PostDetail() {
         ]);
         setNewComment(''); // 댓글 입력란 초기화
         await refetch();
-        console.log('comment:', requestBody);
       } else {
         alert('댓글 작성에 실패했습니다.');
         console.log('comment:', requestBody);
@@ -348,20 +342,22 @@ export default function PostDetail() {
         </aside>
         <div className={styles['post-detail-item-container']}>
           <div className={styles['post-detail-top']}>
-            <div className={styles['profile-image-box']}>
-              {record.user.profileImage ? (
-                <img
-                  src={record.user.profileImage}
-                  alt="프로필 이미지"
-                  className={styles['profile-image']}
-                />
-              ) : (
-                <div className={styles['default-profile-image']}></div>
-              )}
-            </div>
-            <div className={styles['user-nickname']}>
-              {record.user.nickname}
-            </div>
+            <Link href={`/mypage/${record.user.userId}`} replace>
+              <div className={styles['profile-image-box']}>
+                {record.user.profileImage ? (
+                  <img
+                    src={record.user.profileImage}
+                    alt="프로필 이미지"
+                    className={styles['profile-image']}
+                  />
+                ) : (
+                  <div className={styles['default-profile-image']}></div>
+                )}
+              </div>
+              <div className={styles['user-nickname']}>
+                {record.user.nickname}
+              </div>
+            </Link>
             {record.user.email === user?.email && (
               <div
                 className={styles['edit-button']}
@@ -481,6 +477,7 @@ export default function PostDetail() {
                     {user?.nickname}
                   </div>
                 </div>
+
                 <input
                   ref={commentRef}
                   type="text"

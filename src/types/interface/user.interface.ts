@@ -5,4 +5,5 @@ export default interface User {
     age: number | null;
     field: string | null;
     profileImage: string | null; // 유저 프로필 이미지
+    userId: number;
 }

@@ -641,9 +641,9 @@ export const deleteLikeRequest = async (recordId: number, accessToken: string) =
 //         유저 정보 조회 API         //
 const GET_USER_URL = () => `${API_DOMAIN}/users`;
 //         타유저 정보 조회 API         //
-const GET_OTHER_USER_URL = () => `${API_DOMAIN}/users/`;
+const GET_OTHER_USER_URL = (userId: number) => `${API_DOMAIN}/users/${userId}`;
 //         회원 탈퇴 API         //
-const DELETE_USER_URL = () => `${API_DOMAIN}/users/`;
+const DELETE_USER_URL = () => `${API_DOMAIN}/users`;
 //         유저 정보 수정 API         //
 const PATCH_USER_UPDATE_URL = () => `${API_DOMAIN}/users/update`;
 //         유저 프로필 이미지 수정 API         //
@@ -677,6 +677,29 @@ export const getUserRequest = async (accessToken: string) => {
         }
     }
 };
+//         function: 타 유저 데이터 조회 API          //
+export const getOtherUserProfileRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.get(GET_OTHER_USER_URL(userId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('타 유저 정보 추출출 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
 //         function: 프로필 이미지 변경 API          //
 export const putUserProfileImageUpdateRequest = async (formData: FormData, accessToken: string) => {
     try {
@@ -704,7 +727,7 @@ export const putUserProfileImageUpdateRequest = async (formData: FormData, acces
 export const patchUserUpdateRequest = async (requestBody: patchUserRequestDto, accessToken: string) => {
     try {
         const response = await axios.patch<PatchUserResponseDto>(
-            `${PATCH_USER_UPDATE_URL()}`, requestBody,{
+            `${PATCH_USER_UPDATE_URL()}`, requestBody, {
             headers: {
                 Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
             }
