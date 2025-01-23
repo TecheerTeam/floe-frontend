@@ -27,6 +27,7 @@ import { RecordListItem, User } from '@/types/interface';
 import PostItemListType from '@/components/post/postItemListType/page';
 import { patchUserRequestDto } from '@/apis/request/user';
 import { removeCookie } from '../cookies';
+import LoadingSpinner from '@/components/LoadingSpinner/page';
 
 export default function MyPage() {
   //    state: 라우팅    //
@@ -409,7 +410,9 @@ export default function MyPage() {
 
             <div className={styles['postContentWrapper']}>
               {isLoading ? (
-                <p>Loading...</p>
+                <div className={styles['no-records']}>
+                  <LoadingSpinner />
+                </div>
               ) : (
                 <>
                   {recordList.length > 0 ? (

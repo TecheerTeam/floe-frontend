@@ -17,6 +17,7 @@ import { RecordListItem } from '@/types/interface';
 import { GetRecordResponseDto } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useInView } from 'react-intersection-observer';
+import LoadingSpinner from '@/components/LoadingSpinner/page';
 
 //     component: 메인(홈) 페이지     //
 export default function Main() {
@@ -132,7 +133,7 @@ export default function Main() {
                   onClick={toggleViewListMode}></button>
               </div>
               {isLoading ? (
-                <p>Loading...</p>
+                <LoadingSpinner />
               ) : (
                 <>
                   {viewMode === 'card' ? (
@@ -182,7 +183,7 @@ export default function Main() {
                       )}
                     </div>
                   )}
-                  {isFetchingNextPage && <p>Loading more...</p>}
+                  {isFetchingNextPage && <LoadingSpinner />}
                   <div ref={ref} style={{ height: '1px' }} />
                 </>
               )}
