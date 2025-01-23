@@ -31,8 +31,6 @@ import { useLoginUserStore } from '@/store';
 import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { access } from 'fs';
-import Link from 'next/link';
 export default function PostDetail() {
   //    state: React Query Client 가져오기     //
   const queryClient = useQueryClient();

@@ -20,6 +20,8 @@ import {
   getSaveListRecordRequest,
   getUserRecordRequest,
   getOtherUserProfileRequest,
+  getOtherUserRecordRequest,
+  // getOtherUserRecordRequest,
 } from '@/apis';
 import { RecordListItem, User } from '@/types/interface';
 import PostItemListType from '@/components/post/postItemListType/page';
@@ -61,7 +63,14 @@ export default function OtherUserMyPage() {
   //          event handler: 탭 버튼 클릭 이벤트 처리          //
   const handleTabClick = (tab: string) => {
     setActivetab(tab);
-    console.log('Tab clicked:', tab); // 탭 클릭 시 어떤 탭이 눌렸는지 확인
+
+    if (tab === 'SAVE' || tab === 'LIKE') {
+      setRecordList([]); // 데이터를 클리어
+      setTotalPages(1);
+      setCurrentPage(0);
+    } else {
+      fetchData(0); // 첫 페이지의 데이터를 가져오기
+    }
   };
   //        function: getUser 처리 함수(사용자 정보를 받아온다다)       //
   const getOtherUserRequestAPI = async () => {
@@ -102,23 +111,16 @@ export default function OtherUserMyPage() {
       let response;
 
       if (activeTab === 'POSTS') {
-        response = await getUserRecordRequest(page, 5, cookies.accessToken);
+        response = await getOtherUserRecordRequest(
+          id,
+          page,
+          5,
+          cookies.accessToken,
+        );
         setTotalPages(response.data.totalPages);
         setCurrentPage(response.data.pageable.pageNumber);
-
-        console.log('posts tab result', response.data);
-      } else if (activeTab === 'SAVE') {
-        response = await getSaveListRecordRequest(page, 5, cookies.accessToken);
-        setTotalPages(response.data.totalPages);
-        setCurrentPage(response.data.pageable.pageNumber);
-        console.log('save tab result', response.data);
-      } else if (activeTab === 'LIKE') {
-        response = await getLikeListRecordRequest(page, 5, cookies.accessToken);
-        setTotalPages(response.data.totalPages);
-        setCurrentPage(response.data.pageable.pageNumber);
-        console.log('like tab result', response.data);
+        setPostsCounts(response.data.totalElements);
       }
-
       if (response && response.data && Array.isArray(response.data.content)) {
         setRecordList(response.data.content);
       } else {
@@ -255,7 +257,11 @@ export default function OtherUserMyPage() {
                     ))
                   ) : (
                     <div className={styles['no-records']}>
-                      <p>No records found.</p>
+                      {activeTab === 'SAVE' || activeTab === 'LIKE' ? (
+                        <p>You do not have permission.</p>
+                      ) : (
+                        <p>No records found.</p>
+                      )}
                     </div>
                   )}
                 </>
