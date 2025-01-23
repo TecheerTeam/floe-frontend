@@ -203,7 +203,9 @@ export default function PostDetail() {
     }
     router.push(`/post/${id}/update`);
   };
-
+  const onProfileClickHandler = () => {
+    router.push(`/mypage/${record?.user.userId}`);
+  };
   //          function : 좋아요 리스트 처리 함수  (좋아요 목록에서 현재 유저를 찾아 중복처리)        //
   const fetchLikeStatus = async () => {
     if (!recordId || !cookies.accessToken) return;
@@ -342,22 +344,25 @@ export default function PostDetail() {
         </aside>
         <div className={styles['post-detail-item-container']}>
           <div className={styles['post-detail-top']}>
-            <Link href={`/mypage/${record.user.userId}`} replace>
-              <div className={styles['profile-image-box']}>
-                {record.user.profileImage ? (
-                  <img
-                    src={record.user.profileImage}
-                    alt="프로필 이미지"
-                    className={styles['profile-image']}
-                  />
-                ) : (
-                  <div className={styles['default-profile-image']}></div>
-                )}
-              </div>
-              <div className={styles['user-nickname']}>
-                {record.user.nickname}
-              </div>
-            </Link>
+            <div
+              className={styles['profile-image-box']}
+              onClick={onProfileClickHandler}>
+              {record.user.profileImage ? (
+                <img
+                  src={record.user.profileImage}
+                  alt="프로필 이미지"
+                  className={styles['profile-image']}
+                />
+              ) : (
+                <div className={styles['default-profile-image']}></div>
+              )}
+            </div>
+            <div
+              className={styles['user-nickname']}
+              onClick={onProfileClickHandler}>
+              {record.user.nickname}
+            </div>
+
             {record.user.email === user?.email && (
               <div
                 className={styles['edit-button']}
@@ -395,7 +400,7 @@ export default function PostDetail() {
             <div className={styles['post-detail-content']}>
               {record.content}
             </div>
-            {record.medias.length > 0 && (
+            {record.medias && record.medias.length > 0 && (
               <div className={styles['post-detail-image-container']}>
                 {record.medias.map((media) => (
                   <img
