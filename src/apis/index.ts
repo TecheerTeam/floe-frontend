@@ -642,6 +642,8 @@ export const deleteLikeRequest = async (recordId: number, accessToken: string) =
 const GET_USER_URL = () => `${API_DOMAIN}/users`;
 //         타유저 정보 조회 API         //
 const GET_OTHER_USER_URL = (userId: number) => `${API_DOMAIN}/users/${userId}`;
+//         타 유저 게시글 조회 API         //
+const GET_OTHER_USER_RECORD_URL = (userId: number) => `${API_DOMAIN}/records/users/${userId}`;
 //         회원 탈퇴 API         //
 const DELETE_USER_URL = () => `${API_DOMAIN}/users`;
 //         유저 정보 수정 API         //
@@ -700,6 +702,31 @@ export const getOtherUserProfileRequest = async (userId: number, accessToken: st
         }
     }
 }
+//         function: 타유저 게시글 조회 API          //
+export const getOtherUserRecordRequest = async (userId: number, page: number, size: number, accessToken: string) => {
+    try {
+        const response = await axios.get<GetUserRecordResponseDto>(
+            `${GET_OTHER_USER_RECORD_URL(userId)}?page=${page}&size=${size}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+                },
+            }
+        );
+        console.log('타유저 게시글 조회 api 결과:', response.data);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            // Axios 에러라면 response 데이터 확인
+            console.error('Error fetching comments:', error.response?.data || error.message);
+        } else {
+            // 일반적인 에러 메시지 출력
+            console.error('Unknown error:', error);
+        }
+        throw error;
+    }
+}
+
 //         function: 프로필 이미지 변경 API          //
 export const putUserProfileImageUpdateRequest = async (formData: FormData, accessToken: string) => {
     try {
