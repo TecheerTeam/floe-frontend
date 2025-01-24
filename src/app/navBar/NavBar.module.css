@@ -350,7 +350,6 @@
   flex-direction: row;
   gap: 12px;
   padding-bottom: 10px;
-  cursor: pointer;
 }
 
 .alarm-popup-Top-User-Profile-Image {
@@ -380,8 +379,26 @@
   justify-content: center;
   color: var(--nav-bar-alarm-popup-box-user-nickname-text-color);
 }
-.alarm-popup-Top-More {
+
+.alarm-subscribe-button {
+  width: 32px;
+  height: 32px;
+  background-image: var(--nav-bar-alarm-Auto-check-icon);
+  cursor: pointer;
 }
+.alarm-subscribe-button:hover {
+  background-image: var(--nav-bar-alarm-Auto-Uncheck-icon-Hover);
+}
+.alarm-unsubscribe-button {
+  width: 32px;
+  height: 32px;
+  background-image: var(--nav-bar-alarm-Auto-Uncheck-icon);
+  cursor: pointer;
+}
+.alarm-unsubscribe-button:hover {
+  background-image: var(--nav-bar-alarm-Auto-check-icon-Hover);
+}
+
 .alarm-popup-Bottom {
   display: flex;
   flex-direction: column;
@@ -430,6 +447,32 @@
   font-size: 10px;
 
   align-self: flex-end;
+}
+.alarm-popup-Item-button {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+.alarm-popup-Item-Read-button {
+  width: 16px;
+  height: 16px;
+  background-image: var(--nav-bar-alarm-check-icon);
+  cursor: pointer;
+}
+.alarm-popup-Item-Read-button:hover {
+  background-image: var(--nav-bar-alarm-check-icon-Hover);
+}
+.alarm-popup-Item-Read-button.active-icon {
+  background-image: var(--nav-bar-alarm-check-icon-Active);
+}
+.alarm-popup-Item-Delete-button {
+  width: 16px;
+  height: 16px;
+  background-image: var(--nav-bar-alarm-delete-icon);
+  cursor: pointer;
+}
+.alarm-popup-Item-Delete-button:hover {
+  background-image: var(--nav-bar-alarm-delete-icon-Hover);
 }
 .user-profile-image {
   width: 48px;

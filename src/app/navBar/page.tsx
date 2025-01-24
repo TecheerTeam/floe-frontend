@@ -17,15 +17,9 @@ export default function NavBar() {
   const [showAlarmPopup, setShowAlarmPopup] = useState(false);
   //          state: 다크모드 상태 관리          //
   const [isDarkMode, setIsDarkMode] = useState(false);
-  // const [isSubscribed, setIsSubscribed] = useState(false);
-  // const [eventSource, setEventSource] = useState<EventSource | null>(null);
-  // const [isMouseOver, setIsMouseOver] = useState(false);
-  // const [messages, setMessages] = useState([]);
   const pathname = usePathname();
-  // const EventSource = EventSourcePolyfill;
   const isActive = (path: string) => pathname === path;
-  // const eventSourceRef = useRef<EventSource | null>(null); // SSE 객체를 useRef로 관리
-  const { isSubscribed, subscribeToAlarm, unsubscribeFromAlarm } =
+  const { alarms, isSubscribed, subscribeToAlarm, unsubscribeFromAlarm } =
     useAlarmStore();
   //          function: See More 팝업 토글 함수          //
   const toggleSeeMorePopup = () => {
@@ -34,6 +28,9 @@ export default function NavBar() {
 
   //          function: Alarm 팝업 토글 함수          //
   const toggleAlarmPopup = () => {
+    if (!loginUser) {
+      return;
+    }
     setShowAlarmPopup(!showAlarmPopup);
   };
   //          function: 다크/라이트모드 토글 함수          //
@@ -45,53 +42,8 @@ export default function NavBar() {
     setShowSeeMorePopup(false); // 팝업 닫기
   };
 
-  // 실시간 알람 구독 및 해제 핸들러
-  // const subscribeToAlarm = () => {
-  //   if (!loginUser) {
-  //     alert('로그인이 필요합니다.');
-  //     return;
-  //   }
-
-  //   if (!isSubscribed && !eventSourceRef.current) {
-  //     console.log('알람 구독 시작...');
-
-  //     const source = new EventSourcePolyfill(
-  //       'http://localhost:8080/api/v1/notification/subscribe',
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${cookies.accessToken}`,
-  //         },
-  //         withCredentials: true, // 쿠키 포함
-  //       },
-  //     );
-
-  //     source.onmessage = (event) => {
-  //       const data = JSON.parse(event.data);
-  //       console.log('새 알람:', data);
-  //       alert(`새 알람: ${data.message}`);
-  //     };
-
-  //     source.onerror = (error) => {
-  //       console.error('SSE 연결 오류:', error);
-  //       source.close();
-  //       eventSourceRef.current = null;
-  //       setIsSubscribed(false);
-  //     };
-
-  //     eventSourceRef.current = source;
-  //     setIsSubscribed(true);
-  //   } else {
-  //     console.log('알람 구독 해제...');
-  //     if (eventSourceRef.current) {
-  //       eventSourceRef.current.close();
-  //       eventSourceRef.current = null;
-  //     }
-  //     setIsSubscribed(false);
-  //   }
-  // };
   const toggleAlarmSubscription = () => {
     if (!loginUser) {
-      alert('로그인이 필요합니다.');
       return;
     }
 
@@ -148,27 +100,32 @@ export default function NavBar() {
           }`}></div>
         Alarm
       </button>
-      {/* <button
-        className={`${styles['Alarm-Button']} ${
-          isSubscribed ? styles['active'] : ''
-        }`}
-        onClick={toggleAlarmSubscription}>
-        <div className={styles['Heart-Icon']}></div>
-        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-      </button> */}
+
       {showAlarmPopup && (
         <div className={styles['alarm-popup-container']}>
           <div className={styles['alarm-popup-Top']}>
-            <div className={styles['alarm-popup-Top-User-Profile-Image']}></div>
+            <div
+              className={styles['alarm-popup-Top-User-Profile-Image']}
+              style={{
+                backgroundImage: `url(${loginUser?.profileImage})`,
+              }}></div>
             <div className={styles['alarm-popup-Top-User-More']}>
               <div className={styles['alarm-popup-Top-User-Follow-Request']}>
                 {'Follow Request'}
               </div>
               <div className={styles['alarm-popup-Top-User-Nickname']}>
-                {'JAEJAE'}
+                {loginUser?.nickname}
               </div>
             </div>
-            <div className={styles['alarm-popup-Top-More']}></div>
+            <div
+              className={styles['alarm-popup-Top-More']}
+              onClick={toggleAlarmSubscription}>
+              {isSubscribed ? (
+                <div className={styles['alarm-subscribe-button']}></div>
+              ) : (
+                <div className={styles['alarm-unsubscribe-button']}></div>
+              )}
+            </div>
           </div>
           <div className={styles['alarm-popup-Bottom']}>
             <div className={styles['alarm-popup-Today']}>
@@ -181,29 +138,11 @@ export default function NavBar() {
                   </div>
                   <span className={styles['alarm-popup-Item-Time']}>1h</span>
                 </div>
-                <div className={styles['alarm-popup-Item-Images']}></div>
-              </div>
-
-              <div className={styles['alarm-popup-Item']}>
-                <div className={styles['alarm-popup-Item-Profile']}></div>
-                <div className={styles['alarm-popup-Item-Content']}>
-                  <div className={styles['alarm-popup-Item-Text']}>
-                    JAEJAE, JAEJAE and JAEJAE liked your post
-                  </div>
-                  <span className={styles['alarm-popup-Item-Time']}>1h</span>
+                <div className={styles['alarm-popup-Item-button']}>
+                  <div className={styles['alarm-popup-Item-Read-button']}></div>
+                  <div
+                    className={styles['alarm-popup-Item-Delete-button']}></div>
                 </div>
-                <div className={styles['alarm-popup-Item-Images']}></div>
-              </div>
-
-              <div className={styles['alarm-popup-Item']}>
-                <div className={styles['alarm-popup-Item-Profile']}></div>
-                <div className={styles['alarm-popup-Item-Content']}>
-                  <div className={styles['alarm-popup-Item-Text']}>
-                    JAEJAE, JAEJAE and JAEJAE liked your post
-                  </div>
-                  <span className={styles['alarm-popup-Item-Time']}>1h</span>
-                </div>
-                <div className={styles['alarm-popup-Item-Images']}></div>
               </div>
             </div>
 

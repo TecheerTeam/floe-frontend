@@ -9,7 +9,7 @@ import { RecordType } from '@/apis/request/search/search.request.dto';
 import { getSearchRecordRequest } from '@/apis';
 import { cookies } from 'next/headers';
 import { useCookies } from 'react-cookie';
-
+import { useAlarmStore } from '@/store';
 export default function Header() {
   //     state: 쿠키     //
   const [cookies] = useCookies();
@@ -29,7 +29,7 @@ export default function Header() {
   const [isClosing, setIsClosing] = useState<boolean>(false); // 닫기 애니메이션 상태
   //     state:  라우팅     //
   const router = useRouter();
-
+  const { alarms } = useAlarmStore();
   // tag와 title이 빈 문자열이면 null로 변환
   const Tag = tag.trim() === '' ? null : tag;
   const Title = title.trim() === '' ? null : title;
@@ -148,6 +148,39 @@ export default function Header() {
             ✕
           </button>
         </form>
+      </div>
+      <div className={styles['alarm-SlideContainer']}>
+        {alarms.map((alarm) => {
+          // 불필요한 경로(api/v1/) 제거 후 post/ID로 변환
+          // const recordId = alarm.relatedUrl.replace(/^api\/v1\//, '');
+
+          return (
+            <div
+              key={alarm.id}
+              className={styles['alarm-Item']}
+              onClick={() => {
+                console.log('이동할 경로:', alarm.relatedUrl);
+                router.push(`/post/${alarm.relatedUrl}`);
+              }}>
+              <div className={styles['alarm-Content']}>
+                <img
+                  src={alarm.senderProfileImage}
+                  alt="프로필 이미지"
+                  className={styles['alarm-Profile']}
+                />
+                <div>
+                  <strong>{alarm.senderNickname}</strong>님이{' '}
+                  {alarm.notificationType === 'NEW_COMMENT'
+                    ? '댓글을 남겼습니다.'
+                    : '알림이 도착했습니다.'}
+                </div>
+                <span className={styles['alarm-Time']}>
+                  {new Date(alarm.createdAt).toLocaleTimeString()}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

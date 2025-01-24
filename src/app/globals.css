@@ -91,6 +91,20 @@
   --nav-bar-alarm-popup-box-user-nickname-text-color: rgba(0, 0, 0, 0.6);
   --nav-bar-alarm-popup-box-item-background-color: #ffffff;
   --nav-bar-alarm-popup-box-item-hover-background-color: #dfdfdf71;
+
+  --nav-bar-alarm-Auto-check-icon: url('./../assets/AlarmAutoCheckIcon_Active.png');
+  --nav-bar-alarm-Auto-check-icon-Hover: url('./../assets/AlarmAutoCheckIcon_Hover.png');
+
+  --nav-bar-alarm-Auto-Uncheck-icon: url('./../assets/AlarmAutoUncheckIcon_Dark.png');
+  --nav-bar-alarm-Auto-Uncheck-icon-Hover: url('./../assets/AlarmAutoUncheckIcon_Hover.png');
+
+  --nav-bar-alarm-check-icon: url('./../assets/AlarmCheckIcon_Dark.png');
+  --nav-bar-alarm-check-icon-Hover: url('./../assets/AlarmCheckIcon_Hover.png');
+  --nav-bar-alarm-check-icon-Active: url('./../assets/AlarmCheckIcon_Active.png');
+
+  --nav-bar-alarm-delete-icon: url('./../assets/AlarmDeleteIcon_Dark.png');
+  --nav-bar-alarm-delete-icon-Hover: url('./../assets/AlarmDeleteIcon_Hover.png');
+
   /* navbar-icon */
   --nav-bar-Home-icon: url('./../assets/HomeIcon_Dark.png');
   --nav-bar-Alarm-icon: url('./../assets/HeartIcon_Dark.png');
@@ -274,6 +288,20 @@ body {
   --nav-bar-alarm-popup-box-user-nickname-text-color: rgba(211, 211, 211, 0.6);
   --nav-bar-alarm-popup-box-item-background-color: #222222;
   --nav-bar-alarm-popup-box-item-hover-background-color: #dfdfdf71;
+
+  --nav-bar-alarm-Auto-check-icon: url('./../assets/AlarmAutoCheckIcon_Active.png');
+  --nav-bar-alarm-Auto-check-icon-Hover: url('./../assets/AlarmAutoCheckIcon_Hover.png');
+
+  --nav-bar-alarm-Auto-Uncheck-icon: url('./../assets/AlarmAutoUncheckIcon_White.png');
+  --nav-bar-alarm-Auto-Uncheck-icon-Hover: url('./../assets/AlarmAutoUncheckIcon_Hover.png');
+
+  --nav-bar-alarm-check-icon: url('./../assets/AlarmCheckIcon_White.png');
+  --nav-bar-alarm-check-icon-Hover: url('./../assets/AlarmCheckIcon_Hover.png');
+  --nav-bar-alarm-check-icon-Active: url('./../assets/AlarmCheckIcon_Active.png');
+
+  --nav-bar-alarm-delete-icon: url('./../assets/AlarmDeleteIcon_White.png');
+  --nav-bar-alarm-delete-icon-Hover: url('./../assets/AlarmDeleteIcon_Hover.png');
+
   /* navbar-icon */
   --nav-bar-Home-icon: url('./../assets/HomeIcon_White.png');
   --nav-bar-Alarm-icon: url('./../assets/HeartIcon_White.png');
@@ -324,7 +352,7 @@ body {
   --post-item-Heart-icon-hover: url('./../assets/HeartIcon_Hover.png');
   --post-item-Comment-icon-hover: url('./../assets/CommentIcon_Hover.png');
   --post-item-Save-icon-hover: url('./../assets/SaveIcon_Hover.png');
-  
+
   --post-item-Heart-icon-active: url('./../assets/HeartIcon_Active.png');
   --post-item-Comment-icon-active: url('./../assets/CommentIcon_Dark.png');
   --post-item-Save-icon-active: url('./../assets/SaveIcon_Active.png');
