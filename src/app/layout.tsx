@@ -102,8 +102,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         // Access Token이 유효한 경우 사용자 데이터 가져오기
         const userResponse = await getSignInUserRequest(cookies.accessToken);
         if (userResponse?.data) {
-          const { email, nickname, profileImage, experience, age, field } = userResponse.data;
-          setUser({ email, nickname, profileImage, experience, age, field });
+          const { email, nickname, profileImage, experience, age, field, userId } = userResponse.data;
+          setUser({ email, nickname, profileImage, experience, age, field, userId });
           console.log('User authenticated successfully');
         } else {
           logout();
