@@ -1,23 +1,32 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './NavBar.module.css';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useLoginUserStore } from '@/store';
-
+import { useLoginUserStore, useAlarmStore } from '@/store';
+import { useCookies } from 'react-cookie';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 export default function NavBar() {
+  const [cookies] = useCookies(); // 쿠키 상태 관리
   const router = useRouter();
-  const { user:loginUser,setUser, logout } = useLoginUserStore(); // Zustand로 로그인
+  const { user: loginUser, setUser, logout } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //
   const [showAlarmPopup, setShowAlarmPopup] = useState(false);
   //          state: 다크모드 상태 관리          //
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isMouseOver, setIsMouseOver] = useState(false);
+  // const [isSubscribed, setIsSubscribed] = useState(false);
+  // const [eventSource, setEventSource] = useState<EventSource | null>(null);
+  // const [isMouseOver, setIsMouseOver] = useState(false);
+  // const [messages, setMessages] = useState([]);
   const pathname = usePathname();
+  // const EventSource = EventSourcePolyfill;
   const isActive = (path: string) => pathname === path;
+  // const eventSourceRef = useRef<EventSource | null>(null); // SSE 객체를 useRef로 관리
+  const { isSubscribed, subscribeToAlarm, unsubscribeFromAlarm } =
+    useAlarmStore();
   //          function: See More 팝업 토글 함수          //
   const toggleSeeMorePopup = () => {
     setShowSeeMorePopup(!showSeeMorePopup);
@@ -27,7 +36,6 @@ export default function NavBar() {
   const toggleAlarmPopup = () => {
     setShowAlarmPopup(!showAlarmPopup);
   };
-
   //          function: 다크/라이트모드 토글 함수          //
   const toggleDarkMode = () => {
     const newMode = !isDarkMode;
@@ -36,6 +44,64 @@ export default function NavBar() {
     localStorage.setItem('theme', newMode ? 'dark' : 'light');
     setShowSeeMorePopup(false); // 팝업 닫기
   };
+
+  // 실시간 알람 구독 및 해제 핸들러
+  // const subscribeToAlarm = () => {
+  //   if (!loginUser) {
+  //     alert('로그인이 필요합니다.');
+  //     return;
+  //   }
+
+  //   if (!isSubscribed && !eventSourceRef.current) {
+  //     console.log('알람 구독 시작...');
+
+  //     const source = new EventSourcePolyfill(
+  //       'http://localhost:8080/api/v1/notification/subscribe',
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${cookies.accessToken}`,
+  //         },
+  //         withCredentials: true, // 쿠키 포함
+  //       },
+  //     );
+
+  //     source.onmessage = (event) => {
+  //       const data = JSON.parse(event.data);
+  //       console.log('새 알람:', data);
+  //       alert(`새 알람: ${data.message}`);
+  //     };
+
+  //     source.onerror = (error) => {
+  //       console.error('SSE 연결 오류:', error);
+  //       source.close();
+  //       eventSourceRef.current = null;
+  //       setIsSubscribed(false);
+  //     };
+
+  //     eventSourceRef.current = source;
+  //     setIsSubscribed(true);
+  //   } else {
+  //     console.log('알람 구독 해제...');
+  //     if (eventSourceRef.current) {
+  //       eventSourceRef.current.close();
+  //       eventSourceRef.current = null;
+  //     }
+  //     setIsSubscribed(false);
+  //   }
+  // };
+  const toggleAlarmSubscription = () => {
+    if (!loginUser) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    if (!isSubscribed) {
+      subscribeToAlarm(cookies.accessToken);
+    } else {
+      unsubscribeFromAlarm();
+    }
+  };
+
   //     event handler: 로그아웃 이벤트 처리     //
   const onLogoutButtonClickHandler = () => {
     logout();
@@ -47,6 +113,7 @@ export default function NavBar() {
     // 홈으로 리디렉션
     router.push('/');
   };
+
   //          effect: 페이지 로드 시 다크모드 여부를 로컬 스토리지에서 확인 //
   useEffect(() => {
     const savedMode = localStorage.getItem('theme') === 'dark';
@@ -81,6 +148,14 @@ export default function NavBar() {
           }`}></div>
         Alarm
       </button>
+      {/* <button
+        className={`${styles['Alarm-Button']} ${
+          isSubscribed ? styles['active'] : ''
+        }`}
+        onClick={toggleAlarmSubscription}>
+        <div className={styles['Heart-Icon']}></div>
+        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+      </button> */}
       {showAlarmPopup && (
         <div className={styles['alarm-popup-container']}>
           <div className={styles['alarm-popup-Top']}>
@@ -223,7 +298,9 @@ export default function NavBar() {
           {loginUser?.profileImage !== null ? (
             <div
               className={styles['user-profile-image']}
-              style={{ backgroundImage: `url(${loginUser?.profileImage})` }}></div>
+              style={{
+                backgroundImage: `url(${loginUser?.profileImage})`,
+              }}></div>
           ) : (
             <div className={styles['Guest-Icon']}></div>
           )}

@@ -11,6 +11,7 @@ import { comment } from 'postcss';
 import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto } from './response/record/like.response.dto';
 import PatchUserResponseDto from './response/user/patch-user.resposne.dto';
 import { patchUserRequestDto } from './request/user';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 const DOMAIN = 'http://localhost:8080';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
@@ -846,3 +847,17 @@ export const getLikeListRecordRequest = async (page: number, size: number, acces
         }
     }
 }
+//  실시간 알림 구독 조회 API(요청시 알림리스트 조회 요청 보내지 않아도 알아서 실시간 알림 누적)    //
+const GET_REAL_TIME_ALARM_URL = () => `${API_DOMAIN}/notification/subscribe`;
+//  알림 리스트 조회 API(실시간X / 매 요청마다 알림을 조회)   //
+const GET_AlARM_LIST_URL = () => `${API_DOMAIN}/notification`;
+//  해당 알림 읽음 처리 API    //
+const PATCH_READ_ALARM_URL = (notificationId: number) => `${API_DOMAIN}/notification/${notificationId}/read`;
+//  모든 알림 읽음 처리 API    //
+const PATCH_READ_ALL_ALARM_URL = () => `${API_DOMAIN}/notification/read`;
+//  해당 알림 삭제 처리 API    //
+const DELETE_ALARM_URL = (notificationId: number) => `${API_DOMAIN}/notification/${notificationId}/delete`;
+//  읽은 알림 모두 삭제 처리 API    //
+const DELETE_ALL_ALARM_URL = () => `${API_DOMAIN}/notification/unread/delete`;
+//  읽지 않은 알림 수 조회 API    //
+const GET_ALARM_COUNT_URL = () => `${API_DOMAIN}/notification/unread/count`;
