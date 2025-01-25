@@ -151,9 +151,6 @@ export default function Header() {
       </div>
       <div className={styles['alarm-SlideContainer']}>
         {alarms.map((alarm) => {
-          // 불필요한 경로(api/v1/) 제거 후 post/ID로 변환
-          // const recordId = alarm.relatedUrl.replace(/^api\/v1\//, '');
-
           return (
             <div
               key={alarm.id}
@@ -169,7 +166,7 @@ export default function Header() {
                   className={styles['alarm-Profile']}
                 />
                 <div>
-                  <strong>{alarm.senderNickname}</strong>님이{' '}
+                  <strong>{alarm.senderNickname}</strong>님이
                   {alarm.notificationType === 'NEW_COMMENT'
                     ? '댓글을 남겼습니다.'
                     : '알림이 도착했습니다.'}
