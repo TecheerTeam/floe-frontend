@@ -19,8 +19,13 @@ export default function NavBar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
-  const { alarms, isSubscribed, subscribeToAlarm, unsubscribeFromAlarm } =
-    useAlarmStore();
+  const {
+    alarms,
+    isSubscribed,
+    subscribeToAlarm,
+    unsubscribeFromAlarm,
+    removeAlarm,
+  } = useAlarmStore();
   //          function: See More 팝업 토글 함수          //
   const toggleSeeMorePopup = () => {
     setShowSeeMorePopup(!showSeeMorePopup);
@@ -129,26 +134,47 @@ export default function NavBar() {
           </div>
           <div className={styles['alarm-popup-Bottom']}>
             <div className={styles['alarm-popup-Today']}>
-              {'Today'}
-              <div className={styles['alarm-popup-Item']}>
-                <div className={styles['alarm-popup-Item-Profile']}></div>
-                <div className={styles['alarm-popup-Item-Content']}>
-                  <div className={styles['alarm-popup-Item-Text']}>
-                    JAEJAE, JAEJAE and JAEJAE liked your post
-                  </div>
-                  <span className={styles['alarm-popup-Item-Time']}>1h</span>
-                </div>
-                <div className={styles['alarm-popup-Item-button']}>
-                  <div className={styles['alarm-popup-Item-Read-button']}></div>
+              {alarms.map((alarm) => {
+                return (
                   <div
-                    className={styles['alarm-popup-Item-Delete-button']}></div>
-                </div>
-              </div>
+                    key={alarm.id}
+                    className={styles['alarm-popup-Item']}
+                    onClick={() => {
+                      router.push(`/post/${alarm.relatedUrl}`);
+                    }}>
+                    <img
+                      src={alarm.senderProfileImage}
+                      alt="프로필 이미지"
+                      className={styles['alarm-popup-Item-Profile']}
+                    />
+                    <div className={styles['alarm-Content']}>
+                      <div className={styles['alarm-popup-Item-Text']}>
+                        <strong>{alarm.senderNickname}</strong>님이
+                        {alarm.notificationType === 'NEW_COMMENT'
+                          ? '댓글을 남겼습니다.'
+                          : '알림이 도착했습니다.'}
+                      </div>
+                      <div className={styles['alarm-popup-Item-Time']}>
+                        {new Date(alarm.createdAt).toLocaleTimeString()}
+                      </div>
+                    </div>
+                    <div className={styles['alarm-popup-Item-button']}>
+                      <div
+                        className={
+                          styles['alarm-popup-Item-Read-button']
+                        }></div>
+                      <div
+                        className={styles['alarm-popup-Item-Delete-button']}
+                        onClick={() => removeAlarm(alarm.id)}></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            <div className={styles['alarm-popup-This-Week']}></div>
+            {/* <div className={styles['alarm-popup-This-Week']}></div>
             <div className={styles['alarm-popup-This-Month']}></div>
-            <div className={styles['alarm-popup-Earlier']}></div>
+            <div className={styles['alarm-popup-Earlier']}></div> */}
           </div>
         </div>
       )}

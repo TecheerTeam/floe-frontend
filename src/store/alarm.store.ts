@@ -10,11 +10,11 @@ interface Alarm {
   createdAt: string;
 }
 
-
 interface AlarmState {
   isSubscribed: boolean;
   eventSource: EventSource | null;
-  alarms: Alarm[];
+  alarms: Alarm[]; // NavBar용 알람 리스트
+  realTimeAlarms: Alarm[]; // 헤더용 실시간 알람 리스트
   subscribeToAlarm: (accessToken: string) => void;
   unsubscribeFromAlarm: () => void;
   addAlarm: (alarm: Alarm) => void;
@@ -25,6 +25,7 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
   isSubscribed: false,
   eventSource: null,
   alarms: [],
+  realTimeAlarms: [],
 
   subscribeToAlarm: (accessToken: string) => {
     console.log('알람 구독 시작...');
@@ -37,7 +38,7 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
             Authorization: `Bearer ${accessToken}`,
           },
           withCredentials: true,
-          heartbeatTimeout: 60000, // 60초 동안 이벤트가 없으면 재연결 시도
+          heartbeatTimeout: 36000000, // 60분 동안 이벤트가 없으면 재연결 시도
         }
       );
 
@@ -49,23 +50,32 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
           const match = url.match(/api\/v1\/records\/(\d+)/);
           return match ? match[1] : '/';
         };
+
         const newAlarm: Alarm = {
           id: data.id || new Date().getTime(),
           senderProfileImage: data.senderProfileImage || '/default-profile.png',
           senderNickname: data.senderNickname || '시스템',
           notificationType: data.notificationType || '알림',
-          relatedUrl: extractRecordId(data.relatedUrl) || '/',
+          relatedUrl: data.relatedUrl ? extractRecordId(data.relatedUrl) : '/',
           createdAt: data.createdAt || new Date().toISOString(),
         };
 
+        // NavBar에 추가
         set((state) => ({
           alarms: [...state.alarms, newAlarm],
         }));
 
-        // 5초 후 알람 자동 삭제
+        // 헤더용 실시간 알람 추가
+        set((state) => ({
+          realTimeAlarms: [...state.realTimeAlarms, newAlarm],
+        }));
+
+        // 5초 후 실시간 알람 자동 삭제
         setTimeout(() => {
           set((state) => ({
-            alarms: state.alarms.filter((alarm) => alarm.id !== newAlarm.id),
+            realTimeAlarms: state.realTimeAlarms.filter(
+              (alarm) => alarm.id !== newAlarm.id
+            ),
           }));
         }, 5000);
       };
@@ -98,10 +108,17 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
     });
   },
 
-  addAlarm: (alarm) => set((state) => ({ alarms: [...state.alarms, alarm] })),
+  addAlarm: (alarm) =>
+    set((state) => ({
+      alarms: [...state.alarms, alarm],
+      realTimeAlarms: [...state.realTimeAlarms, alarm],
+    })),
 
   removeAlarm: (id) =>
-    set((state) => ({ alarms: state.alarms.filter((alarm) => alarm.id !== id) })),
+    set((state) => ({
+      alarms: state.alarms.filter((alarm) => alarm.id !== id),
+      realTimeAlarms: state.realTimeAlarms.filter((alarm) => alarm.id !== id),
+    })),
 }));
 
 export default useAlarmStore;
