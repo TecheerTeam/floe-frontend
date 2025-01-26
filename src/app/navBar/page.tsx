@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLoginUserStore, useAlarmStore } from '@/store';
 import { useCookies } from 'react-cookie';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import { getAlarmListRequest } from '@/apis';
 export default function NavBar() {
   const [cookies] = useCookies(); // 쿠키 상태 관리
   const router = useRouter();
@@ -26,6 +27,11 @@ export default function NavBar() {
     unsubscribeFromAlarm,
     removeAlarm,
   } = useAlarmStore();
+
+  //    state: 알람 읽음 상태    //
+  const [isRead, setIsRead] = useState<boolean>(false);
+  //    state: 알람 삭제제 상태    //
+  const [isDelete, setIsDelete] = useState<boolean>(false);
   //          function: See More 팝업 토글 함수          //
   const toggleSeeMorePopup = () => {
     setShowSeeMorePopup(!showSeeMorePopup);
@@ -59,6 +65,26 @@ export default function NavBar() {
     }
   };
 
+  //    function: 해당 알람 읽음 처리함수     //
+  const onReadAlarmHandler = async () => {
+    try {
+      const response = await patchReadAlarmRequest(notificationId, cookies.accessToken);
+    } catch (error) {
+      console.error('Alarm List Request Error', error);
+    }
+  };
+  //    function: 알람 리스트 조회 함수     //
+  const getAlarmListApi = async () => {
+    try {
+      const response = await getAlarmListRequest(cookies.accessToken);
+      if (response.code === 'N002') {
+        console.log('알람 리스트 조회 API 요청 성공 Navbar:', response.data);
+      }
+    } catch (error) {
+      console.error('Alarm List Request Error', error);
+    }
+  };
+
   //     event handler: 로그아웃 이벤트 처리     //
   const onLogoutButtonClickHandler = () => {
     logout();
@@ -77,7 +103,9 @@ export default function NavBar() {
     setIsDarkMode(savedMode);
     document.body.classList.toggle('dark-mode', savedMode);
   }, []);
-
+  useEffect(() => {
+    getAlarmListApi();
+  }, [cookies.accessToken]);
   //          render: NavBar 렌더링          //
   return (
     <div className={styles['navBar-container']}>
@@ -172,8 +200,8 @@ export default function NavBar() {
               })}
             </div>
 
-            {/* <div className={styles['alarm-popup-This-Week']}></div>
-            <div className={styles['alarm-popup-This-Month']}></div>
+            <div className={styles['alarm-popup-This-Week']}></div>
+            {/* <div className={styles['alarm-popup-This-Month']}></div>
             <div className={styles['alarm-popup-Earlier']}></div> */}
           </div>
         </div>
