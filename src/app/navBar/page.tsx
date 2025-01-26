@@ -7,7 +7,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLoginUserStore, useAlarmStore } from '@/store';
 import { useCookies } from 'react-cookie';
 import { EventSourcePolyfill } from 'event-source-polyfill';
-import { getAlarmListRequest } from '@/apis';
+import {
+  deleteAlarmRequest,
+  getAlarmListRequest,
+  patchReadAlarmRequest,
+} from '@/apis';
+import { AlarmResponseDto } from '@/apis/response/user';
 export default function NavBar() {
   const [cookies] = useCookies(); // 쿠키 상태 관리
   const router = useRouter();
@@ -22,12 +27,12 @@ export default function NavBar() {
   const isActive = (path: string) => pathname === path;
   const {
     alarms,
+    addAlarm,
     isSubscribed,
     subscribeToAlarm,
     unsubscribeFromAlarm,
     removeAlarm,
   } = useAlarmStore();
-
   //    state: 알람 읽음 상태    //
   const [isRead, setIsRead] = useState<boolean>(false);
   //    state: 알람 삭제제 상태    //
@@ -65,10 +70,16 @@ export default function NavBar() {
     }
   };
 
-  //    function: 해당 알람 읽음 처리함수     //
-  const onReadAlarmHandler = async () => {
+  //    function: 해당 알람 읽음 처리 함수     //
+  const onReadAlarmHandler = async (notificationId: number) => {
     try {
-      const response = await patchReadAlarmRequest(notificationId, cookies.accessToken);
+      const response = await patchReadAlarmRequest(
+        notificationId,
+        cookies.accessToken,
+      );
+      if (response.code === 'N003') {
+        console.log('알림읽음처리 api 결과 navbar', response.data);
+      }
     } catch (error) {
       console.error('Alarm List Request Error', error);
     }
@@ -79,12 +90,27 @@ export default function NavBar() {
       const response = await getAlarmListRequest(cookies.accessToken);
       if (response.code === 'N002') {
         console.log('알람 리스트 조회 API 요청 성공 Navbar:', response.data);
+        addAlarm(response.data);
       }
     } catch (error) {
       console.error('Alarm List Request Error', error);
     }
   };
-
+  //    function: 해당 알람 삭제 처리 함수     //
+  const onDeleteAlarmHandler = async (notificationId: number) => {
+    try {
+      const response = await deleteAlarmRequest(
+        notificationId,
+        cookies.accessToken,
+      );
+      if (response.code === 'N005') {
+        console.log('알림 삭제 처리 성공', response.data);
+        removeAlarm(response.data.notificationId);
+      }
+    } catch (error) {
+      console.error('Alarm List Request Error', error);
+    }
+  };
   //     event handler: 로그아웃 이벤트 처리     //
   const onLogoutButtonClickHandler = () => {
     logout();
@@ -193,7 +219,7 @@ export default function NavBar() {
                         }></div>
                       <div
                         className={styles['alarm-popup-Item-Delete-button']}
-                        onClick={() => removeAlarm(alarm.id)}></div>
+                        onClick={() => onDeleteAlarmHandler(alarm.id)}></div>
                     </div>
                   </div>
                 );

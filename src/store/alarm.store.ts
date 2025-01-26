@@ -17,6 +17,7 @@ interface AlarmState {
   realTimeAlarms: Alarm[]; // 헤더용 실시간 알람 리스트
   subscribeToAlarm: (accessToken: string) => void;
   unsubscribeFromAlarm: () => void;
+  
   addAlarm: (alarm: Alarm) => void;
   removeAlarm: (id: number) => void;
 }
@@ -27,6 +28,10 @@ export const useAlarmStore = create<AlarmState>((set, get) => ({
   alarms: [],
   realTimeAlarms: [],
 
+   // API에서 가져온 알람 리스트를 설정
+  setAlarms: (alarmList: Alarm[]) => {
+    set({ alarms: alarmList });
+  },
   subscribeToAlarm: (accessToken: string) => {
     console.log('알람 구독 시작...');
 
