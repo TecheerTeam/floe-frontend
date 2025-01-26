@@ -5,7 +5,7 @@ import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto, PutCo
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
 import { SignUpResponseDto } from './response/auth';
 import GetDetailRecordResponseDto, { GetCheckSavedRecordResponseDto, GetUserRecordResponseDto } from './response/record/record.response.dto';
-import { GetUserResponseDto } from './response/user';
+import { AlarmResponseDto, GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
 import { comment } from 'postcss';
 import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto } from './response/record/like.response.dto';
@@ -860,4 +860,146 @@ const DELETE_ALARM_URL = (notificationId: number) => `${API_DOMAIN}/notification
 //  읽은 알림 모두 삭제 처리 API    //
 const DELETE_ALL_ALARM_URL = () => `${API_DOMAIN}/notification/unread/delete`;
 //  읽지 않은 알림 수 조회 API    //
-const GET_ALARM_COUNT_URL = () => `${API_DOMAIN}/notification/unread/count`;
+const GET_UNREAD_ALARM_COUNT_URL = () => `${API_DOMAIN}/notification/unread/count`;
+
+//         function: 알람 리스트 조회 API          //
+export const getAlarmListRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.get<AlarmResponseDto>(GET_AlARM_LIST_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('알람 리스트 조회 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//         function: 해당 알람 읽음 처리 API          //
+export const patchReadAlarmRequest = async (notificationId: number, accessToken: string) => {
+    try {
+        const result = await axios.patch<AlarmResponseDto>(PATCH_READ_ALARM_URL(notificationId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('해당 알람 읽음 처리 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//         function: 모든 알람 읽음 처리 API          //
+export const patchReadAllAlarmRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.patch<AlarmResponseDto>(PATCH_READ_ALL_ALARM_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('모든 알람 읽음 처리 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+
+}
+//         function: 해당 알람 삭제 처리 API          //
+export const deleteAlarmRequest = async (notificationId: number, accessToken: string) => {
+    try {
+        const result = await axios.delete<AlarmResponseDto>(DELETE_ALARM_URL(notificationId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('해당 알람 삭제 처리 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+
+}
+//         function: 읽은 알람 모두 삭제 처리 API          //
+export const deleteAlreadyReadAllAlarmRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.delete<AlarmResponseDto>(DELETE_ALL_ALARM_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('읽은 알람 모두 삭제 처리 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+
+}
+//         function: 읽지 않은 알림 수 카운트 API          //
+export const getUnreadAlarmCountRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.get<AlarmResponseDto>(GET_UNREAD_ALARM_COUNT_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('읽지 않은 알림 수 카운트 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
