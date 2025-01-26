@@ -865,11 +865,13 @@ const GET_UNREAD_ALARM_COUNT_URL = () => `${API_DOMAIN}/notification/unread/coun
 //         function: 알람 리스트 조회 API          //
 export const getAlarmListRequest = async (accessToken: string) => {
     try {
-        const result = await axios.get<AlarmResponseDto>(GET_AlARM_LIST_URL(), {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            },
-        });
+        const result = await axios.get<AlarmResponseDto>(
+            `${GET_AlARM_LIST_URL()}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            });
         console.log('알람 리스트 조회 api ', result);
         return result.data;
     }
@@ -888,7 +890,7 @@ export const getAlarmListRequest = async (accessToken: string) => {
 //         function: 해당 알람 읽음 처리 API          //
 export const patchReadAlarmRequest = async (notificationId: number, accessToken: string) => {
     try {
-        const result = await axios.patch<AlarmResponseDto>(PATCH_READ_ALARM_URL(notificationId), {
+        const result = await axios.patch<AlarmResponseDto>(`${PATCH_READ_ALARM_URL(notificationId)}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -911,7 +913,7 @@ export const patchReadAlarmRequest = async (notificationId: number, accessToken:
 //         function: 모든 알람 읽음 처리 API          //
 export const patchReadAllAlarmRequest = async (accessToken: string) => {
     try {
-        const result = await axios.patch<AlarmResponseDto>(PATCH_READ_ALL_ALARM_URL(), {
+        const result = await axios.patch<AlarmResponseDto>(`${PATCH_READ_ALL_ALARM_URL()}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -935,7 +937,7 @@ export const patchReadAllAlarmRequest = async (accessToken: string) => {
 //         function: 해당 알람 삭제 처리 API          //
 export const deleteAlarmRequest = async (notificationId: number, accessToken: string) => {
     try {
-        const result = await axios.delete<AlarmResponseDto>(DELETE_ALARM_URL(notificationId), {
+        const result = await axios.delete<AlarmResponseDto>(`${DELETE_ALARM_URL(notificationId)}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -959,7 +961,7 @@ export const deleteAlarmRequest = async (notificationId: number, accessToken: st
 //         function: 읽은 알람 모두 삭제 처리 API          //
 export const deleteAlreadyReadAllAlarmRequest = async (accessToken: string) => {
     try {
-        const result = await axios.delete<AlarmResponseDto>(DELETE_ALL_ALARM_URL(), {
+        const result = await axios.delete<AlarmResponseDto>(`${DELETE_ALL_ALARM_URL()}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
@@ -983,7 +985,7 @@ export const deleteAlreadyReadAllAlarmRequest = async (accessToken: string) => {
 //         function: 읽지 않은 알림 수 카운트 API          //
 export const getUnreadAlarmCountRequest = async (accessToken: string) => {
     try {
-        const result = await axios.get<AlarmResponseDto>(GET_UNREAD_ALARM_COUNT_URL(), {
+        const result = await axios.get<AlarmResponseDto>(`${GET_UNREAD_ALARM_COUNT_URL()}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
