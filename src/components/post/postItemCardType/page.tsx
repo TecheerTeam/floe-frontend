@@ -10,12 +10,37 @@ import {
   getLikeListRequest,
   getSaveCountRecordRequest,
 } from '@/apis';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import { useCookies } from 'react-cookie';
-dayjs.extend(utc);
-dayjs.extend(timezone);
+const formatElapsedTime = (createdAt: string) => {
+  // 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
+  const formattedDate = `${createdAt[0]}-${String(createdAt[1]).padStart(2, '0')}-${String(createdAt[2]).padStart(2, '0')} ${String(createdAt[3]).padStart(2, '0')}:${String(createdAt[4]).padStart(2, '0')}:${String(createdAt[5]).padStart(2, '0')}`;
+
+  // 생성된 날짜를 Date 객체로 변환
+  const date = new Date(formattedDate);
+  const now = new Date();
+
+  // 날짜 차이 계산
+  const diffInMs = now.getTime() - date.getTime(); // 밀리초 차이
+  const diffInSec = diffInMs / 1000; // 초
+  const diffInMin = diffInSec / 60; // 분
+  const diffInHour = diffInMin / 60; // 시간
+  const diffInDay = diffInHour / 24; // 일
+
+  // "몇 분 전", "몇 시간 전", "몇 일 전" 형식으로 변환
+  if (diffInDay >= 1) {
+    const daysAgo = Math.floor(diffInDay);
+    return `${daysAgo}일 전`;
+  } else if (diffInHour >= 1) {
+    const hoursAgo = Math.floor(diffInHour);
+    return `${hoursAgo}시간 전`;
+  } else if (diffInMin >= 1) {
+    const minutesAgo = Math.floor(diffInMin);
+    return `${minutesAgo}분 전`;
+  } else {
+    return '방금 전';
+  }
+};
+
 interface PostItemCardTypeProps {
   recordListItem: RecordListItem; // 게시물 데이터
 }
@@ -100,20 +125,7 @@ export default function PostItemCardType({
   const isLikedByUser = likeListData?.some(
     (like: { userName: string }) => like.userName === user.nickname,
   );
-  //          function: 작성일 경과시간 함수          //
-  const getElapsedTime = () => {
-    const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
-    const writeTime = dayjs(createdAt).tz('Asia/Seoul'); // 작성 시간을 한국 시간으로 변환
 
-    const gap = now.diff(writeTime, 's'); // 초 단위 차이 계산
-    if (gap < 60) return `${gap}초 전`;
-    if (gap < 3600) return `${Math.floor(gap / 60)}분 전`;
-    if (gap < 86400) return `${Math.floor(gap / 3600)}시간 전`;
-    return `${Math.floor(gap / 86400)}일 전`;
-  };
-  const formatDateToKorean = (date: string) => {
-    return dayjs(date).tz('Asia/Seoul').format('YYYY년 MM월 DD일 HH:mm:ss');
-  };
   //          render: 게시물 카드형 렌더링          //
   return (
     <div className={styles['card-container']} onClick={handleCardClick}>
@@ -131,7 +143,9 @@ export default function PostItemCardType({
           )}
         </div>
         <div className={styles['user-nickname']}>{user.nickname}</div>
-        <div className={styles['create-at']}>{getElapsedTime()}</div>
+        <div className={styles['create-at']}>
+          {formatElapsedTime(createdAt)}
+        </div>
         {/* profileimgae-box와 user-nickname 클릭시 해당 유저의 프로필로 이동해야함 */}
       </div>
 

@@ -11,8 +11,7 @@ export default interface RecordListItem {
     content: string;
     medias: { mediaId: number; mediaUrl: string }[];
     tagNames: string[];
-    recordType: RecordType;
-    createdAt: Date;
+    createdAt: string;
     likeCount: number;
     commentCount: number;
     saveCount: number;
