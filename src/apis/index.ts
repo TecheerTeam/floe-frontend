@@ -890,7 +890,7 @@ export const getAlarmListRequest = async (accessToken: string) => {
 //         function: 해당 알람 읽음 처리 API          //
 export const patchReadAlarmRequest = async (notificationId: number, accessToken: string) => {
     try {
-        const result = await axios.patch<AlarmResponseDto>(`${PATCH_READ_ALARM_URL(notificationId)}`, {
+        const result = await axios.patch<AlarmResponseDto>(`${PATCH_READ_ALARM_URL(notificationId)}`, {}, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },

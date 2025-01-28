@@ -31,6 +31,23 @@ import { useLoginUserStore } from '@/store';
 import { PostCommentRequestDto } from '@/apis/request/record';
 import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone'; // 시간대 플러그인
+import relativeTime from 'dayjs/plugin/relativeTime'; // 상대 시간 플러그인
+
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
+dayjs.locale('ko');
+
+//   function: 작성일자 포멧팅함수 (xxxx년 xx월 xx일 xx시 xx분)   //
+const formatCreatedAt = (createdAt: string | number[]) => {
+  // 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
+  const formattedDate = `${createdAt[0]}-${String(createdAt[1]).padStart(2, '0')}-${String(createdAt[2]).padStart(2, '0')} ${String(createdAt[3]).padStart(2, '0')}:${String(createdAt[4]).padStart(2, '0')}:${String(createdAt[5]).padStart(2, '0')}`;
+
+  // 생성된 날짜를 한국 시간대로 포맷
+  return dayjs(formattedDate).tz('Asia/Seoul').format('YYYY년 MM월 DD일 HH:mm');
+};
+
 export default function PostDetail() {
   //    state: React Query Client 가져오기     //
   const queryClient = useQueryClient();
@@ -93,6 +110,7 @@ export default function PostDetail() {
         5,
         cookies.accessToken,
       );
+      console.log('rrrr', response.data);
       return response; // data만 반환
     },
     getNextPageParam: (last: GetCommentResponseDto) => {
@@ -104,7 +122,7 @@ export default function PostDetail() {
 
     initialPageParam: 0,
   });
-  //     function: Infinite Query로 불러온 전체 댓글 데이터 길이이     //
+  //     function: Infinite Query로 불러온 전체 댓글 데이터 길이     //
   const totalComments = async () => {
     const response = await getCommentRequest(
       Number(recordId),
@@ -293,6 +311,7 @@ export default function PostDetail() {
       const response = await getDetailRecordRequest(id);
       if (response?.code === 'R003') {
         setRecord(response.data);
+        console.log('response.data', response.data);
       } else {
         router.push('/');
       }
@@ -455,7 +474,7 @@ export default function PostDetail() {
             </div>
 
             <div className={styles['post-detail-upload-time']}>
-              {record.createdAt}
+              {formatCreatedAt(record.createdAt)}
             </div>
           </div>
           {showCommentSection && (

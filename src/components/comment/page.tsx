@@ -10,9 +10,6 @@ import {
 } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
 import {
@@ -33,6 +30,9 @@ import {
 } from '@/apis/request/record';
 import { GetCommentResponseDto } from '@/apis/response/record';
 import { comment } from 'postcss';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 interface Props {

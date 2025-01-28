@@ -1,18 +1,32 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './NavBar.module.css';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLoginUserStore, useAlarmStore } from '@/store';
 import { useCookies } from 'react-cookie';
-import { EventSourcePolyfill } from 'event-source-polyfill';
 import {
   deleteAlarmRequest,
   getAlarmListRequest,
   patchReadAlarmRequest,
 } from '@/apis';
-import { AlarmResponseDto } from '@/apis/response/user';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+// 경과 시간 표시 함수
+const getElapsedTime = (createdAt: string) => {
+  const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
+  const writeTime = dayjs(createdAt).tz('Asia/Seoul'); // 작성 시간을 한국 시간으로 변환
+  const gap = now.diff(writeTime, 's'); // 초 단위 차이 계산
+
+  if (gap < 60) return `${gap}초 전`;
+  if (gap < 3600) return `${Math.floor(gap / 60)}분 전`;
+  if (gap < 86400) return `${Math.floor(gap / 3600)}시간 전`;
+  return `${Math.floor(gap / 86400)}일 전`;
+};
+
 export default function NavBar() {
   const [cookies] = useCookies(); // 쿠키 상태 관리
   const router = useRouter();
@@ -25,16 +39,10 @@ export default function NavBar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
-  const {
-    alarms,
-    addAlarm,
-    isSubscribed,
-    subscribeToAlarm,
-    unsubscribeFromAlarm,
-    removeAlarm,
-  } = useAlarmStore();
+  const { alarms, setAlarms, resetAlarms, readAlarm } = useAlarmStore();
+
   //    state: 알람 읽음 상태    //
-  const [isRead, setIsRead] = useState<boolean>(false);
+  // const [isRead, setIsRead] = useState<boolean>(false);
   //    state: 알람 삭제제 상태    //
   const [isDelete, setIsDelete] = useState<boolean>(false);
   //          function: See More 팝업 토글 함수          //
@@ -58,20 +66,23 @@ export default function NavBar() {
     setShowSeeMorePopup(false); // 팝업 닫기
   };
 
-  const toggleAlarmSubscription = () => {
-    if (!loginUser) {
-      return;
-    }
-
-    if (!isSubscribed) {
-      subscribeToAlarm(cookies.accessToken);
-    } else {
-      unsubscribeFromAlarm();
+  //    function: 알람 리스트 조회 함수     //
+  const getAlarmListApi = async () => {
+    if (!cookies.accessToken) return;
+    try {
+      const response = await getAlarmListRequest(cookies.accessToken);
+      if (response.code === 'N002') {
+        console.log('알람 리스트 조회 API 요청 성공 Navbar:', response.data);
+        setAlarms(response.data.notificationList || []);
+      }
+    } catch (error) {
+      console.error('Alarm List Request Error', error);
     }
   };
-
   //    function: 해당 알람 읽음 처리 함수     //
   const onReadAlarmHandler = async (notificationId: number) => {
+    readAlarm(notificationId); // Zustand 상태 업데이트
+    if (!cookies.accessToken) return;
     try {
       const response = await patchReadAlarmRequest(
         notificationId,
@@ -79,38 +90,48 @@ export default function NavBar() {
       );
       if (response.code === 'N003') {
         console.log('알림읽음처리 api 결과 navbar', response.data);
+      } else {
+        console.error(
+          '알림 읽음 처리 실패: 응답 코드가 없거나 예상한 코드가 아닙니다.',
+          response,
+        );
       }
     } catch (error) {
       console.error('Alarm List Request Error', error);
+      console.log('id', notificationId);
     }
   };
-  //    function: 알람 리스트 조회 함수     //
-  const getAlarmListApi = async () => {
-    try {
-      const response = await getAlarmListRequest(cookies.accessToken);
-      if (response.code === 'N002') {
-        console.log('알람 리스트 조회 API 요청 성공 Navbar:', response.data);
-        addAlarm(response.data);
-      }
-    } catch (error) {
-      console.error('Alarm List Request Error', error);
+
+  const getAlarmDateCategory = (createdAt: string) => {
+    const alarmDate = new Date(createdAt);
+    const today = new Date();
+
+    // 오늘 날짜와 비교
+    if (alarmDate.toDateString() === today.toDateString()) {
+      return 'today';
     }
-  };
-  //    function: 해당 알람 삭제 처리 함수     //
-  const onDeleteAlarmHandler = async (notificationId: number) => {
-    try {
-      const response = await deleteAlarmRequest(
-        notificationId,
-        cookies.accessToken,
-      );
-      if (response.code === 'N005') {
-        console.log('알림 삭제 처리 성공', response.data);
-        removeAlarm(response.data.notificationId);
-      }
-    } catch (error) {
-      console.error('Alarm List Request Error', error);
+
+    // 이번 주인지 확인
+    const startOfWeek = new Date(
+      today.setDate(today.getDate() - today.getDay()),
+    ); // 이번 주의 첫날 (일요일)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // 이번 주의 마지막 날 (토요일)
+
+    if (alarmDate >= startOfWeek && alarmDate <= endOfWeek) {
+      return 'thisWeek';
     }
+
+    // 이번 달인지 확인
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    if (alarmDate >= startOfMonth) {
+      return 'thisMonth';
+    }
+
+    // 그 외는 "Earlier"
+    return 'earlier';
   };
+
   //     event handler: 로그아웃 이벤트 처리     //
   const onLogoutButtonClickHandler = () => {
     logout();
@@ -129,6 +150,7 @@ export default function NavBar() {
     setIsDarkMode(savedMode);
     document.body.classList.toggle('dark-mode', savedMode);
   }, []);
+
   useEffect(() => {
     getAlarmListApi();
   }, [cookies.accessToken]);
@@ -176,26 +198,20 @@ export default function NavBar() {
                 {loginUser?.nickname}
               </div>
             </div>
-            <div
-              className={styles['alarm-popup-Top-More']}
-              onClick={toggleAlarmSubscription}>
-              {isSubscribed ? (
-                <div className={styles['alarm-subscribe-button']}></div>
-              ) : (
-                <div className={styles['alarm-unsubscribe-button']}></div>
-              )}
+            <div className={styles['alarm-popup-Top-More']}>
+              <div className={styles['alarm-All-Read-button']}></div>
+
+              <div className={styles['alarm-All-Delete-button']}></div>
             </div>
           </div>
           <div className={styles['alarm-popup-Bottom']}>
-            <div className={styles['alarm-popup-Today']}>
+            <div className={styles['alarm-popup-list']}>
               {alarms.map((alarm) => {
+                const dateCategory = getAlarmDateCategory(alarm.createdAt);
                 return (
                   <div
                     key={alarm.id}
-                    className={styles['alarm-popup-Item']}
-                    onClick={() => {
-                      router.push(`/post/${alarm.relatedUrl}`);
-                    }}>
+                    className={`${styles['alarm-popup-Item']} ${alarm.isRead ? styles['read'] : ''}`}>
                     <img
                       src={alarm.senderProfileImage}
                       alt="프로필 이미지"
@@ -209,26 +225,23 @@ export default function NavBar() {
                           : '알림이 도착했습니다.'}
                       </div>
                       <div className={styles['alarm-popup-Item-Time']}>
-                        {new Date(alarm.createdAt).toLocaleTimeString()}
+                        {getElapsedTime(alarm.createdAt)}
                       </div>
+                      
                     </div>
                     <div className={styles['alarm-popup-Item-button']}>
                       <div
-                        className={
-                          styles['alarm-popup-Item-Read-button']
-                        }></div>
+                        className={`${styles['alarm-popup-Item-Read-button']} ${alarm.isRead ? styles['active-icon'] : ''}`}
+                        onClick={() => onReadAlarmHandler(alarm.id)}></div>
                       <div
-                        className={styles['alarm-popup-Item-Delete-button']}
-                        onClick={() => onDeleteAlarmHandler(alarm.id)}></div>
+                        className={
+                          styles['alarm-popup-Item-Delete-button']
+                        }></div>
                     </div>
                   </div>
                 );
               })}
             </div>
-
-            <div className={styles['alarm-popup-This-Week']}></div>
-            {/* <div className={styles['alarm-popup-This-Month']}></div>
-            <div className={styles['alarm-popup-Earlier']}></div> */}
           </div>
         </div>
       )}
