@@ -1,4 +1,25 @@
 'use client';
+import {
+  FaReact,
+  FaVuejs,
+  FaAngular,
+  FaSass,
+  FaJs,
+  FaCss3,
+  FaHtml5,
+} from 'react-icons/fa';
+import {
+  FaNodeJs,
+  FaJava,
+  FaPhp,
+  FaPython,
+  FaDocker,
+  FaAws,
+  FaCloud,
+  FaGithub,
+} from 'react-icons/fa';
+import { FaBootstrap, FaNpm, FaYarn, FaGrunt, FaGulp } from 'react-icons/fa';
+import { FaFigma, FaSketch } from 'react-icons/fa';
 import React, { useState, useEffect, useRef, ChangeEvent } from 'react';
 import styles from './PostDetail.module.css';
 import Header from '../../header/page';
@@ -44,7 +65,14 @@ const formatCreatedAt = (createdAt: string | number[]) => {
   // createdAt이 배열인 경우 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
   let date: Date;
   if (Array.isArray(createdAt)) {
-    date = new Date(createdAt[0], createdAt[1] - 1, createdAt[2], createdAt[3], createdAt[4], createdAt[5]);
+    date = new Date(
+      createdAt[0],
+      createdAt[1] - 1,
+      createdAt[2],
+      createdAt[3],
+      createdAt[4],
+      createdAt[5],
+    );
   } else {
     // 문자열인 경우 Date로 변환
     date = new Date(createdAt);
@@ -60,7 +88,6 @@ const formatCreatedAt = (createdAt: string | number[]) => {
   // 한국식 날짜 및 시간 포맷으로 리턴
   return `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분`;
 };
-
 
 export default function PostDetail() {
   //    state: React Query Client 가져오기     //
@@ -350,6 +377,95 @@ export default function PostDetail() {
     }
   };
 
+  const getTagIcon = (tag: string) => {
+    switch (tag) {
+      case 'react':
+        return (
+          <FaReact className={`${styles['stack-tag']} ${styles['react']}`} />
+        );
+      case 'java':
+        return (
+          <FaJava className={`${styles['stack-tag']} ${styles['java']}`} />
+        );
+      case 'node':
+        return (
+          <FaNodeJs className={`${styles['stack-tag']} ${styles['node']}`} />
+        );
+      case 'python':
+        return (
+          <FaPython className={`${styles['stack-tag']} ${styles['python']}`} />
+        );
+      case 'vue':
+        return (
+          <FaVuejs className={`${styles['stack-tag']} ${styles['vue']}`} />
+        );
+      case 'angular':
+        return (
+          <FaAngular
+            className={`${styles['stack-tag']} ${styles['angular']}`}
+          />
+        );
+      case 'sass':
+        return (
+          <FaSass className={`${styles['stack-tag']} ${styles['sass']}`} />
+        );
+      case 'js':
+        return <FaJs className={`${styles['stack-tag']} ${styles['js']}`} />;
+      case 'css':
+        return <FaCss3 className={`${styles['stack-tag']} ${styles['css']}`} />;
+      case 'html':
+        return (
+          <FaHtml5 className={`${styles['stack-tag']} ${styles['html']}`} />
+        );
+      case 'php':
+        return <FaPhp className={`${styles['stack-tag']} ${styles['php']}`} />;
+      case 'docker':
+        return (
+          <FaDocker className={`${styles['stack-tag']} ${styles['docker']}`} />
+        );
+      case 'aws':
+        return <FaAws className={`${styles['stack-tag']} ${styles['aws']}`} />;
+      case 'cloud':
+        return (
+          <FaCloud className={`${styles['stack-tag']} ${styles['cloud']}`} />
+        );
+      case 'github':
+        return (
+          <FaGithub className={`${styles['stack-tag']} ${styles['github']}`} />
+        );
+      case 'bootstrap':
+        return (
+          <FaBootstrap
+            className={`${styles['stack-tag']} ${styles['bootstrap']}`}
+          />
+        );
+      case 'npm':
+        return <FaNpm className={`${styles['stack-tag']} ${styles['npm']}`} />;
+      case 'yarn':
+        return (
+          <FaYarn className={`${styles['stack-tag']} ${styles['yarn']}`} />
+        );
+      case 'grunt':
+        return (
+          <FaGrunt className={`${styles['stack-tag']} ${styles['grunt']}`} />
+        );
+      case 'gulp':
+        return (
+          <FaGulp className={`${styles['stack-tag']} ${styles['gulp']}`} />
+        );
+      case 'figma':
+        return (
+          <FaFigma className={`${styles['stack-tag']} ${styles['figma']}`} />
+        );
+      case 'sketch':
+        return (
+          <FaSketch className={`${styles['stack-tag']} ${styles['sketch']}`} />
+        );
+      default:
+        return null;
+    }
+  };
+
   useEffect(() => {
     fetchSaveStatus();
     fetchSaveCount();
@@ -421,8 +537,11 @@ export default function PostDetail() {
           <div className={styles['post-detail-main']}>
             <div className={styles['stack-tag-box']}>
               {record.tagNames.map((tag, index) => (
-                <span key={index} className={styles['stack-tag']}>
-                  {tag}
+                <span
+                  key={index}
+                  className={`${styles['stack-tag']} ${styles[tag.toLowerCase()]}`}>
+                  {getTagIcon(tag)} {tag}
+                  {index < tag.length - 1 && ', '}
                 </span>
               ))}
             </div>
