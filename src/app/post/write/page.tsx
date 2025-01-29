@@ -16,7 +16,7 @@ import { useRecordStore } from '@/store';
 import { postRecordRequest } from '@/apis';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { PostRecordResponseDto } from '@/apis/response/record';
 //          component: 게시물 작성 화면 컴포넌트          //
 export default function PostWrite() {

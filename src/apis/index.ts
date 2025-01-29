@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ResponseDto } from './response';
-import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, PostCommentResponseDto, GetCommentResponseDto, DeleteCommentResponseDto, GetRecordResponseDto, GetRecordLikeCountResponseDto, GetRecordLikeListResponseDto } from './response/record';
+import { PostRecordResponseDto, PutRecordResponseDto, DeleteRecordResponseDto, PostCommentResponseDto, GetCommentResponseDto, DeleteCommentResponseDto, GetRecordResponseDto, GetTagRatioResponseDto } from './response/record';
 import { PostCommentRequestDto, PutRecordRequestDto, PostRecordRequestDto, PutCommentRequestDto } from './request/record';
 import { SignInRequestDto, SignUpRequestDto } from './request/auth';
 import { SignUpResponseDto } from './response/auth';
@@ -8,7 +8,7 @@ import GetDetailRecordResponseDto, { GetCheckSavedRecordResponseDto, GetUserReco
 import { AlarmResponseDto, GetUserResponseDto } from './response/user';
 import { SearchRecordRequestDto } from './request/search';
 import { comment } from 'postcss';
-import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto } from './response/record/like.response.dto';
+import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto, GetRecordLikeCountResponseDto, GetRecordLikeListResponseDto } from './response/record/like.response.dto';
 import PatchUserResponseDto from './response/user/patch-user.resposne.dto';
 import { patchUserRequestDto } from './request/user';
 import { EventSourcePolyfill } from 'event-source-polyfill';
@@ -847,8 +847,6 @@ export const getLikeListRecordRequest = async (page: number, size: number, acces
         }
     }
 }
-//  실시간 알림 구독 조회 API(요청시 알림리스트 조회 요청 보내지 않아도 알아서 실시간 알림 누적)    //
-const GET_REAL_TIME_ALARM_URL = () => `${API_DOMAIN}/notification/subscribe`;
 //  알림 리스트 조회 API(실시간X / 매 요청마다 알림을 조회)   //
 const GET_AlARM_LIST_URL = () => `${API_DOMAIN}/notification`;
 //  해당 알림 읽음 처리 API    //
@@ -991,6 +989,57 @@ export const getUnreadAlarmCountRequest = async (accessToken: string) => {
             },
         });
         console.log('읽지 않은 알림 수 카운트 api ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+//  전체 태그 통계 조회 API   //
+const GET_All_TAG_RATIO_URL = () => `${API_DOMAIN}/tags/all`;
+//  전체 태그 통계 조회 API   //
+const GET_USER_TAG_RATIO_URL = () => `${API_DOMAIN}/tags`;
+
+export const getAllTagRatioRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.get<GetTagRatioResponseDto>(`${GET_All_TAG_RATIO_URL()}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('전체 태그 통계 조회 API 요청 ', result);
+        return result.data;
+    }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+
+export const getUserTagRatioRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.get<GetTagRatioResponseDto>(`${GET_USER_TAG_RATIO_URL()}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저저 태그 통계 조회 API 요청 ', result);
         return result.data;
     }
     catch (error: unknown) {
