@@ -28,6 +28,7 @@ import PostItemListType from '@/components/post/postItemListType/page';
 import { patchUserRequestDto } from '@/apis/request/user';
 import { removeCookie } from '../cookies';
 import LoadingSpinner from '@/components/LoadingSpinner/page';
+import SideBar from '../sideBar/page';
 
 export default function MyPage() {
   //    state: 라우팅    //
@@ -451,7 +452,7 @@ export default function MyPage() {
               </div>
             </div>
           </div>
-
+        
           {modalOpen && (
             <div
               className={styles['modal-overlay']}
@@ -551,6 +552,9 @@ export default function MyPage() {
             </div>
           )}
         </div>
+        <aside className={styles['sidebar']}>
+            <SideBar />
+          </aside>
       </div>
     </>
   );
