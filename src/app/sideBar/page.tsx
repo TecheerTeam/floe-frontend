@@ -43,10 +43,11 @@ export default function SideBar() {
       console.error('Error posting record', error);
     }
   };
+  // 차트 데이터 정의
   const chartData = {
     labels: (pathname === '/mypage' ? userTags : tags).map(
-      (tag) => tag.tagName,
-    ), // 경로가 /mypage이면 userTags 사용
+      (tag) => `${tag.tagName} (${tag.count})`, // 태그 이름과 count를 함께 표시
+    ),
     datasets: [
       {
         data: (pathname === '/mypage' ? userTags : tags).map(
@@ -56,6 +57,22 @@ export default function SideBar() {
         hoverOffset: 4,
       },
     ],
+  };
+
+  // 툴팁 커스터마이즈 (tag count와 ratio 포함)
+  const options = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem: any) {
+            const label = tooltipItem.label || '';
+            const count = tooltipItem.raw || 0;
+            const ratio = tooltipItem.raw || 0;
+            return `${label}: Count ${count}, Ratio ${ratio}%`; // tooltip에 count와 ratio 표시
+          },
+        },
+      },
+    },
   };
   useEffect(() => {
     if (!cookies.accessToken) return;
@@ -85,7 +102,7 @@ export default function SideBar() {
           {pathname === '/mypage' ? 'Tags of my Posts' : 'Tags of Total Posts'}
         </div>
         <div className={styles['pie-chart']}>
-          <Pie data={chartData} /> {/* Pie 차트 렌더링 */}
+          <Pie data={chartData} options={options} /> {/* Pie 차트 렌더링 */}
         </div>
       </div>
     </div>
