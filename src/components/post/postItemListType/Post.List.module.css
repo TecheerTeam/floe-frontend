@@ -56,6 +56,134 @@
   height: 53px;
   padding-left: 15px;
 }
+.stack-tag {
+  padding-left: 5px;
+  padding-right: 8px; /* 태그들 사이에 여백 추가 */
+  border-radius: 5%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+/* 스타일 추가 부분 */
+.stack-tag.react {
+  background-color: #61dafb;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.vue {
+  background-color: #42b883;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.angular {
+  background-color: #dd1b16;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.sass {
+  background-color: #cc6699;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.js {
+  background-color: #f7df1e;
+  color: black;
+  font-weight: bold;
+}
+
+.stack-tag.css {
+  background-color: #2965f1;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.html {
+  background-color: #e34f26;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.java {
+  background-color: #007396;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.php {
+  background-color: #8993be;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.docker {
+  background-color: #2496ed;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.aws {
+  background-color: #ff9900;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.cloud {
+  background-color: #2196f3;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.github {
+  background-color: #333;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.bootstrap {
+  background-color: #563d7c;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.npm {
+  background-color: #cb3837;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.yarn {
+  background-color: #2c8ebb;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.grunt {
+  background-color: #f50057;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.gulp {
+  background-color: #cf4647;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.figma {
+  background-color: #f24e1e;
+  color: white;
+  font-weight: bold;
+}
+
+.stack-tag.sketch {
+  background-color: #f7b500;
+  color: white;
+  font-weight: bold;
+}
 
 .list-main {
   display: flex; /* 변경: flex로 가로 배치 */

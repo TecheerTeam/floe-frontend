@@ -1,4 +1,25 @@
 'use client';
+import {
+  FaReact,
+  FaVuejs,
+  FaAngular,
+  FaSass,
+  FaJs,
+  FaCss3,
+  FaHtml5,
+} from 'react-icons/fa';
+import {
+  FaNodeJs,
+  FaJava,
+  FaPhp,
+  FaPython,
+  FaDocker,
+  FaAws,
+  FaCloud,
+  FaGithub,
+} from 'react-icons/fa';
+import { FaBootstrap, FaNpm, FaYarn, FaGrunt, FaGulp } from 'react-icons/fa';
+import { FaFigma, FaSketch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation'; // Next.js 라우터
 import React from 'react';
 import styles from './Post.Card.module.css';
@@ -126,6 +147,96 @@ export default function PostItemCardType({
     (like: { userName: string }) => like.userName === user.nickname,
   );
 
+  // 스택 아이콘 처리 함수
+  const getTagIcon = (tag: string) => {
+    switch (tag) {
+      case 'react':
+        return (
+          <FaReact className={`${styles['stack-tag']} ${styles['react']}`} />
+        );
+      case 'java':
+        return (
+          <FaJava className={`${styles['stack-tag']} ${styles['java']}`} />
+        );
+      case 'node':
+        return (
+          <FaNodeJs className={`${styles['stack-tag']} ${styles['node']}`} />
+        );
+      case 'python':
+        return (
+          <FaPython className={`${styles['stack-tag']} ${styles['python']}`} />
+        );
+      case 'vue':
+        return (
+          <FaVuejs className={`${styles['stack-tag']} ${styles['vue']}`} />
+        );
+      case 'angular':
+        return (
+          <FaAngular
+            className={`${styles['stack-tag']} ${styles['angular']}`}
+          />
+        );
+      case 'sass':
+        return (
+          <FaSass className={`${styles['stack-tag']} ${styles['sass']}`} />
+        );
+      case 'js':
+        return <FaJs className={`${styles['stack-tag']} ${styles['js']}`} />;
+      case 'css':
+        return <FaCss3 className={`${styles['stack-tag']} ${styles['css']}`} />;
+      case 'html':
+        return (
+          <FaHtml5 className={`${styles['stack-tag']} ${styles['html']}`} />
+        );
+      case 'php':
+        return <FaPhp className={`${styles['stack-tag']} ${styles['php']}`} />;
+      case 'docker':
+        return (
+          <FaDocker className={`${styles['stack-tag']} ${styles['docker']}`} />
+        );
+      case 'aws':
+        return <FaAws className={`${styles['stack-tag']} ${styles['aws']}`} />;
+      case 'cloud':
+        return (
+          <FaCloud className={`${styles['stack-tag']} ${styles['cloud']}`} />
+        );
+      case 'github':
+        return (
+          <FaGithub className={`${styles['stack-tag']} ${styles['github']}`} />
+        );
+      case 'bootstrap':
+        return (
+          <FaBootstrap
+            className={`${styles['stack-tag']} ${styles['bootstrap']}`}
+          />
+        );
+      case 'npm':
+        return <FaNpm className={`${styles['stack-tag']} ${styles['npm']}`} />;
+      case 'yarn':
+        return (
+          <FaYarn className={`${styles['stack-tag']} ${styles['yarn']}`} />
+        );
+      case 'grunt':
+        return (
+          <FaGrunt className={`${styles['stack-tag']} ${styles['grunt']}`} />
+        );
+      case 'gulp':
+        return (
+          <FaGulp className={`${styles['stack-tag']} ${styles['gulp']}`} />
+        );
+      case 'figma':
+        return (
+          <FaFigma className={`${styles['stack-tag']} ${styles['figma']}`} />
+        );
+      case 'sketch':
+        return (
+          <FaSketch className={`${styles['stack-tag']} ${styles['sketch']}`} />
+        );
+      default:
+        return null;
+    }
+  };
+
   //          render: 게시물 카드형 렌더링          //
   return (
     <div className={styles['card-container']} onClick={handleCardClick}>
@@ -152,16 +263,20 @@ export default function PostItemCardType({
       <div className={styles['card-main']}>
         {/* 게시글 내용 전체 클릭시 해당 게시글 디테일페이지로 이동 */}
         <div className={styles['stack-tag-box']}>
-          <div className={styles['stack-tag']}>
-            {tagNames.map((tag, index) => (
-              <span key={index} className={styles['stack-tag']}>
-                {tag}
-              </span>
-            ))}
-          </div>
+          {tagNames.map((tag, index) => (
+            <span
+              key={index}
+              className={`${styles['stack-tag']} ${styles[tag.toLowerCase()]}`}>
+              {getTagIcon(tag)} {tag}
+              {index < tagNames.length - 1 && ', '}
+            </span>
+          ))}
         </div>
 
-        <div className={styles['card-title']}>{title}</div>
+        <div className={styles['card-title']}>
+          {'Title:   '}
+          {title}
+        </div>
         <div className={styles['card-content']}>{content}</div>
         {medias.length > 0 && (
           <div className={styles['card-image']}>
