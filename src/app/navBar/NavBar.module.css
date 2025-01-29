@@ -317,6 +317,21 @@
 .active-icon {
   background-image: var(--nav-bar-active-Home-icon);
 }
+.Heart-Icon {
+  position: relative;
+  /* 기존 Heart-Icon 스타일 */
+}
+
+.Heart-Icon.has-alarm::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background-color: red;
+}
 .Heart-Icon.active-icon {
   background-image: var(--nav-bar-active-Alarm-icon);
 }
@@ -353,10 +368,9 @@
 }
 
 .alarm-popup-Top-User-Profile-Image {
-  background-image: url(./../../assets/WR.png);
   width: 36px;
   height: 36px;
-  background-size: cover;
+  background-size: contain;
   border-radius: 50%;
   background-position: center;
 }
@@ -367,38 +381,52 @@
   flex: 1;
 }
 
-.alarm-popup-Top-User-Follow-Request {
-  font-size: 14px;
-  align-items: center;
-  justify-content: center;
-  color: var(--nav-bar-alarm-popup-box-user-follow-request-text-color);
-}
 .alarm-popup-Top-User-Nickname {
-  font-size: 12px;
+  font-size: 14px;
   align-items: center;
   justify-content: center;
   color: var(--nav-bar-alarm-popup-box-user-nickname-text-color);
 }
+.alarm-popup-Top-User-Alarm-Count {
+  display: flex;
+  flex-direction: row;
 
-.alarm-subscribe-button {
+  font-size: 12px;
+  align-items: center;
+  color: var(--nav-bar-alarm-popup-box-user-Alarm-Count-text-color);
+  gap: 10px;
+}
+.alarm-popup-Top-More {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.alarm-All-Read-button {
+  cursor: pointer;
   width: 32px;
   height: 32px;
-  background-image: var(--nav-bar-alarm-Auto-check-icon);
+  background-color: transparent; /* 배경색 제거 */
+  background-image: var(--nav-bar-alarm-all-read-icon);
+}
+.alarm-All-Read-button:hover {
+  background-image: var(--nav-bar-alarm-all-read-icon-Hover);
+}
+.alarm-All-Read-button.active {
+  background-image: var(--nav-bar-alarm-all-read-icon-Active);
+}
+.alarm-All-Read-button.active:hover {
+  background-image: var(--nav-bar-alarm-all-read-icon-Hover);
+}
+.alarm-All-Delete-button {
   cursor: pointer;
-}
-.alarm-subscribe-button:hover {
-  background-image: var(--nav-bar-alarm-Auto-Uncheck-icon-Hover);
-}
-.alarm-unsubscribe-button {
   width: 32px;
   height: 32px;
-  background-image: var(--nav-bar-alarm-Auto-Uncheck-icon);
-  cursor: pointer;
+  background-color: transparent; /* 배경색 제거 */
+  background-image: var(--nav-bar-alarm-all-delete-icon);
 }
-.alarm-unsubscribe-button:hover {
-  background-image: var(--nav-bar-alarm-Auto-check-icon-Hover);
+.alarm-All-Delete-button:hover {
+  background-image: var(--nav-bar-alarm-all-delete-icon-Hover);
 }
-
 .alarm-popup-Bottom {
   display: flex;
   flex-direction: column;
@@ -415,7 +443,9 @@
 /* 스크롤바 전체 */
 .alarm-popup-list::-webkit-scrollbar {
   width: 8px; /* 스크롤바 너비 */
-  background-color: #f1f1f1; /* 스크롤바의 배경 색 */
+  background-color: var(
+    --nav-bar-alarm-popup-box-background-color
+  ); /* 스크롤바의 배경 색 */
 }
 /* 스크롤바의 트랙 (스크롤바가 이동하는 영역) */
 .alarm-popup-list::-webkit-scrollbar-track {
@@ -471,7 +501,6 @@
 }
 /* 읽음 처리된 알람에 대한 스타일 */
 .read {
-  background-color: #f0f0f0; /* 읽음 알람의 배경색 */
   text-decoration: line-through; /* 읽음 알람은 텍스트에 취소선을 추가 */
 }
 

@@ -41,12 +41,26 @@ dayjs.locale('ko');
 
 //   function: 작성일자 포멧팅함수 (xxxx년 xx월 xx일 xx시 xx분)   //
 const formatCreatedAt = (createdAt: string | number[]) => {
-  // 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
-  const formattedDate = `${createdAt[0]}-${String(createdAt[1]).padStart(2, '0')}-${String(createdAt[2]).padStart(2, '0')} ${String(createdAt[3]).padStart(2, '0')}:${String(createdAt[4]).padStart(2, '0')}:${String(createdAt[5]).padStart(2, '0')}`;
+  // createdAt이 배열인 경우 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
+  let date: Date;
+  if (Array.isArray(createdAt)) {
+    date = new Date(createdAt[0], createdAt[1] - 1, createdAt[2], createdAt[3], createdAt[4], createdAt[5]);
+  } else {
+    // 문자열인 경우 Date로 변환
+    date = new Date(createdAt);
+  }
 
-  // 생성된 날짜를 한국 시간대로 포맷
-  return dayjs(formattedDate).tz('Asia/Seoul').format('YYYY년 MM월 DD일 HH:mm');
+  // 날짜와 시간 정보를 각각 얻기
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더함
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+
+  // 한국식 날짜 및 시간 포맷으로 리턴
+  return `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분`;
 };
+
 
 export default function PostDetail() {
   //    state: React Query Client 가져오기     //
@@ -282,7 +296,7 @@ export default function PostDetail() {
               profileImage: user.profileImage,
             },
             content: newComment,
-            createdAt: new Date(),
+            createdAt: new Date().toISOString(),
           },
           ...prev,
         ]);

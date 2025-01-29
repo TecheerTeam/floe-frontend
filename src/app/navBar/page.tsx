@@ -8,23 +8,39 @@ import { useLoginUserStore, useAlarmStore } from '@/store';
 import { useCookies } from 'react-cookie';
 import {
   deleteAlarmRequest,
+  deleteAlreadyReadAllAlarmRequest,
   getAlarmListRequest,
+  getUnreadAlarmCountRequest,
   patchReadAlarmRequest,
+  patchReadAllAlarmRequest,
 } from '@/apis';
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import relativeTime from 'dayjs/plugin/relativeTime';
 
-// 경과 시간 표시 함수
-const getElapsedTime = (createdAt: string) => {
-  const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
-  const writeTime = dayjs(createdAt).tz('Asia/Seoul'); // 작성 시간을 한국 시간으로 변환
-  const gap = now.diff(writeTime, 's'); // 초 단위 차이 계산
+//   function: 날짜 처리 함수    //
+const formatElapsedTime = (createdAt: string) => {
+  // 'YYYY-MM-DD HH:mm:ss' 형식의 문자열을 Date 객체로 변환
+  const date = new Date(createdAt);
+  const now = new Date();
 
-  if (gap < 60) return `${gap}초 전`;
-  if (gap < 3600) return `${Math.floor(gap / 60)}분 전`;
-  if (gap < 86400) return `${Math.floor(gap / 3600)}시간 전`;
-  return `${Math.floor(gap / 86400)}일 전`;
+  // 날짜 차이 계산
+  const diffInMs = now.getTime() - date.getTime(); // 밀리초 차이
+  const diffInSec = diffInMs / 1000; // 초
+  const diffInMin = diffInSec / 60; // 분
+  const diffInHour = diffInMin / 60; // 시간
+  const diffInDay = diffInHour / 24; // 일
+
+  // "몇 분 전", "몇 시간 전", "몇 일 전" 형식으로 변환
+  if (diffInDay >= 1) {
+    const daysAgo = Math.floor(diffInDay);
+    return `${daysAgo}일 전`;
+  } else if (diffInHour >= 1) {
+    const hoursAgo = Math.floor(diffInHour);
+    return `${hoursAgo}시간 전`;
+  } else if (diffInMin >= 1) {
+    const minutesAgo = Math.floor(diffInMin);
+    return `${minutesAgo}분 전`;
+  } else {
+    return '방금 전';
+  }
 };
 
 export default function NavBar() {
@@ -39,12 +55,10 @@ export default function NavBar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
-  const { alarms, setAlarms, resetAlarms, readAlarm } = useAlarmStore();
+  const { alarms, setAlarms, readAllAlarms, deleteAlarm, readAlarm } =
+    useAlarmStore();
+  const [alarmCounts, setAlarmCounts] = useState<number>(0);
 
-  //    state: 알람 읽음 상태    //
-  // const [isRead, setIsRead] = useState<boolean>(false);
-  //    state: 알람 삭제제 상태    //
-  const [isDelete, setIsDelete] = useState<boolean>(false);
   //          function: See More 팝업 토글 함수          //
   const toggleSeeMorePopup = () => {
     setShowSeeMorePopup(!showSeeMorePopup);
@@ -81,7 +95,6 @@ export default function NavBar() {
   };
   //    function: 해당 알람 읽음 처리 함수     //
   const onReadAlarmHandler = async (notificationId: number) => {
-    readAlarm(notificationId); // Zustand 상태 업데이트
     if (!cookies.accessToken) return;
     try {
       const response = await patchReadAlarmRequest(
@@ -90,6 +103,8 @@ export default function NavBar() {
       );
       if (response.code === 'N003') {
         console.log('알림읽음처리 api 결과 navbar', response.data);
+        readAlarm(notificationId); // Zustand 상태 업데이트
+        setAlarmCounts((prev) => prev - 1);
       } else {
         console.error(
           '알림 읽음 처리 실패: 응답 코드가 없거나 예상한 코드가 아닙니다.',
@@ -101,35 +116,98 @@ export default function NavBar() {
       console.log('id', notificationId);
     }
   };
-
-  const getAlarmDateCategory = (createdAt: string) => {
-    const alarmDate = new Date(createdAt);
-    const today = new Date();
-
-    // 오늘 날짜와 비교
-    if (alarmDate.toDateString() === today.toDateString()) {
-      return 'today';
+  //    function: 해당 알람 삭제 처리 함수     //
+  const onDeleteAlarmHandler = async (
+    notificationId: number,
+    isRead: boolean,
+  ) => {
+    if (!cookies.accessToken) return;
+    const alarm = alarms.find((alarm) => alarm.id === notificationId);
+    if (!alarm) return; // 알람이 없다면 처리 안함
+    try {
+      const response = await deleteAlarmRequest(
+        notificationId,
+        cookies.accessToken,
+      );
+      if (response.code === 'N005') {
+        console.log('알림삭제처리 api 결과 navbar', response.data);
+        deleteAlarm(notificationId); // Zustand 상태 업데이트
+        if (!isRead) {
+          setAlarmCounts((prev) => prev - 1);
+        }
+      } else {
+        console.error(
+          '알림 읽음 처리 실패: 응답 코드가 없거나 예상한 코드가 아닙니다.',
+          response,
+        );
+      }
+    } catch (error) {
+      console.error('Alarm Delete Request Error', error);
+      console.log('id', notificationId);
     }
-
-    // 이번 주인지 확인
-    const startOfWeek = new Date(
-      today.setDate(today.getDate() - today.getDay()),
-    ); // 이번 주의 첫날 (일요일)
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // 이번 주의 마지막 날 (토요일)
-
-    if (alarmDate >= startOfWeek && alarmDate <= endOfWeek) {
-      return 'thisWeek';
+  };
+  //    function: 모든 알람 읽음 처리 함수     //
+  const onReadAllAlarmHandler = async () => {
+    if (!cookies.accessToken) return;
+    try {
+      const response = await patchReadAllAlarmRequest(cookies.accessToken);
+      if (response.code === 'N004') {
+        console.log('모든 알람 읽음 처리 성공', response.data);
+        useAlarmStore.getState().readAllAlarms();
+        setAlarmCounts(0); // alarmCounts를 0으로 설정
+      }
+    } catch (error) {
+      console.error('Read All Alarm Request Error', error);
     }
+  };
 
-    // 이번 달인지 확인
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    if (alarmDate >= startOfMonth) {
-      return 'thisMonth';
+  //    function: 읽은 알람 모두 삭제 처리 함수     //
+  const onDeleteAllReadAlarmHandler = async () => {
+    if (!cookies.accessToken) return;
+    try {
+      const response = await deleteAlreadyReadAllAlarmRequest(
+        cookies.accessToken,
+      );
+      if (response.code === 'N006') {
+        console.log('읽은 알람 모두 삭제 처리 성공', response.data);
+        // isRead가 true인 알림만 삭제
+        useAlarmStore.getState().setAlarms(
+          alarms.filter((alarm) => !alarm.isRead), // isRead가 true인 알림은 제외
+        );
+      }
+    } catch (error) {
+      console.error('Delete All Alarm Request Error', error);
     }
+  };
+  //    function: 읽지 않은 알람 카운트 함수     //
+  const onAlarmCountsHandler = async () => {
+    if (!cookies.accessToken) return;
+    try {
+      const response = await getUnreadAlarmCountRequest(cookies.accessToken);
+      if (response.code === 'N007') {
+        console.log('알림 개수 조회 성공', response.data);
+        setAlarmCounts(response.data.count);
+      }
+    } catch (error) {
+      console.error('Delete All Alarm Request Error', error);
+    }
+  };
 
-    // 그 외는 "Earlier"
-    return 'earlier';
+  //   function: URL에서 recordId 추출하는 함수  //
+  const extractRecordId = (url: string) => {
+    const match = url.match(/\/records\/(\d+)/); // "/records/" 뒤의 숫자만 추출
+    return match ? match[1] : null; // 없으면 null을 반환
+  };
+
+  //   function: 알림 클릭 시 해당 recordId로 이동하고 읽음 처리하는 함수 //
+  const onAlarmClickHandler = (notificationId: number, relatedUrl: string) => {
+    // 해당 알림을 읽음 처리
+    onReadAlarmHandler(notificationId);
+    // 관련 URL에서 recordId 추출
+    const recordId = extractRecordId(relatedUrl);
+    if (recordId) {
+      router.push(`/post/${recordId}`); // 해당 recordId로 이동
+    }
   };
 
   //     event handler: 로그아웃 이벤트 처리     //
@@ -152,7 +230,10 @@ export default function NavBar() {
   }, []);
 
   useEffect(() => {
-    getAlarmListApi();
+    if (cookies.accessToken) {
+      getAlarmListApi();
+      onAlarmCountsHandler();
+    }
   }, [cookies.accessToken]);
   //          render: NavBar 렌더링          //
   return (
@@ -176,7 +257,7 @@ export default function NavBar() {
         }`}
         onClick={toggleAlarmPopup}>
         <div
-          className={`${styles['Heart-Icon']} ${
+          className={`${styles['Heart-Icon']} ${alarmCounts > 0 ? styles['has-alarm'] : ''} ${
             isActive('/alarm') ? styles['active-icon'] : ''
           }`}></div>
         Alarm
@@ -191,56 +272,67 @@ export default function NavBar() {
                 backgroundImage: `url(${loginUser?.profileImage})`,
               }}></div>
             <div className={styles['alarm-popup-Top-User-More']}>
-              <div className={styles['alarm-popup-Top-User-Follow-Request']}>
-                {'Follow Request'}
-              </div>
               <div className={styles['alarm-popup-Top-User-Nickname']}>
                 {loginUser?.nickname}
               </div>
+              <div className={styles['alarm-popup-Top-User-Alarm-Count']}>
+                {'New Alarm'}
+                <div className={styles['Alarm-Count']}>{alarmCounts}</div>
+              </div>
             </div>
             <div className={styles['alarm-popup-Top-More']}>
-              <div className={styles['alarm-All-Read-button']}></div>
+              <div
+                className={`${styles['alarm-All-Read-button']} ${
+                  alarmCounts > 0 ? '' : styles['active']
+                }`}
+                onClick={onReadAllAlarmHandler}></div>
 
-              <div className={styles['alarm-All-Delete-button']}></div>
+              <div
+                className={styles['alarm-All-Delete-button']}
+                onClick={onDeleteAllReadAlarmHandler}></div>
             </div>
           </div>
           <div className={styles['alarm-popup-Bottom']}>
             <div className={styles['alarm-popup-list']}>
-              {alarms.map((alarm) => {
-                const dateCategory = getAlarmDateCategory(alarm.createdAt);
-                return (
-                  <div
-                    key={alarm.id}
-                    className={`${styles['alarm-popup-Item']} ${alarm.isRead ? styles['read'] : ''}`}>
-                    <img
-                      src={alarm.senderProfileImage}
-                      alt="프로필 이미지"
-                      className={styles['alarm-popup-Item-Profile']}
-                    />
-                    <div className={styles['alarm-Content']}>
-                      <div className={styles['alarm-popup-Item-Text']}>
-                        <strong>{alarm.senderNickname}</strong>님이
-                        {alarm.notificationType === 'NEW_COMMENT'
-                          ? '댓글을 남겼습니다.'
-                          : '알림이 도착했습니다.'}
+              {alarms
+                .filter((alarm) => !alarm.isDelete) // 삭제된 알람을 제외하고 렌더링
+                .map((alarm) => {
+                  return (
+                    <div
+                      key={alarm.id}
+                      className={`${styles['alarm-popup-Item']} ${alarm.isRead ? styles['read'] : ''}`}
+                      onClick={() =>
+                        onAlarmClickHandler(alarm.id, alarm.relatedUrl)
+                      }>
+                      <img
+                        src={alarm.senderProfileImage}
+                        alt="프로필 이미지"
+                        className={styles['alarm-popup-Item-Profile']}
+                      />
+                      <div className={styles['alarm-Content']}>
+                        <div className={styles['alarm-popup-Item-Text']}>
+                          <strong>{alarm.senderNickname}</strong>님이
+                          {alarm.notificationType === 'NEW_COMMENT'
+                            ? '내 게시글에 댓글을 남겼습니다.'
+                            : '내 댓글에 대댓글을 남겼습니다.'}
+                        </div>
+                        <div className={styles['alarm-popup-Item-Time']}>
+                          {formatElapsedTime(alarm.createdAt)}
+                        </div>
                       </div>
-                      <div className={styles['alarm-popup-Item-Time']}>
-                        {getElapsedTime(alarm.createdAt)}
+                      <div className={styles['alarm-popup-Item-button']}>
+                        <div
+                          className={`${styles['alarm-popup-Item-Read-button']} ${alarm.isRead ? styles['active-icon'] : ''}`}
+                          onClick={() => onReadAlarmHandler(alarm.id)}></div>
+                        <div
+                          className={styles['alarm-popup-Item-Delete-button']}
+                          onClick={() =>
+                            onDeleteAlarmHandler(alarm.id, alarm.isRead)
+                          }></div>
                       </div>
-                      
                     </div>
-                    <div className={styles['alarm-popup-Item-button']}>
-                      <div
-                        className={`${styles['alarm-popup-Item-Read-button']} ${alarm.isRead ? styles['active-icon'] : ''}`}
-                        onClick={() => onReadAlarmHandler(alarm.id)}></div>
-                      <div
-                        className={
-                          styles['alarm-popup-Item-Delete-button']
-                        }></div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
         </div>
