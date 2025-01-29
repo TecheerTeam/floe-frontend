@@ -29,18 +29,42 @@ import {
   PutCommentRequestDto,
 } from '@/apis/request/record';
 import { GetCommentResponseDto } from '@/apis/response/record';
-import { comment } from 'postcss';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-dayjs.extend(utc);
-dayjs.extend(timezone);
+const formatElapsedTime = (createdAt: string) => {
+  // 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
+  const formattedDate = `${createdAt[0]}-${String(createdAt[1]).padStart(2, '0')}-${String(createdAt[2]).padStart(2, '0')} ${String(createdAt[3]).padStart(2, '0')}:${String(createdAt[4]).padStart(2, '0')}:${String(createdAt[5]).padStart(2, '0')}`;
+
+  // 생성된 날짜를 Date 객체로 변환
+  const date = new Date(formattedDate);
+  const now = new Date();
+
+  // 날짜 차이 계산
+  const diffInMs = now.getTime() - date.getTime(); // 밀리초 차이
+  const diffInSec = diffInMs / 1000; // 초
+  const diffInMin = diffInSec / 60; // 분
+  const diffInHour = diffInMin / 60; // 시간
+  const diffInDay = diffInHour / 24; // 일
+
+  // "몇 분 전", "몇 시간 전", "몇 일 전" 형식으로 변환
+  if (diffInDay >= 1) {
+    const daysAgo = Math.floor(diffInDay);
+    return `${daysAgo}일 전`;
+  } else if (diffInHour >= 1) {
+    const hoursAgo = Math.floor(diffInHour);
+    return `${hoursAgo}시간 전`;
+  } else if (diffInMin >= 1) {
+    const minutesAgo = Math.floor(diffInMin);
+    return `${minutesAgo}분 전`;
+  } else {
+    return '방금 전';
+  }
+};
 interface Props {
   commentsList: CommentItem; // 댓글 데이터
 }
 
 export default function Comment({ commentsList }: Props) {
   const { commentId, content, createdAt, user: commentWriter } = commentsList;
+
   const { user: logInUser } = useLoginUserStore(); // 현재 로그인한 사용자
   const [clickReply, setClickReply] = useState<number | null>(null); // 클릭된 대댓글의 ID 관리
   const handleToggleReply = (commentId: number) => {
@@ -74,6 +98,7 @@ export default function Comment({ commentsList }: Props) {
   const [isLike, setIsLike] = useState<boolean>(false);
   //      state : 댓글/대댓글좋아요 개수 상태        //
   const [likeCount, setLikeCount] = useState<number>(0);
+
   //     function: 대댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
@@ -100,18 +125,6 @@ export default function Comment({ commentsList }: Props) {
 
     initialPageParam: 0,
   });
-
-  //          function: 작성일 경과시간 함수          //
-  const getElapsedTime = () => {
-    const now = dayjs().tz('Asia/Seoul'); // 현재 시간을 한국 시간으로 계산
-    const writeTime = dayjs(createdAt).tz('Asia/Seoul'); // 작성 시간을 한국 시간으로 변환
-
-    const gap = now.diff(writeTime, 's'); // 초 단위 차이 계산
-    if (gap < 60) return `${gap}초 전`;
-    if (gap < 3600) return `${Math.floor(gap / 60)}분 전`;
-    if (gap < 86400) return `${Math.floor(gap / 3600)}시간 전`;
-    return `${Math.floor(gap / 86400)}일 전`;
-  };
   //    event handler: 대댓글 입력 변경 처리    //
   const onReplyChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -157,7 +170,7 @@ export default function Comment({ commentsList }: Props) {
               profileImage: commentWriter.profileImage,
             },
             content: newReply,
-            createdAt: new Date(),
+            createdAt: new Date().toISOString(),
             parentId: commentId,
           },
           ...prev,
@@ -290,9 +303,7 @@ export default function Comment({ commentsList }: Props) {
   };
 
   const fetchCommentLikeStatus = async () => {
-    if (!commentId || !cookies.accessToken) 
-     
-      return;
+    if (!commentId || !cookies.accessToken) return;
 
     try {
       const response = await getCommentLikeListRequest(
@@ -384,7 +395,7 @@ export default function Comment({ commentsList }: Props) {
 
             <div className={styles['comment-item-bottom']}>
               <div className={styles['comment-write-time']}>
-                {getElapsedTime()}
+                {formatElapsedTime(createdAt)}
               </div>
               <div className={styles['comment-like-container']}>
                 <div className={styles['comment-like-count']}>{likeCount}</div>

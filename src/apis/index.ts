@@ -913,7 +913,7 @@ export const patchReadAlarmRequest = async (notificationId: number, accessToken:
 //         function: 모든 알람 읽음 처리 API          //
 export const patchReadAllAlarmRequest = async (accessToken: string) => {
     try {
-        const result = await axios.patch<AlarmResponseDto>(`${PATCH_READ_ALL_ALARM_URL()}`, {
+        const result = await axios.patch<AlarmResponseDto>(`${PATCH_READ_ALL_ALARM_URL()}`, {}, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },
