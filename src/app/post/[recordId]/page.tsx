@@ -28,6 +28,11 @@ import Comment from '@/components/comment/page';
 import { CommentItem, LikeItem, RecordItem } from '@/types/interface';
 import { redirect, useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { Navigation, Pagination } from 'swiper/modules';
 import {
   deleteLikeRequest,
   deleteRecordRequest,
@@ -88,7 +93,20 @@ const formatCreatedAt = (createdAt: string | number[]) => {
   // 한국식 날짜 및 시간 포맷으로 리턴
   return `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분`;
 };
+//   function: TipTap-Editor 태그 제거    //
+function sanitizeContent(content: string) {
+  // <p>, <b>, <em>, <code> 태그를 제거하면서 스타일은 유지할 수 있도록 <span>을 사용
+  content = content.replace(/<p>/gi, '<p data-class="paragraph">');
+  content = content.replace(/<\/p>/gi, '</p><br>'); // <p> 태그 뒤에 줄바꿈 강제 삽입
+  content = content.replace(/<b>/gi, '<span data-class="bold">');
+  content = content.replace(/<\/b>/gi, '</span>');
+  content = content.replace(/<italic>/gi, '<span data-class="italic">');
+  content = content.replace(/<\/italic>/gi, '</span>');
+  content = content.replace(/<code>/gi, '<span data-class="code">');
+  content = content.replace(/<\/code>/gi, '</span>');
 
+  return content;
+}
 export default function PostDetail() {
   //    state: React Query Client 가져오기     //
   const queryClient = useQueryClient();
@@ -466,6 +484,7 @@ export default function PostDetail() {
     }
   };
 
+  //  effect: record Id path variable 바뀔떄마다 해당 게시물 좋아요, 저장 데이터 불러     //
   useEffect(() => {
     fetchSaveStatus();
     fetchSaveCount();
@@ -473,7 +492,7 @@ export default function PostDetail() {
     fetchLikeCount();
   }, [recordId, cookies.accessToken]);
 
-  //          effect: record Id path variable 바뀔떄마다 해당 게시물 데이터, 댓글 데이터 불러오기 (무한스크롤)     //
+  //  effect: record Id path variable 바뀔떄마다 해당 게시물 데이터, 댓글 데이터 불러오기 (무한스크롤)   //
   useEffect(() => {
     getRecordDetails();
     totalComments();
@@ -547,19 +566,30 @@ export default function PostDetail() {
             </div>
 
             <div className={styles['post-detail-title']}>{record.title}</div>
-            <div className={styles['post-detail-content']}>
-              {record.content}
-            </div>
+            <div
+              className={styles['post-detail-content']}
+              dangerouslySetInnerHTML={{
+                __html: sanitizeContent(record.content),
+              }}
+            />
+            {/* 이미지 슬라이더 적용 */}
             {record.medias && record.medias.length > 0 && (
               <div className={styles['post-detail-image-container']}>
-                {record.medias.map((media) => (
-                  <img
-                    key={media.mediaId}
-                    src={media.mediaUrl}
-                    alt="게시물 이미지"
-                    className={styles['post-detail-images']}
-                  />
-                ))}
+                <Swiper
+                  modules={[Navigation, Pagination]}
+                  navigation
+                  pagination={{ clickable: true }}
+                  className={styles['swiper-container']}>
+                  {record.medias.map((media) => (
+                    <SwiperSlide key={media.mediaId}>
+                      <img
+                        src={media.mediaUrl}
+                        alt="게시물 이미지"
+                        className={styles['post-detail-images']}
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
             )}
           </div>
