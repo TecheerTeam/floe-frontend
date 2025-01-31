@@ -21,7 +21,7 @@ import {
 import { FaBootstrap, FaNpm, FaYarn, FaGrunt, FaGulp } from 'react-icons/fa';
 import { FaFigma, FaSketch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation'; // Next.js 라우터
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './Post.List.module.css';
 import { RecordListItem } from '@/types/interface';
 import { useQuery } from '@tanstack/react-query';
@@ -32,6 +32,22 @@ import {
   getSaveCountRecordRequest,
 } from '@/apis';
 
+//   function: TipTap-Editor 태그 제거    //
+function sanitizeContent(content: string) {
+  // <p>, <b>, <em>, <code> 태그를 제거하면서 스타일은 유지할 수 있도록 <span>을 사용
+  content = content.replace(/<p>/gi, '<p data-class="paragraph">');
+  content = content.replace(/<\/p>/gi, '</p><br>'); // <p> 태그 뒤에 줄바꿈 강제 삽입
+  content = content.replace(/<b>/gi, '<span data-class="bold">');
+  content = content.replace(/<\/b>/gi, '</span>');
+  content = content.replace(/<italic>/gi, '<span data-class="italic">');
+  content = content.replace(/<\/italic>/gi, '</span>');
+  content = content.replace(/<code>/gi, '<span data-class="code">');
+  content = content.replace(/<\/code>/gi, '</span>');
+
+  return content;
+}
+
+//  function: 작성일자 포맷  //
 const formatElapsedTime = (createdAt: string) => {
   // 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
   const formattedDate = `${createdAt[0]}-${String(createdAt[1]).padStart(2, '0')}-${String(createdAt[2]).padStart(2, '0')} ${String(createdAt[3]).padStart(2, '0')}:${String(createdAt[4]).padStart(2, '0')}:${String(createdAt[5]).padStart(2, '0')}`;
@@ -61,6 +77,7 @@ const formatElapsedTime = (createdAt: string) => {
     return '방금 전';
   }
 };
+
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
 interface PostItemListTypeProps {
@@ -87,7 +104,8 @@ export default function PostItemListType({
   const [cookies] = useCookies();
   //        state : 라우팅     //
   const router = useRouter();
-
+  //        state : 에디터 태그 제거 상태     //
+  const sanitizedContent = sanitizeContent(content);
   //     event handler: 클릭 이벤트 처리     //
   const handleCardClick = () => {
     // recordId를 기반으로 게시글 상세 페이지로 이동
@@ -146,7 +164,7 @@ export default function PostItemListType({
   const isLikedByUser = likeListData?.some(
     (like: { userName: string }) => like.userName === user.nickname,
   );
-  // 스택 아이콘 처리 함수
+  //   function: 스택 아이콘 처리 함수    //
   const getTagIcon = (tag: string) => {
     switch (tag) {
       case 'react':
@@ -235,6 +253,15 @@ export default function PostItemListType({
         return null;
     }
   };
+  useEffect(() => {
+    document.querySelectorAll('[data-class]').forEach((el) => {
+      const className = el.getAttribute('data-class');
+      if (className) {
+        el.classList.add(styles[className]); // `module.css` 스타일 적용
+        el.removeAttribute('data-class'); // `data-class` 속성 제거
+      }
+    });
+  }, [sanitizedContent]);
   //          render: 게시물 카드형 렌더링          //
   return (
     <div className={styles['list-container']} onClick={handleCardClick}>
@@ -258,14 +285,14 @@ export default function PostItemListType({
         {/* profileimgae-box와 user-nickname 클릭시 해당 유저의 프로필로 이동해야함 */}
         <div className={styles['stack-tag-box']}>
           <div className={styles['stack-tag']}>
-          {tagNames.map((tag, index) => (
-            <span
-              key={index}
-              className={`${styles['stack-tag']} ${styles[tag.toLowerCase()]}`}>
-              {getTagIcon(tag)} {tag}
-              {index < tagNames.length - 1 && ', '}
-            </span>
-          ))}
+            {tagNames.map((tag, index) => (
+              <span
+                key={index}
+                className={`${styles['stack-tag']} ${styles[tag.toLowerCase()]}`}>
+                {getTagIcon(tag)} {tag}
+                {index < tagNames.length - 1 && ', '}
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -273,7 +300,10 @@ export default function PostItemListType({
       <div className={styles['list-main']}>
         <div className={styles['text-container']}>
           <div className={styles['list-title']}>{title}</div>
-          <div className={styles['list-content']}>{content}</div>
+          <div
+            className={styles['list-content']}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+          />
         </div>
         {medias.length > 0 && (
           <div className={styles['list-image']}>

@@ -32,6 +32,23 @@ import {
   getSaveCountRecordRequest,
 } from '@/apis';
 import { useCookies } from 'react-cookie';
+
+//   function: TipTap-Editor 태그 제거    //
+function sanitizeContent(content: string) {
+  // <p>, <b>, <em>, <code> 태그를 제거하면서 스타일은 유지할 수 있도록 <span>을 사용
+  content = content.replace(/<p>/gi, '<p data-class="paragraph">');
+  content = content.replace(/<\/p>/gi, '</p><br>'); // <p> 태그 뒤에 줄바꿈 강제 삽입
+  content = content.replace(/<b>/gi, '<span data-class="bold">');
+  content = content.replace(/<\/b>/gi, '</span>');
+  content = content.replace(/<italic>/gi, '<span data-class="italic">');
+  content = content.replace(/<\/italic>/gi, '</span>');
+  content = content.replace(/<code>/gi, '<span data-class="code">');
+  content = content.replace(/<\/code>/gi, '</span>');
+
+  return content;
+}
+
+//  function: 작성일자 포맷  //
 const formatElapsedTime = (createdAt: string) => {
   // 배열을 'YYYY-MM-DD HH:mm:ss' 형식으로 변환
   const formattedDate = `${createdAt[0]}-${String(createdAt[1]).padStart(2, '0')}-${String(createdAt[2]).padStart(2, '0')} ${String(createdAt[3]).padStart(2, '0')}:${String(createdAt[4]).padStart(2, '0')}:${String(createdAt[5]).padStart(2, '0')}`;
@@ -86,7 +103,8 @@ export default function PostItemCardType({
   const [cookies] = useCookies();
   //        state : 라우팅     //
   const router = useRouter();
-
+  //        state : 에디터 태그 제거 상태     //
+  const sanitizedContent = sanitizeContent(content);
   //     event handler: 클릭 이벤트 처리     //
   const handleCardClick = () => {
     // recordId를 기반으로 게시글 상세 페이지로 이동
@@ -277,7 +295,10 @@ export default function PostItemCardType({
           {'Title:   '}
           {title}
         </div>
-        <div className={styles['card-content']}>{content}</div>
+        <div
+          className={styles['card-content']}
+          dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+        />
         {medias.length > 0 && (
           <div className={styles['card-image']}>
             <img
