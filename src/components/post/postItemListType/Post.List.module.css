@@ -215,6 +215,7 @@
   align-items: center;
   font-size: 16px;
   margin-bottom: 15px;
+  white-space: pre-wrap;
 }
 .list-image {
   display: flex;
@@ -290,4 +291,10 @@
 }
 .list-save-icon:hover {
   background-image: var(--post-item-Save-icon-hover);
+}
+.code {
+  background-color: rgba(240, 114, 198, 0.637);
+}
+.paragraph {
+  white-space: pre-line; /* 자동 줄바꿈 처리 */
 }

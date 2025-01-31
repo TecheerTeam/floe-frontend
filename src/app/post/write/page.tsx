@@ -6,7 +6,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Text from '@tiptap/extension-text';
 import Bold from '@tiptap/extension-bold';
 import Italic from '@tiptap/extension-italic';
-import Code from '@tiptap/extension-code';
+import CodeBlock from '@tiptap/extension-code-block';
 import Placeholder from '@tiptap/extension-placeholder';
 import Header from '@/app/header/page';
 import NavBar from '@/app/navBar/page';
@@ -19,6 +19,13 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { PostRecordResponseDto } from '@/apis/response/record';
 //          component: 게시물 작성 화면 컴포넌트          //
+
+const sanitizeContent = (content: string) => {
+  return content
+    .replace(/<\/p><p>/gi, '</p><br><p>') // 문단 간 <br> 추가
+    .replace(/<p>/gi, '') // <p> 제거
+    .replace(/<\/p>/gi, ''); // </p> 제거
+};
 export default function PostWrite() {
   const router = useRouter(); // 페이지 리다이렉트 사용
   const { user } = useLoginUserStore(); // zustand 상태 관리
@@ -127,7 +134,7 @@ export default function PostWrite() {
       Text,
       Bold,
       Italic,
-      Code,
+      CodeBlock,
       Placeholder.configure({
         // 에디터가 완전히 비어 있을 때만 placeholder를 표시
         emptyEditorClass: 'is-empty', // 커스텀 클래스를 추가
@@ -137,8 +144,10 @@ export default function PostWrite() {
     content: content || '',
     autofocus: true,
     onUpdate: ({ editor }) => {
-      setContent(editor.getHTML()); // TipTap 에디터의 HTML 내용을 상태로 저장
-      console.log(editor.getHTML()); // 콘솔에 에디터 내용 확인
+      const rawHtml = editor.getHTML();
+      const sanitizedHtml = sanitizeContent(rawHtml);
+      setContent(sanitizedHtml); // 변환된 HTML을 저장
+      console.log(sanitizedHtml); // 확인
     },
   });
 
@@ -266,7 +275,7 @@ export default function PostWrite() {
             <div className={styles['content-Title-Box']}>
               <div className={styles['content-Title-Text']}>{'Content'}</div>
               <div className={styles['content-Title-Intro-Text']}>
-                {'내용용을 입력해주세요'}
+                {'내용을 입력해주세요'}
               </div>
             </div>
             <div className={styles['content-Input-Box']}>
@@ -283,7 +292,9 @@ export default function PostWrite() {
                     <i>I</i>
                   </button>
                   <button
-                    onClick={() => editor?.chain().focus().toggleCode().run()}
+                    onClick={() =>
+                      editor?.chain().focus().toggleCodeBlock().run()
+                    }
                     className={styles.toolbarButton}>
                     {'<>'}
                   </button>
