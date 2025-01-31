@@ -21,7 +21,7 @@ import {
 import { FaBootstrap, FaNpm, FaYarn, FaGrunt, FaGulp } from 'react-icons/fa';
 import { FaFigma, FaSketch } from 'react-icons/fa';
 import { useRouter } from 'next/navigation'; // Next.js 라우터
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './Post.Card.module.css';
 import { RecordListItem } from '@/types/interface';
 import { useQuery } from '@tanstack/react-query';
@@ -254,7 +254,15 @@ export default function PostItemCardType({
         return null;
     }
   };
-
+  useEffect(() => {
+    document.querySelectorAll('[data-class]').forEach((el) => {
+      const className = el.getAttribute('data-class');
+      if (className) {
+        el.classList.add(styles[className]); // `module.css` 스타일 적용
+        el.removeAttribute('data-class'); // `data-class` 속성 제거
+      }
+    });
+  }, [sanitizedContent]);
   //          render: 게시물 카드형 렌더링          //
   return (
     <div className={styles['card-container']} onClick={handleCardClick}>
