@@ -176,6 +176,7 @@ export default function PostItemCardType({
         return (
           <FaJava className={`${styles['stack-tag']} ${styles['java']}`} />
         );
+      case 'Node.js':
       case 'node':
         return (
           <FaNodeJs className={`${styles['stack-tag']} ${styles['node']}`} />
@@ -199,6 +200,7 @@ export default function PostItemCardType({
           <FaSass className={`${styles['stack-tag']} ${styles['sass']}`} />
         );
       case 'js':
+      case 'javascript':
         return <FaJs className={`${styles['stack-tag']} ${styles['js']}`} />;
       case 'css':
         return <FaCss3 className={`${styles['stack-tag']} ${styles['css']}`} />;

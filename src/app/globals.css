@@ -27,7 +27,7 @@
   /* 사용자 기본 이미지 */
   --default-profile-image: url('./../assets/GuestIcon_Dark.png');
   --default-profile-image-hover: url('./../assets/GuestIcon_White.png');
-
+  --auto-complete-bg-color: #ffffff;
   --splash-screen-background-color: #ffffff;
   --header-logo-image: url('./../assets/floelogo.png');
   --header-border-bottom-color: rgba(0, 0, 0, 0.2);
@@ -109,7 +109,6 @@
   --nav-bar-alarm-all-read-icon-Hover: url('./../assets/AlarmAllReadIcon_Hover.png');
   --nav-bar-alarm-all-read-icon-Active: url('./../assets/AlarmAllReadIcon_Active.png');
 
-    
   --nav-bar-alarm-all-delete-icon: url('./../assets/AlarmAllDeleteIcon_Dark.png');
   --nav-bar-alarm-all-delete-icon-Hover: url('./../assets/AlarmAllDeleteIcon_Hover.png');
   /* navbar-icon */
@@ -231,7 +230,7 @@ body {
   /* 사용자 기본 이미지 */
   --default-profile-image: url('./../assets/GuestIcon_White.png');
   --default-profile-image-hover: url('./../assets/GuestIcon_Dark.png');
-
+  --auto-complete-bg-color: #888;
   --splash-screen-background-color: #000000;
   --header-logo-image: url('./../assets/floelogo-dark.png');
   --header-border-bottom-color: rgba(255, 255, 255, 0.3);
@@ -317,7 +316,7 @@ body {
   --nav-bar-alarm-all-read-icon: url('./../assets/AlarmAllReadIcon_White.png');
   --nav-bar-alarm-all-read-icon-Hover: url('./../assets/AlarmAllReadIcon_Hover.png');
   --nav-bar-alarm-all-read-icon-Active: url('./../assets/AlarmAllReadIcon_Active.png');
-  
+
   --nav-bar-alarm-all-delete-icon: url('./../assets/AlarmAllDeleteIcon_White.png');
   --nav-bar-alarm-all-delete-icon-Hover: url('./../assets/AlarmAllDeleteIcon_Hover.png');
 

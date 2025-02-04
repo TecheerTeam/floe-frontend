@@ -62,6 +62,8 @@
 .stack-Search-Box {
   width: auto;
   height: 100%;
+  display: flex;
+  gap: 50px;
 }
 .stack-Search {
   max-width: 267px;
@@ -382,4 +384,52 @@
 }
 .upload-Button:hover {
   background-color: var(--post-Page-Upload-Button-background-color-hover);
+}
+.autocomplete-list {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;
+  background-color: var(--auto-complete-bg-color);
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  position: absolute;
+  top: 250px;
+  width: 14%;
+  z-index: 1000;
+}
+
+.autocomplete-list li {
+  padding: 8px;
+  cursor: pointer;
+  background-color: var(--auto-complete-bg-color);
+}
+
+.autocomplete-list li:hover {
+  background: #f0f0f0;
+}
+
+.stack-Add-Complete {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tag {
+  background-color: var(--post-Page-Section-color);
+  color: var(--post-Page-text-color);
+  padding: 5px 5px;
+  border-radius: 5px;
+  border: 1px solid #b1b0b0;
+  display: flex;
+  align-items: center;
+}
+
+.remove-tag {
+  background: none;
+  border: none;
+  color: var(--post-Page-text-color);
+  cursor: pointer;
+  margin-left: 5px;
 }

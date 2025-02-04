@@ -55,6 +55,7 @@
   align-items: center;
   height: 53px;
   padding-left: 15px;
+  /* width: auto; */
 }
 .stack-tag {
   padding-left: 5px;
@@ -88,7 +89,11 @@
   color: white;
   font-weight: bold;
 }
-
+.stack-tag.node {
+  background-color: #42b883;
+  color: black;
+  font-weight: bold;
+}
 .stack-tag.js {
   background-color: #f7df1e;
   color: black;
