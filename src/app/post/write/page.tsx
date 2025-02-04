@@ -1,5 +1,25 @@
 'use client';
-
+import {
+  FaReact,
+  FaVuejs,
+  FaAngular,
+  FaSass,
+  FaJs,
+  FaCss3,
+  FaHtml5,
+} from 'react-icons/fa';
+import {
+  FaNodeJs,
+  FaJava,
+  FaPhp,
+  FaPython,
+  FaDocker,
+  FaAws,
+  FaCloud,
+  FaGithub,
+} from 'react-icons/fa';
+import { FaBootstrap, FaNpm, FaYarn, FaGrunt, FaGulp } from 'react-icons/fa';
+import { FaFigma, FaSketch } from 'react-icons/fa';
 import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -26,6 +46,32 @@ const sanitizeContent = (content: string) => {
     .replace(/<p>/gi, '') // <p> 제거
     .replace(/<\/p>/gi, ''); // </p> 제거
 };
+
+const stackTags = [
+  'React',
+  'Vue.js',
+  'Angular',
+  'Sass',
+  'JavaScript',
+  'CSS3',
+  'HTML5',
+  'Node.js',
+  'Java',
+  'PHP',
+  'Python',
+  'Docker',
+  'AWS',
+  'Cloud',
+  'GitHub',
+  'Bootstrap',
+  'NPM',
+  'Yarn',
+  'Grunt',
+  'Gulp',
+  'Figma',
+  'Sketch',
+];
+
 export default function PostWrite() {
   const router = useRouter(); // 페이지 리다이렉트 사용
   const { user } = useLoginUserStore(); // zustand 상태 관리
@@ -54,16 +100,47 @@ export default function PostWrite() {
   //          state: 이미지 상태          //
   const { images, setImages } = useRecordStore();
 
+  const [inputValue, setInputValue] = useState<string>('');
+  const [filteredTags, setFilteredTags] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   //         event handler: Stack Tag 처리 이벤트          //
+  // const onTagChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = event.target;
+
+  //   // value를 그대로 배열로 저장
+  //   const tagArray = value.split(',').map((tag) => tag.trim()); // 쉼표로 구분하고 공백 제거
+
+  //   // 상태 업데이트
+  //   setTagNames(tagArray); // 배열로 업데이트
+  //   console.log(tagArray); // 배열로 처리된 값 출력
+  // };
   const onTagChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
+    const value = event.target.value;
+    setInputValue(value);
 
-    // value를 그대로 배열로 저장
-    const tagArray = value.split(',').map((tag) => tag.trim()); // 쉼표로 구분하고 공백 제거
+    if (value.trim() === '') {
+      setFilteredTags([]);
+      setShowSuggestions(false);
+    } else {
+      const matchedTags = stackTags.filter((tag) =>
+        tag.toLowerCase().includes(value.toLowerCase()),
+      );
+      setFilteredTags(matchedTags);
+      setShowSuggestions(true);
+    }
+  };
+  const onTagSelect = (tag: string) => {
+    if (!tagNames.includes(tag)) {
+      setTagNames([...tagNames, tag]); // `useRecordStore`에 저장
+    }
+    setInputValue('');
+    setFilteredTags([]);
+    setShowSuggestions(false);
+  };
 
-    // 상태 업데이트
-    setTagNames(tagArray); // 배열로 업데이트
-    console.log(tagArray); // 배열로 처리된 값 출력
+  // ✅ 태그 개별 삭제 기능
+  const removeTag = (tag: string) => {
+    setTagNames(tagNames.filter((t) => t !== tag));
   };
 
   //         event handler: 카테고리 변경 처리 이벤트          //
@@ -192,9 +269,65 @@ export default function PostWrite() {
     }
   };
 
+  const getTagIcon = (tag: string) => {
+    switch (tag.toLowerCase()) {
+      case 'react':
+        return <FaReact />;
+      case 'vue.js':
+        return <FaVuejs />;
+      case 'angular':
+        return <FaAngular />;
+      case 'sass':
+        return <FaSass />;
+      case 'js':
+      case 'javascript':
+        return <FaJs />;
+      case 'css3':
+        return <FaCss3 />;
+      case 'html5':
+        return <FaHtml5 />;
+      case 'node.js':
+      case 'node':
+        return <FaNodeJs />;
+      case 'java':
+        return <FaJava />;
+      case 'php':
+        return <FaPhp />;
+      case 'python':
+        return <FaPython />;
+      case 'docker':
+        return <FaDocker />;
+      case 'aws':
+        return <FaAws />;
+      case 'cloud':
+        return <FaCloud />;
+      case 'github':
+        return <FaGithub />;
+      case 'bootstrap':
+        return <FaBootstrap />;
+      case 'npm':
+        return <FaNpm />;
+      case 'yarn':
+        return <FaYarn />;
+      case 'grunt':
+        return <FaGrunt />;
+      case 'gulp':
+        return <FaGulp />;
+      case 'figma':
+        return <FaFigma />;
+      case 'sketch':
+        return <FaSketch />;
+      default:
+        return null;
+    }
+  };
+
   //          effect: 마운트 시 실행할 함수          //
   useEffect(() => {
     resetRecord();
+    setContent('');
+    setTitle('');
+    setTagNames([]);
     if (!cookies.accessToken || !cookies.refreshToken || !user) {
       alert('로그인이 필요합니다');
       router.push('/auth');
@@ -225,9 +358,32 @@ export default function PostWrite() {
                   placeholder="Search..."
                   ref={tagRef}
                   onChange={onTagChangeHandler}
-                  value={tagNames}
-                />
-                <div className={styles['stack-Add-Complete']}></div>
+                  // value={tagNames}
+                  value={inputValue}
+                  onFocus={() => setShowSuggestions(true)}
+                />{' '}
+                {/* 자동완성 목록 */}
+                {showSuggestions && filteredTags.length > 0 && (
+                  <ul className={styles['autocomplete-list']}>
+                    {filteredTags.map((tag, index) => (
+                      <li key={index} onClick={() => onTagSelect(tag)}>
+                        {getTagIcon(tag)} {tag}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className={styles['stack-Add-Complete']}>
+                  {tagNames.map((tag, index) => (
+                    <span key={index} className={styles['tag']}>
+                      {getTagIcon(tag)} {tag}
+                      <button
+                        className={styles['remove-tag']}
+                        onClick={() => removeTag(tag)}>
+                        ✕
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
             {/* Category 영역 */}

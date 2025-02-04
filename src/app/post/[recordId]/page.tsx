@@ -406,6 +406,7 @@ export default function PostDetail() {
           <FaJava className={`${styles['stack-tag']} ${styles['java']}`} />
         );
       case 'node':
+      case 'Node.js':
         return (
           <FaNodeJs className={`${styles['stack-tag']} ${styles['node']}`} />
         );
@@ -428,6 +429,7 @@ export default function PostDetail() {
           <FaSass className={`${styles['stack-tag']} ${styles['sass']}`} />
         );
       case 'js':
+      case 'javascript':
         return <FaJs className={`${styles['stack-tag']} ${styles['js']}`} />;
       case 'css':
         return <FaCss3 className={`${styles['stack-tag']} ${styles['css']}`} />;
