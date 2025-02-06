@@ -126,7 +126,6 @@
 }
 .other-text-right:hover {
   color: var(--other-text-color-hover);
-  font-weight: bolder;
 }
 
 .divider {
@@ -210,7 +209,9 @@
   background-image: var(--return-icon);
   cursor: pointer;
 }
-
 .return-button:hover {
   background-image: var(--return-icon-hover);
+}
+.error-message {
+  color: red;
 }

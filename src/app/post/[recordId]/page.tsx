@@ -46,6 +46,9 @@ import {
   saveCancelRecordRequest,
   getIsSaveRecordRequest,
   getSaveCountRecordRequest,
+  postUserFollowRequest,
+  getUserFollowStatusRequest,
+  deleteUserFollowRequest,
 } from '@/apis';
 import {
   GetCommentResponseDto,
@@ -119,7 +122,7 @@ export default function PostDetail() {
   //        state: record Id varibale 상태        //
   const { recordId } = useParams(); // URL에서 recordId를 가져옴
   //        state: 유저 로그인 상태        //
-  const { user } = useLoginUserStore();
+  const { user, setUser } = useLoginUserStore();
   //        state: 게시물 상태(zustand)        //
   const [record, setRecord] = useState<RecordItem | null>(null);
   //       state : 좋아요 개수 상태        //
@@ -144,7 +147,8 @@ export default function PostDetail() {
   const [totalCommentCount, setTotalCommentCount] = useState<number>(0);
   //          state: 더보기 버튼 클릭 상태          //
   const [viewEdit, setViewEdit] = useState<boolean>(false);
-
+  //          state: 팔로우 상태          //
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   //   event handler: 더보기 버튼 클릭 이벤트 처리     //
   const onClickViewEditButton = () => {
     setViewEdit((prev) => !prev); // 상태를 토글
@@ -169,7 +173,6 @@ export default function PostDetail() {
         5,
         cookies.accessToken,
       );
-      console.log('rrrr', response.data);
       return response; // data만 반환
     },
     getNextPageParam: (last: GetCommentResponseDto) => {
@@ -370,7 +373,6 @@ export default function PostDetail() {
       const response = await getDetailRecordRequest(id);
       if (response?.code === 'R003') {
         setRecord(response.data);
-        console.log('response.data', response.data);
       } else {
         router.push('/');
       }
@@ -378,6 +380,8 @@ export default function PostDetail() {
       console.error('게시물 데이터 불러오기 오류:', error);
     }
   };
+
+  //    function: 게시물 삭제 처리 함수      //
   const onDeleteButtonHandler = async () => {
     if (record?.user.email !== user?.email) {
       alert('삭제 권한이 없습니다.');
@@ -395,6 +399,54 @@ export default function PostDetail() {
     }
   };
 
+  const onFollowFollowingButtonClickHandler = async () => {
+    if (!cookies.accessToken || !record) return;
+
+    if (isFollowing) {
+      try {
+        const response = await deleteUserFollowRequest(
+          record.user.userId,
+          cookies.accessToken,
+        );
+        if (response.code === 'UF02') {
+          console.log('팔로우 취소', response.data);
+          setIsFollowing(false);
+        }
+      } catch (error) {
+        console.error('팔로우 오류', error);
+      }
+    } else if (!isFollowing) {
+      try {
+        const response = await postUserFollowRequest(
+          record.user.userId,
+          cookies.accessToken,
+        );
+        if (response.code === 'UF01') {
+          console.log('팔로우 추가', response.data);
+          setIsFollowing(true);
+        }
+      } catch (error) {
+        console.error('팔로우 오류', error);
+      }
+    }
+  };
+
+  const onFetchFollowStatusHandler = async () => {
+    if (!cookies.accessToken || !record) return;
+    try {
+      const response = await getUserFollowStatusRequest(
+        record.user.userId,
+        cookies.accessToken,
+      );
+      if (response.code === 'UF05') {
+        console.log('유저팔로우상태', response.data);
+        setIsFollowing(response.data.isFollowed);
+      }
+    } catch (error) {
+      console.error('팔로우 오류', error);
+    }
+  };
+  //    function: 태그 아이콘     //
   const getTagIcon = (tag: string) => {
     switch (tag) {
       case 'react':
@@ -485,15 +537,21 @@ export default function PostDetail() {
         return null;
     }
   };
-
   //  effect: record Id path variable 바뀔떄마다 해당 게시물 좋아요, 저장 데이터 불러     //
   useEffect(() => {
-    fetchSaveStatus();
-    fetchSaveCount();
-    fetchLikeStatus();
-    fetchLikeCount();
+    if (record) {
+      fetchSaveStatus();
+      fetchSaveCount();
+      fetchLikeStatus();
+      fetchLikeCount();
+    }
   }, [recordId, cookies.accessToken]);
 
+  useEffect(() => {
+    if (record && cookies.accessToken) {
+      onFetchFollowStatusHandler();
+    }
+  }, [record, cookies.accessToken]);
   //  effect: record Id path variable 바뀔떄마다 해당 게시물 데이터, 댓글 데이터 불러오기 (무한스크롤)   //
   useEffect(() => {
     getRecordDetails();
@@ -530,6 +588,16 @@ export default function PostDetail() {
               onClick={onProfileClickHandler}>
               {record.user.nickname}
             </div>
+
+            {record.user.userId === user?.userId ? (
+              <div></div>
+            ) : (
+              <div
+                className={styles['follow-box']}
+                onClick={onFollowFollowingButtonClickHandler}>
+                {isFollowing ? '✅Following' : 'Follow'}
+              </div>
+            )}
 
             {record.user.email === user?.email && (
               <div

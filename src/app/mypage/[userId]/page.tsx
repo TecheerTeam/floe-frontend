@@ -21,6 +21,12 @@ import {
   getUserRecordRequest,
   getOtherUserProfileRequest,
   getOtherUserRecordRequest,
+  getUserFollowCountRequest,
+  getUserFollowStatusRequest,
+  postUserFollowRequest,
+  deleteUserFollowRequest,
+  getUserFollowerRequest,
+  getUserFollowingRequest,
   // getOtherUserRecordRequest,
 } from '@/apis';
 import { RecordListItem, User } from '@/types/interface';
@@ -54,6 +60,10 @@ export default function OtherUserMyPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //         state: 게시글 개수 상태(페이지네이션)         //
   const [postCounts, setPostsCounts] = useState<number>(0);
+    //         state: 팔로워 수 상태         //
+    const [followerCount, setFollowerCount] = useState<number>(0);
+    //         state: 팔로잉 수 상태         //
+    const [followingCount, setFollowingCount] = useState<number>(0);
   //     function: userId가 string|string[] 형식일 경우 number로 변환     //
   const id = Array.isArray(userId) ? Number(userId[0]) : Number(userId);
   if (!id || isNaN(id)) {
@@ -89,7 +99,7 @@ export default function OtherUserMyPage() {
           age: UserResponse.data.age,
           field: UserResponse.data.field,
           profileImage: UserResponse.data.profileImage,
-          userId: UserResponse.data.userId,
+          userId: UserResponse.data.id,
         });
       }
     } catch (error) {
@@ -179,6 +189,28 @@ export default function OtherUserMyPage() {
       );
     });
   };
+
+
+  
+    //    function: 팔로워,팔로잉 카운트 조회   //
+    const FollowerFollowingCount = async () => {
+      if (!cookies.accessToken || !user?.userId) return;
+      try {
+        const response = await getUserFollowCountRequest(
+          user?.userId,
+          cookies.accessToken,
+        );
+        console.log('팔로잉 팔로워 카운트 조회 api');
+        if (response.code === 'UF04') {
+          console.log('팔로잉 팔로워 카운트 api 성공값', response.data);
+          setFollowerCount(response.data.followerCount);
+          setFollowingCount(response.data.followingCount);
+        }
+      } catch (error) {
+        console.error('팔로잉 팔로워 카운트 에러', error);
+      }
+    };
+  
   //     effect: 탭 변경에 따른 데이터 렌더링    //
   useEffect(() => {
     setRecordList([]); // 탭 변경 시 기존 데이터를 클리어
@@ -193,7 +225,12 @@ export default function OtherUserMyPage() {
     }
     getOtherUserRequestAPI(); // 유저 정보 가져오기
   }, [cookies.accessToken]);
-
+  //     effect: 팔로워.팔로잉 각종 상태    //
+  useEffect(() => {
+    if (!cookies.accessToken || !user?.userId) return;
+   
+    FollowerFollowingCount();
+  }, [cookies.accessToken, user?.userId]);
   //         render : 마이페이지 컴포넌트 렌더링         //
   return (
     <>
@@ -223,12 +260,12 @@ export default function OtherUserMyPage() {
                 </div>
 
                 <div className={styles['user-Followers']}>
-                  <div className={styles['data-Number']}>10</div>
+                  <div className={styles['data-Number']}>  {followerCount}</div>
                   <div>followers</div>
                 </div>
 
                 <div className={styles['user-Following']}>
-                  <div className={styles['data-Number']}>10</div>
+                  <div className={styles['data-Number']}> {followingCount}</div>
                   <div>following</div>
                 </div>
 

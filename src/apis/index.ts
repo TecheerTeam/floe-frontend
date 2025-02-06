@@ -12,6 +12,8 @@ import { GetCommentLikeCountResponseDto, GetCommentLikeListResponseDto, GetRecor
 import PatchUserResponseDto from './response/user/patch-user.resposne.dto';
 import { patchUserRequestDto } from './request/user';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import { access } from 'fs';
+import { UserFollowCountResponseDto, UserFollowerListResponseDto, UserFollowingListResponseDto, UserFollowStatusResponseDto } from './response/user/follow.response.dto';
 const DOMAIN = 'http://localhost:8080';
 const API_DOMAIN = `${DOMAIN}/api/v1`;
 
@@ -1042,6 +1044,154 @@ export const getUserTagRatioRequest = async (accessToken: string) => {
         console.log('유저저 태그 통계 조회 API 요청 ', result);
         return result.data;
     }
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+const USER_FOLLOW_URL = (userId: number) => `${API_DOMAIN}/users/${userId}/follow`;
+const USER_FOLLOWER_URL = (userId: number) => `${API_DOMAIN}/users/${userId}/follow/follower`;
+const USER_FOLLOWING_URL = (userId: number) => `${API_DOMAIN}/users/${userId}/follow/following`;
+const USER_FOLLOW_COUNT_URL = (userId: number) => `${API_DOMAIN}/users/${userId}/follow/count`;
+const USER_FOLLOW_STATUS_URL = (userId: number) => `${API_DOMAIN}/users/${userId}/follow/status`;
+
+export const postUserFollowRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.post(USER_FOLLOW_URL(userId), {},{
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저 팔로우 생성 api ', result);
+        return result.data;
+    }
+
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+export const deleteUserFollowRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.delete(USER_FOLLOW_URL(userId), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저 팔로우 취소소 api ', result);
+        return result.data;
+    }
+
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+export const getUserFollowerRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.get<UserFollowerListResponseDto>(`${USER_FOLLOWER_URL(userId)}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저 팔로워 목록 조회 api ', result);
+        return result.data;
+    }
+
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+export const getUserFollowingRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.get<UserFollowingListResponseDto>(`${USER_FOLLOWING_URL(userId)}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저 팔로잉 목록 조회 api ', result);
+        return result.data;
+    }
+
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+export const getUserFollowCountRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.get<UserFollowCountResponseDto>(`${USER_FOLLOW_COUNT_URL(userId)}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저 팔로우 수 조회 api ', result);
+        return result.data;
+    }
+
+    catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
+export const getUserFollowStatusRequest = async (userId: number, accessToken: string) => {
+    try {
+        const result = await axios.get<UserFollowStatusResponseDto>(`${USER_FOLLOW_STATUS_URL(userId)}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('유저 팔로우 상태 조회 api ', result);
+        return result.data;
+    }
+
     catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
         if (axios.isAxiosError(error)) {

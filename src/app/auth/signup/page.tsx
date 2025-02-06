@@ -130,14 +130,13 @@ export default function SignUp() {
     if (!fieldRef.current) return;
     fieldRef.current.focus();
   };
- 
 
   const onSignUpButtonClickHandler = () => {
-    const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const isEmailPattern = emailPattern.test(email);
     if (!isEmailPattern) {
       setEmailError(true);
-      setEmailErrorMessage('이메일 주소 포멧이 맞지 않습니다.');
+      setEmailErrorMessage('이메일 형식 오류');
     }
     const isCheckedPassword = password.trim().length >= 8;
     if (!isCheckedPassword) {
@@ -173,9 +172,11 @@ export default function SignUp() {
     }
     const { code } = responseBody;
     console.log(responseBody);
-    if (code === 'U003') alert('중복된 이메일입니다');
-    if (code === 'U004') alert('중복된 닉네임입니다.');
-    if (code !== 'U001') return;
+
+    if (code !== 'U001') {
+      alert('이메일 또는 닉네임 중복입니다');
+      return;
+    }
     router.push('/');
   };
 
@@ -196,11 +197,18 @@ export default function SignUp() {
               ref={emailRef}
               type="text"
               placeholder="Enter your Email"
-              className={styles['email-input']}
+              className={`${styles['email-input']} ${isEmailError ? styles['input-error'] : ''}`}
               value={email}
               onChange={onEmailChangeHandler}
               onKeyDown={onEmailKeyDownHandler}
             />
+            <div className={styles['error-section']}>
+              {isEmailError && (
+                <div className={styles['error-message']}>
+                  {emailErrorMessage}
+                </div>
+              )}
+            </div>
           </div>
           <div className={styles['signUp-pw-section']}>
             <div className={styles['PW']}>{'PW *'}</div>
@@ -208,12 +216,20 @@ export default function SignUp() {
               ref={passwordRef}
               type="text"
               placeholder="Enter your Password"
-              className={styles['pw-input']}
+              className={`${styles['pw-input']} ${isPasswordError ? styles['input-error'] : ''}`}
               value={password}
               onChange={onPassWordChangeHandler}
               onKeyDown={onPasswordKeyDownHandler}
             />
+            <div className={styles['error-section']}>
+              {isPasswordError && (
+                <div className={styles['error-message']}>
+                  {passwordErrorMessage}
+                </div>
+              )}
+            </div>
           </div>
+
           <div className={styles['divider']}></div>
           {/* 닉네임임 */}
           <div className={styles['signUp-nickname-input-section']}>
@@ -222,11 +238,18 @@ export default function SignUp() {
               ref={nicknameRef}
               type="text"
               placeholder="Enter your Nickname"
-              className={styles['nickname-input']}
+              className={`${styles['nickname-input']} ${isPasswordError ? styles['input-error'] : ''}`}
               value={nickname}
               onChange={onNicknameChangeHandler}
               onKeyDown={onNicknameKeyDownHandler}
             />
+            <div className={styles['error-section']}>
+              {isNicknameError && (
+                <div className={styles['error-message']}>
+                  {nicknameErrorMessage}
+                </div>
+              )}
+            </div>
           </div>
           {/* 연차 */}
           <div className={styles['signUp-experience-input-section']}>
@@ -241,7 +264,6 @@ export default function SignUp() {
               onKeyDown={onExperienceKeyDownHandler}
             />
           </div>
-
           {/* 나이 */}
           <div className={styles['signUp-Age-input-section']}>
             <div className={styles['Age']}>{'Age(나이)'}</div>
@@ -255,7 +277,6 @@ export default function SignUp() {
               onKeyDown={onAgeKeyDownHandler}
             />
           </div>
-
           {/* 분야  */}
           <div className={styles['signUp-Field-input-section']}>
             <div className={styles['Field']}>{'Field(분야)'}</div>

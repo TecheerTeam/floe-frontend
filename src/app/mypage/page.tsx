@@ -22,8 +22,14 @@ import {
   getUserRequest,
   putUserProfileImageUpdateRequest,
   patchUserUpdateRequest,
+  getUserFollowCountRequest,
+  getUserFollowStatusRequest,
+  postUserFollowRequest,
+  deleteUserFollowRequest,
+  getUserFollowerRequest,
+  getUserFollowingRequest,
 } from '@/apis';
-import { RecordListItem, User } from '@/types/interface';
+import { Follower, RecordListItem, User } from '@/types/interface';
 import PostItemListType from '@/components/post/postItemListType/page';
 import { patchUserRequestDto } from '@/apis/request/user';
 import { removeCookie } from '../cookies';
@@ -40,7 +46,7 @@ export default function MyPage() {
   //          state: 프로필 이미지 입력 요소 참조 상태          //
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   //          state: 프로필 이미지 미리보기 URL 상태          //
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  // const [imageUrls, setImageUrls] = useState<string[]>([]);
   //          state: Tab Navigation 선택 상태         //
   const [activeTab, setActivetab] = useState<string>('POSTS');
   //         state: 게시물 리스트 상태         //
@@ -75,9 +81,16 @@ export default function MyPage() {
   const fieldRef = useRef<HTMLInputElement | null>(null);
   //         state: Modal Open 상태         //
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  //         state: 모달창 배경 참조 상태         //
-  const modalBackground = useRef();
-
+  //         state: 팔로워 수 상태         //
+  const [followerCount, setFollowerCount] = useState<number>(0);
+  //         state: 팔로잉 수 상태         //
+  const [followingCount, setFollowingCount] = useState<number>(0);
+  //         state: Modal Open 상태         //
+  const [followerModalOpen, setFollowerModalOpen] = useState<boolean>(false);
+  //         state: Modal Open 상태         //
+  const [followingModalOpen, setFollowingModalOpen] = useState<boolean>(false);
+  const [followerList, setFollowerList] = useState<Follower[]>([]);
+  const [followingList, setFollowingList] = useState<Follower[]>([]);
   //        event handler:  PW 변경 이벤트 처리        //
   const onPassWordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -216,7 +229,6 @@ export default function MyPage() {
   //          event handler: 탭 버튼 클릭 이벤트 처리          //
   const handleTabClick = (tab: string) => {
     setActivetab(tab);
-    console.log('Tab clicked:', tab); // 탭 클릭 시 어떤 탭이 눌렸는지 확인
   };
   //        function: getUser 처리 함수(사용자 정보를 받아온다다)       //
   const getUserRequestAPI = async () => {
@@ -235,7 +247,7 @@ export default function MyPage() {
           age: UserResponse.data.age,
           field: UserResponse.data.field,
           profileImage: UserResponse.data.profileImage,
-          userId: UserResponse.data.userId,
+          userId: UserResponse.data.id,
         });
         setPostsCounts(PostsResposne.data.totalElements);
       }
@@ -333,6 +345,83 @@ export default function MyPage() {
       );
     });
   };
+
+  //    function: 팔로워 리스트 조회   //
+  const FollowerStatus = async () => {
+    if (!cookies.accessToken || !user?.userId) return;
+    try {
+      const response = await getUserFollowerRequest(
+        user?.userId,
+        cookies.accessToken,
+      );
+      console.log('팔로워 리스트 조회 api');
+      if (response.code === 'UF03') {
+        console.log('팔로워 리스트 조회 api 성공값', response.data);
+        setFollowerList(response.data.userFollowerList);
+      }
+    } catch (error) {
+      console.error('팔로우 리스트 에러', error);
+    }
+  };
+  //    function: 팔로잉 리스트 조회   //
+  const FollowingStatus = async () => {
+    if (!cookies.accessToken || !user?.userId) return;
+    try {
+      const response = await getUserFollowingRequest(
+        user?.userId,
+        cookies.accessToken,
+      );
+      console.log('팔로잉 리스트 조회 api');
+      if (response.code === 'UF03') {
+        console.log('팔로잉 리스트 조회 api 성공값', response.data);
+        setFollowingList(response.data.userFollowingList);
+      }
+    } catch (error) {
+      console.error('팔로잉 리스트 에러', error);
+    }
+  };
+  //    function: 팔로워,팔로잉 카운트 조회   //
+  const FollowerFollowingCount = async () => {
+    if (!cookies.accessToken || !user?.userId) return;
+    try {
+      const response = await getUserFollowCountRequest(
+        user?.userId,
+        cookies.accessToken,
+      );
+      console.log('팔로잉 팔로워 카운트 조회 api');
+      if (response.code === 'UF04') {
+        console.log('팔로잉 팔로워 카운트 api 성공값', response.data);
+        setFollowerCount(response.data.followerCount);
+        setFollowingCount(response.data.followingCount);
+      }
+    } catch (error) {
+      console.error('팔로잉 팔로워 카운트 에러', error);
+    }
+  };
+
+  //    function: 언팔로우 처리   //
+  const handleUnfollow = async (userId: number) => {
+    if (!cookies.accessToken) return;
+
+    try {
+      const response = await deleteUserFollowRequest(
+        userId,
+        cookies.accessToken,
+      );
+
+      if (response.code === 'UF02') {
+        // 팔로잉 리스트 갱신
+        FollowingStatus();
+        FollowerFollowingCount();
+      } else {
+        alert('팔로잉 취소에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('팔로잉 취소 에러:', error);
+      alert('오류가 발생했습니다.');
+    }
+  };
+
   //     effect: 탭 변경에 따른 데이터 렌더링    //
   useEffect(() => {
     setRecordList([]); // 탭 변경 시 기존 데이터를 클리어
@@ -347,6 +436,13 @@ export default function MyPage() {
     }
     getUserRequestAPI(); // 유저 정보 가져오기
   }, [cookies.accessToken]);
+  //     effect: 팔로워.팔로잉 각종 상태    //
+  useEffect(() => {
+    if (!cookies.accessToken || !user?.userId) return;
+    FollowerStatus();
+    FollowingStatus();
+    FollowerFollowingCount();
+  }, [cookies.accessToken, user?.userId]);
 
   //         render : 마이페이지 컴포넌트 렌더링         //
   return (
@@ -379,23 +475,34 @@ export default function MyPage() {
             <div className={styles['user-Data-Wrapper']}>
               <div className={styles['user-Data']}>
                 <div className={styles['user-Posts']}>
-                  <div className={styles['data-Number']}>{postCounts}</div>
+                  <div className={styles['post-Count']}>{postCounts}</div>
                   <div>posts</div>
                 </div>
 
                 <div className={styles['user-Followers']}>
-                  <div className={styles['data-Number']}>10</div>
+                  <div
+                    className={styles['follow-Count']}
+                    onClick={() => setFollowerModalOpen(true)}>
+                    {followerCount}
+                  </div>
                   <div>followers</div>
                 </div>
 
                 <div className={styles['user-Following']}>
-                  <div className={styles['data-Number']}>10</div>
+                  <div
+                    className={styles['following-Count']}
+                    onClick={() => setFollowingModalOpen(true)}>
+                    {followingCount}
+                  </div>
                   <div>following</div>
                 </div>
               </div>
 
               <div className={styles['user-Edit']}>
-                <button className={styles['user-setting']} />
+                <button
+                  className={styles['user-setting']}
+                  onClick={() => setModalOpen(true)}
+                />
                 <button
                   className={styles['edit-Button']}
                   onClick={() => setModalOpen(true)}>
@@ -452,7 +559,7 @@ export default function MyPage() {
               </div>
             </div>
           </div>
-        
+
           {modalOpen && (
             <div
               className={styles['modal-overlay']}
@@ -551,10 +658,92 @@ export default function MyPage() {
               </div>
             </div>
           )}
+          {followerModalOpen && (
+            <div
+              className={styles['follower-modal-overlay']}
+              onClick={() => setFollowerModalOpen(false)}>
+              <div
+                className={styles['follower-modal-content']}
+                onClick={(e) => e.stopPropagation()}>
+                <h2>팔로우</h2>
+                {followerList.length > 0 ? (
+                  followerList.map((follower) => (
+                    <div
+                      key={follower.userId}
+                      className={styles['follower-item']}>
+                      {follower.profileImage !== null ? (
+                        <div
+                          className={styles['follower-image']}
+                          style={{
+                            backgroundImage: `url(${follower?.profileImage})`,
+                          }}></div>
+                      ) : (
+                        <div className={styles['Guest-Icon']}></div>
+                      )}
+
+                      <div className={styles['follower-nickname']}>
+                        {follower.nickName}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No followers found.</p>
+                )}
+                <button
+                  className={styles['close-button']}
+                  onClick={() => setFollowerModalOpen(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+          {followingModalOpen && (
+            <div
+              className={styles['follower-modal-overlay']}
+              onClick={() => setFollowingModalOpen(false)}>
+              <div
+                className={styles['follower-modal-content']}
+                onClick={(e) => e.stopPropagation()}>
+                <h2>팔로잉</h2>
+                {followingList.length > 0 ? (
+                  followingList.map((following) => (
+                    <div
+                      key={following.userId}
+                      className={styles['follower-item']}>
+                      {following.profileImage !== null ? (
+                        <div
+                          className={styles['follower-image']}
+                          style={{
+                            backgroundImage: `url(${following?.profileImage})`,
+                          }}></div>
+                      ) : (
+                        <div className={styles['Guest-Icon']}></div>
+                      )}
+                      <div className={styles['follower-nickname']}>
+                        {following.nickName}
+                      </div>
+                      <div
+                        className={styles['following-cancel-button']}
+                        onClick={() => handleUnfollow(following.userId)}>
+                        {'UnFollow'}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No followers found.</p>
+                )}
+                <button
+                  className={styles['close-button']}
+                  onClick={() => setFollowingModalOpen(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         <aside className={styles['sidebar']}>
-            <SideBar />
-          </aside>
+          <SideBar />
+        </aside>
       </div>
     </>
   );

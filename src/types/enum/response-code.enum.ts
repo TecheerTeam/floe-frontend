@@ -47,6 +47,12 @@ export enum ResponseCode {
     // Tag
     GET_TAG_STATISTICS_SUCCESS = "T001", // 전체 태그 통계 조회 성공
     GET_USER_TAG_STATISTICS_SUCCESS = "T002", // 유저 태그 통계 조회 성공
+
+    USER_FOLLOW_CREATE_SUCCESS = "UF01",
+    USER_FOLLOW_DELETE_SUCCESS = "UF02",
+    USER_FOLLOW_GET_SUCCESS = "UF03",
+    USER_FOLLOW_COUNT_GET_SUCCESS = "UF04",
+    USER_FOLLOW_STATUS_GET_SUCCESS = "UF05",
 }
 
 export default ResponseCode;

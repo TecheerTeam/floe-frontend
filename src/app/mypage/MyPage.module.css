@@ -46,7 +46,7 @@
   background-size: cover;
   border: 0.5px solid gray;
   border-radius: 50%;
-
+  background-position: 50%;
   margin-right: 1rem;
 }
 .user-Image {
@@ -106,10 +106,14 @@
   text-align: end;
   justify-content: space-between;
 }
-.data-Number {
+.post-Count {
   width: 4rem;
 }
-
+.follow-Count,
+.following-Count {
+  width: 4rem;
+  cursor: pointer;
+}
 .user-Edit {
   /* width: 100%; */
   display: flex;
@@ -121,7 +125,7 @@
 .user-setting {
   width: 1.125rem;
   height: 1.25rem;
-  background-image: var(--mypage-image-settingBlack);
+  background-image: var(--mypage-image-setting);
   cursor: pointer;
   background-size: cover;
   background-position: center;
@@ -186,7 +190,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -201,10 +205,11 @@
   align-items: center;
   width: 500px;
   padding: 30px;
-  background-color: white;
+  background-color: var(--mypage-edit-modal-background-color);
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   text-align: center;
+  color: var(--mypage-edit-modal-text-color);
 }
 .modal-nickname,
 .modal-pw,
@@ -215,6 +220,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: var(--mypage-edit-modal-text-color);
 }
 
 .modal-nickname span,
@@ -225,13 +231,13 @@
   margin-bottom: 8px;
   font-weight: bold;
   font-size: 1rem;
-  color: #333;
+  color: var(--mypage-edit-modal-text-color);
 }
 .modal-header {
   font-size: 1.5rem;
   margin-bottom: 20px;
   font-weight: bold;
-  color: var(--mypage-text-color);
+  color: var(--mypage-edit-modal-text-color);
 }
 
 .modal-input {
@@ -266,4 +272,87 @@
 .modal-button.cancel {
   background-color: #f44336;
   color: white;
+}
+.follower-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.follower-modal-content {
+  background: var(--mypage-follower-modal-background-color);
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+  color: var(--mypage-follower-modal-text-color);
+  gap: 10px;
+  text-align: center;
+}
+
+.follower-item {
+  color: var(--mypage-follower-modal-text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 0;
+}
+
+.follower-image {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.follower-nickname {
+  color: var(--mypage-follower-modal-text-color);
+  font-size: 18px;
+}
+.close-button {
+  margin-top: 10px;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background: #0056b3;
+}
+.following-cancel-button {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 8px 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.following-cancel-button:hover {
+  background-color: #cc0000;
+}
+.Guest-Icon {
+  width: 32px;
+  height: 32px;
+  background-image: var(--nav-bar-Guest-icon);
+  border-radius: 50%;
+  object-fit: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
