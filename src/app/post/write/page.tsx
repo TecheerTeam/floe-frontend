@@ -104,16 +104,6 @@ export default function PostWrite() {
   const [filteredTags, setFilteredTags] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
   //         event handler: Stack Tag 처리 이벤트          //
-  // const onTagChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = event.target;
-
-  //   // value를 그대로 배열로 저장
-  //   const tagArray = value.split(',').map((tag) => tag.trim()); // 쉼표로 구분하고 공백 제거
-
-  //   // 상태 업데이트
-  //   setTagNames(tagArray); // 배열로 업데이트
-  //   console.log(tagArray); // 배열로 처리된 값 출력
-  // };
   const onTagChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setInputValue(value);
@@ -250,11 +240,7 @@ export default function PostWrite() {
       for (const file of images) {
         formData.append('files', file);
       }
-    } else {
-      // 파일이 없을 경우 빈 Blob 객체를 추가
-      const emptyBlob = new Blob([], { type: 'application/json' });
-      formData.append('files', emptyBlob);
-    }
+    } 
 
     // 3. API 호출: 서버에 FormData 보내기
     try {
