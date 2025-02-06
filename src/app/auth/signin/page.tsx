@@ -20,6 +20,8 @@ export default function SignIn() {
   const emailRef = useRef<HTMLInputElement | null>(null);
   //          state:     pw input 참조 상태          //
   const passwordRef = useRef<HTMLInputElement | null>(null);
+  //          state: 에러 상태          //
+  const [error, setError] = useState<boolean>(false);
   //         event handler:    이메일 변경 이벤트 처리      //
   const onEmailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -45,7 +47,9 @@ export default function SignIn() {
   //          event handler: 로그인 버튼 클릭 이벤트 처리          //
   const onSignInButtonClickHandler = () => {
     const requestBody: SignInRequestDto = { email, password };
-    signInRequest(requestBody).then(signInResponse);
+    signInRequest(requestBody)
+      .then(signInResponse)
+      .catch(() => setError(true));
     console.log(requestBody);
   };
   //          function: sign in response 처리 함수          //
@@ -55,7 +59,8 @@ export default function SignIn() {
       alert('네트워크 이상입니다.');
       return;
     }
-
+    const { code } = responseBody;
+    if (code === 'U006') setError(true);
     const { accessToken, refreshToken, expirationTime } = responseBody;
     const now = new Date().getTime();
     const expires = new Date(now + expirationTime * 1000);
@@ -106,7 +111,7 @@ export default function SignIn() {
             <div className={styles['PW']}>{'PW'}</div>
             <input
               ref={passwordRef}
-              type="text"
+              type="password"
               placeholder="Enter your Password"
               className={styles['pw-input']}
               value={password}
@@ -120,6 +125,11 @@ export default function SignIn() {
           onClick={onSignInButtonClickHandler}>
           {'Sign In'}
         </div>
+        {error && (
+          <div className={styles['error-message']}>
+            {'이메일 주소 또는 비밀번호를 잘못 입력했습니다.'}
+          </div>
+        )}
         <div className={styles['other-text-section']}>
           <div className={styles['other-text-left']}>
             {"Don't Have An Account?"}
