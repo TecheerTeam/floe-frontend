@@ -306,7 +306,10 @@ export default function PostItemListType({
 
       <div className={styles['list-main']}>
         <div className={styles['text-container']}>
-          <div className={styles['list-title']}>{title}</div>
+          <div className={styles['list-title']}>
+            {'Title: '}
+            {title}
+          </div>
           <div
             className={styles['list-content']}
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}

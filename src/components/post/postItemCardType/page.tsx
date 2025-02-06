@@ -185,16 +185,19 @@ export default function PostItemCardType({
         return (
           <FaPython className={`${styles['stack-tag']} ${styles['python']}`} />
         );
+      case 'Vue.js':
       case 'vue':
         return (
           <FaVuejs className={`${styles['stack-tag']} ${styles['vue']}`} />
         );
+      case 'Angular':
       case 'angular':
         return (
           <FaAngular
             className={`${styles['stack-tag']} ${styles['angular']}`}
           />
         );
+      case 'Sass':
       case 'sass':
         return (
           <FaSass className={`${styles['stack-tag']} ${styles['sass']}`} />
@@ -232,6 +235,7 @@ export default function PostItemCardType({
         );
       case 'npm':
         return <FaNpm className={`${styles['stack-tag']} ${styles['npm']}`} />;
+      case 'Yarn':
       case 'yarn':
         return (
           <FaYarn className={`${styles['stack-tag']} ${styles['yarn']}`} />
@@ -244,6 +248,7 @@ export default function PostItemCardType({
         return (
           <FaGulp className={`${styles['stack-tag']} ${styles['gulp']}`} />
         );
+      case 'Figma':
       case 'figma':
         return (
           <FaFigma className={`${styles['stack-tag']} ${styles['figma']}`} />
