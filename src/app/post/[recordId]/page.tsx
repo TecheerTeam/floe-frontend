@@ -149,6 +149,11 @@ export default function PostDetail() {
   const [viewEdit, setViewEdit] = useState<boolean>(false);
   //          state: 팔로우 상태          //
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [queryKey, setQueryKey] = useState([
+    'comments',
+    recordId,
+    new Date().getTime(),
+  ]);
   //   event handler: 더보기 버튼 클릭 이벤트 처리     //
   const onClickViewEditButton = () => {
     setViewEdit((prev) => !prev); // 상태를 토글
@@ -165,7 +170,7 @@ export default function PostDetail() {
     refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
   } = useInfiniteQuery({
-    queryKey: ['comments', recordId],
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getCommentRequest(
         id,
@@ -255,6 +260,7 @@ export default function PostDetail() {
       const response = await getLikeCountRequest(id, cookies.accessToken);
       if (response.code === 'RL01') {
         setLikeCount(response.data.count);
+        console.log('좋아요 개수 가져오기', response.data);
       }
     } catch (error) {
       console.error('fetch Like Count Error', error);
@@ -286,7 +292,7 @@ export default function PostDetail() {
   };
   //          function : 좋아요 리스트 처리 함수  (좋아요 목록에서 현재 유저를 찾아 중복처리)        //
   const fetchLikeStatus = async () => {
-    if (!recordId || !cookies.accessToken) return;
+    if (!record || !recordId || !cookies.accessToken) return;
 
     try {
       const response = await getLikeListRequest(id, cookies.accessToken);
@@ -449,6 +455,7 @@ export default function PostDetail() {
   //    function: 태그 아이콘     //
   const getTagIcon = (tag: string) => {
     switch (tag) {
+      case 'React':
       case 'react':
         return (
           <FaReact className={`${styles['stack-tag']} ${styles['react']}`} />
@@ -462,20 +469,24 @@ export default function PostDetail() {
         return (
           <FaNodeJs className={`${styles['stack-tag']} ${styles['node']}`} />
         );
+      case 'Python':
       case 'python':
         return (
           <FaPython className={`${styles['stack-tag']} ${styles['python']}`} />
         );
+      case 'Vue.js':
       case 'vue':
         return (
           <FaVuejs className={`${styles['stack-tag']} ${styles['vue']}`} />
         );
+      case 'Angular':
       case 'angular':
         return (
           <FaAngular
             className={`${styles['stack-tag']} ${styles['angular']}`}
           />
         );
+      case 'Sass':
       case 'sass':
         return (
           <FaSass className={`${styles['stack-tag']} ${styles['sass']}`} />
@@ -483,52 +494,66 @@ export default function PostDetail() {
       case 'js':
       case 'javascript':
         return <FaJs className={`${styles['stack-tag']} ${styles['js']}`} />;
+      case 'CSS3':
       case 'css':
         return <FaCss3 className={`${styles['stack-tag']} ${styles['css']}`} />;
+      case 'HTML5':
       case 'html':
         return (
           <FaHtml5 className={`${styles['stack-tag']} ${styles['html']}`} />
         );
+      case 'PHP':
       case 'php':
         return <FaPhp className={`${styles['stack-tag']} ${styles['php']}`} />;
+      case 'Docker':
       case 'docker':
         return (
           <FaDocker className={`${styles['stack-tag']} ${styles['docker']}`} />
         );
+      case 'Aws':
       case 'aws':
         return <FaAws className={`${styles['stack-tag']} ${styles['aws']}`} />;
+      case 'Cloud':
       case 'cloud':
         return (
           <FaCloud className={`${styles['stack-tag']} ${styles['cloud']}`} />
         );
+      case 'Github':
       case 'github':
         return (
           <FaGithub className={`${styles['stack-tag']} ${styles['github']}`} />
         );
+      case 'Bootstrap':
       case 'bootstrap':
         return (
           <FaBootstrap
             className={`${styles['stack-tag']} ${styles['bootstrap']}`}
           />
         );
+      case 'NPM':
       case 'npm':
         return <FaNpm className={`${styles['stack-tag']} ${styles['npm']}`} />;
+      case 'Yarn':
       case 'yarn':
         return (
           <FaYarn className={`${styles['stack-tag']} ${styles['yarn']}`} />
         );
+      case 'Grunt':
       case 'grunt':
         return (
           <FaGrunt className={`${styles['stack-tag']} ${styles['grunt']}`} />
         );
+      case 'Gulp':
       case 'gulp':
         return (
           <FaGulp className={`${styles['stack-tag']} ${styles['gulp']}`} />
         );
+      case 'Figma':
       case 'figma':
         return (
           <FaFigma className={`${styles['stack-tag']} ${styles['figma']}`} />
         );
+      case 'Sketch':
       case 'sketch':
         return (
           <FaSketch className={`${styles['stack-tag']} ${styles['sketch']}`} />
@@ -545,7 +570,7 @@ export default function PostDetail() {
       fetchLikeStatus();
       fetchLikeCount();
     }
-  }, [recordId, cookies.accessToken]);
+  }, [recordId, cookies.accessToken, record]);
 
   useEffect(() => {
     if (record && cookies.accessToken) {
@@ -718,25 +743,42 @@ export default function PostDetail() {
 
               <div className={styles['comment-input-container']}>
                 <div className={styles['user-profile-box']}>
-                  {record.user.profileImage ? (
-                    <img
-                      src={record.user.profileImage}
-                      alt="프로필 이미지"
-                      className={styles['user-profile-image']}
-                    />
+                  {user ? (
+                    // 로그인한 유저의 프로필 이미지가 있을 경우
+                    user?.profileImage !== null ? (
+                      <img
+                        src={user?.profileImage}
+                        alt="프로필 이미지"
+                        className={styles['user-profile-image']}
+                      />
+                    ) : (
+                      <div // 로그인한 유저의 프로필 이미지가 없을 경우
+                        className={
+                          styles['comment-default-profile-image']
+                        }></div>
+                    )
                   ) : (
+                    // 로그인하지 않은 경우
                     <div
                       className={styles['comment-default-profile-image']}></div>
                   )}
-                  <div className={styles['user-profile-nickname']}>
-                    {user?.nickname}
-                  </div>
+                  {user ? (
+                    <div className={styles['user-profile-nickname']}>
+                      {user?.nickname}
+                    </div>
+                  ) : (
+                    <div className={styles['user-profile-nickname']}>
+                      {'Guest'}
+                    </div>
+                  )}
                 </div>
 
                 <input
                   ref={commentRef}
                   type="text"
-                  placeholder="댓글 추가..."
+                  placeholder={
+                    user ? '댓글을 입력해주세요...' : '로그인이 필요합니다'
+                  }
                   value={newComment}
                   className={styles['comment-input']}
                   onChange={onCommentChangeHandler}

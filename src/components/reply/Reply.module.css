@@ -18,7 +18,11 @@
   border-radius: 50%;
 }
 .user-profile-nickname {
+  width: 50px;
   font-size: 14px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
 }
 
 .reply-item-list-container {
@@ -43,8 +47,11 @@
   border-radius: 50%;
 }
 .reply-user-nickname {
-  cursor: pointer;
   font-size: 14px;
+  width: 65px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
 }
 .reply-text {
   font-size: 14px;

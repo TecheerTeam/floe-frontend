@@ -490,7 +490,6 @@ export const deleteCommentLikeRequest = async (commentId: number, accessToken: s
                 Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
             },
         })
-
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -1065,7 +1064,7 @@ const USER_FOLLOW_STATUS_URL = (userId: number) => `${API_DOMAIN}/users/${userId
 
 export const postUserFollowRequest = async (userId: number, accessToken: string) => {
     try {
-        const result = await axios.post(USER_FOLLOW_URL(userId), {},{
+        const result = await axios.post(USER_FOLLOW_URL(userId), {}, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             },

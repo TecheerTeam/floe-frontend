@@ -98,14 +98,18 @@ export default function Comment({ commentsList }: Props) {
   const [isLike, setIsLike] = useState<boolean>(false);
   //      state : 댓글/대댓글좋아요 개수 상태        //
   const [likeCount, setLikeCount] = useState<number>(0);
-
+  const [queryKey, setQueryKey] = useState([
+    'reply',
+    commentId,
+    new Date().getTime(),
+  ]);
   //     function: 대댓글 무한 스크롤     //
   const {
     data, // 불러온 댓글 데이터
     refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
   } = useInfiniteQuery({
-    queryKey: ['reply', commentId],
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getReplyRequest(
         commentId,
@@ -239,13 +243,11 @@ export default function Comment({ commentsList }: Props) {
       alert('댓글 삭제 권한이 없습니다.');
       return;
     }
-
     try {
       const response = await deleteCommentRequest(
         commentId,
         cookies.accessToken,
       );
-      const currentData = queryClient.getQueryData(['reply', commentId]);
       if (response.code === 'C003') {
         queryClient.setQueryData(['comments', recordId], (oldData: any) => {
           if (!oldData) return oldData;

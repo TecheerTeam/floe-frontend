@@ -32,7 +32,7 @@
 }
 .page-container {
   display: grid;
-  grid-template-columns: 400px 1fr 420px;
+  grid-template-columns: 400px minmax(600px, 1fr) 420px; 
   gap: 20px;
   width: 100%;
   max-width: 1920px; /* 전체 너비 제한 */
