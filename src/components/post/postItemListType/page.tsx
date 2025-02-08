@@ -167,6 +167,7 @@ export default function PostItemListType({
   //   function: 스택 아이콘 처리 함수    //
   const getTagIcon = (tag: string) => {
     switch (tag) {
+      case 'React':
       case 'react':
         return (
           <FaReact className={`${styles['stack-tag']} ${styles['react']}`} />
@@ -181,6 +182,7 @@ export default function PostItemListType({
           <FaNodeJs className={`${styles['stack-tag']} ${styles['node']}`} />
         );
       case 'python':
+      case 'Python':
         return (
           <FaPython className={`${styles['stack-tag']} ${styles['python']}`} />
         );
@@ -205,34 +207,43 @@ export default function PostItemListType({
       case 'javascript':
         return <FaJs className={`${styles['stack-tag']} ${styles['js']}`} />;
       case 'css':
+      case 'CSS3':
         return <FaCss3 className={`${styles['stack-tag']} ${styles['css']}`} />;
       case 'html':
+      case 'HTML5':
         return (
           <FaHtml5 className={`${styles['stack-tag']} ${styles['html']}`} />
         );
       case 'php':
+      case 'PHP':
         return <FaPhp className={`${styles['stack-tag']} ${styles['php']}`} />;
       case 'docker':
+      case 'Docker':
         return (
           <FaDocker className={`${styles['stack-tag']} ${styles['docker']}`} />
         );
       case 'aws':
+      case 'Aws':
         return <FaAws className={`${styles['stack-tag']} ${styles['aws']}`} />;
       case 'cloud':
+      case 'Cloud':
         return (
           <FaCloud className={`${styles['stack-tag']} ${styles['cloud']}`} />
         );
       case 'github':
+      case 'Github':
         return (
           <FaGithub className={`${styles['stack-tag']} ${styles['github']}`} />
         );
       case 'bootstrap':
+      case 'Bootstrap':
         return (
           <FaBootstrap
             className={`${styles['stack-tag']} ${styles['bootstrap']}`}
           />
         );
       case 'npm':
+      case 'NPM':
         return <FaNpm className={`${styles['stack-tag']} ${styles['npm']}`} />;
       case 'Yarn':
       case 'yarn':
@@ -240,10 +251,12 @@ export default function PostItemListType({
           <FaYarn className={`${styles['stack-tag']} ${styles['yarn']}`} />
         );
       case 'grunt':
+      case 'Grunt':
         return (
           <FaGrunt className={`${styles['stack-tag']} ${styles['grunt']}`} />
         );
       case 'gulp':
+      case 'Gulp':
         return (
           <FaGulp className={`${styles['stack-tag']} ${styles['gulp']}`} />
         );
@@ -253,6 +266,7 @@ export default function PostItemListType({
           <FaFigma className={`${styles['stack-tag']} ${styles['figma']}`} />
         );
       case 'sketch':
+      case 'Sketch':
         return (
           <FaSketch className={`${styles['stack-tag']} ${styles['sketch']}`} />
         );

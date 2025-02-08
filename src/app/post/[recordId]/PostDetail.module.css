@@ -270,12 +270,16 @@
 .user-profile-image {
   width: 32px;
   height: 32px;
-  background-image: url(./../../../assets/WR.png);
   background-size: cover;
+  object-fit: cover;
   border-radius: 50%;
 }
 .user-profile-nickname {
+  width: 50px;
   font-size: 16px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
 }
 .comment-input {
   flex: 1;

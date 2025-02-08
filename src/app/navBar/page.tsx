@@ -266,11 +266,15 @@ export default function NavBar() {
       {showAlarmPopup && (
         <div className={styles['alarm-popup-container']}>
           <div className={styles['alarm-popup-Top']}>
-            <div
-              className={styles['alarm-popup-Top-User-Profile-Image']}
-              style={{
-                backgroundImage: `url(${loginUser?.profileImage})`,
-              }}></div>
+            {loginUser?.profileImage !== null ? (
+              <div
+                className={styles['alarm-popup-Top-User-Profile-Image']}
+                style={{
+                  backgroundImage: `url(${loginUser?.profileImage})`,
+                }}></div>
+            ) : (
+              <div className={styles['default-icon']}></div>
+            )}
             <div className={styles['alarm-popup-Top-User-More']}>
               <div className={styles['alarm-popup-Top-User-Nickname']}>
                 {loginUser?.nickname}
@@ -304,14 +308,24 @@ export default function NavBar() {
                       onClick={() =>
                         onAlarmClickHandler(alarm.id, alarm.relatedUrl)
                       }>
-                      <img
-                        src={alarm.senderProfileImage}
-                        alt="프로필 이미지"
-                        className={styles['alarm-popup-Item-Profile']}
-                      />
+                      {alarm.senderProfileImage !== null ? (
+                        <img
+                          src={alarm.senderProfileImage}
+                          alt="프로필 이미지"
+                          className={styles['alarm-popup-Item-Profile']}
+                        />
+                      ) : (
+                        <div
+                          className={
+                            styles['alarm-popup-default-Profile']
+                          }></div>
+                      )}
                       <div className={styles['alarm-Content']}>
                         <div className={styles['alarm-popup-Item-Text']}>
-                          <strong>{alarm.senderNickname}</strong>님이
+                          <div className={styles['alarm-popup-Item-Nickname']}>
+                            {alarm.senderNickname}
+                            {'님이'}
+                          </div>
                           {alarm.notificationType === 'NEW_COMMENT'
                             ? '내 게시글에 댓글을 남겼습니다.'
                             : '내 댓글에 대댓글을 남겼습니다.'}
@@ -419,16 +433,27 @@ export default function NavBar() {
         passHref
         style={{ textDecoration: 'none' }}>
         <button className={styles['Profile-Button']}>
-          {loginUser?.profileImage !== null ? (
-            <div
-              className={styles['user-profile-image']}
-              style={{
-                backgroundImage: `url(${loginUser?.profileImage})`,
-              }}></div>
+          {loginUser ? (
+            loginUser.profileImage !== null ? (
+              // 로그인한 유저의 프로필 이미지가 있을 경우
+              <div
+                className={styles['user-profile-image']}
+                style={{
+                  backgroundImage: `url(${loginUser.profileImage})`,
+                }}></div>
+            ) : (
+              // 로그인한 유저의 프로필 이미지가 없을 경우
+              <div className={styles['Guest-Icon']}></div>
+            )
           ) : (
+            // 로그인하지 않은 경우
             <div className={styles['Guest-Icon']}></div>
           )}
-          {loginUser ? loginUser?.nickname : 'Guest'}
+          {loginUser ? (
+            <div className={styles['user-nickname']}>{loginUser?.nickname}</div>
+          ) : (
+            <div className={styles['guest-Text']}>{'Guest'}</div>
+          )}
         </button>
       </Link>
     </div>

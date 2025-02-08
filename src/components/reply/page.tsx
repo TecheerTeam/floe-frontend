@@ -193,9 +193,9 @@ export default function Reply({ replyList }: Props) {
       <div className={styles['reply-item-list-container']}>
         <div className={styles['reply-item-list']}>
           <div className={styles['reply-item']}>
-            {record?.user.profileImage ? (
+            {replyWriter?.profileImage !== null ? (
               <img
-                src={record.user.profileImage}
+                src={replyWriter.profileImage}
                 alt="프로필 이미지"
                 className={styles['reply-user-profile-image']}
               />

@@ -235,6 +235,19 @@
   font-size: 20px;
   cursor: pointer;
 }
+.user-nickname {
+  width: 75px;
+  font-family: 'Pretendard Variable';
+  font-size: 20px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
+}
+.guest-Text {
+  width: auto;
+  font-family: 'Pretendard Variable';
+  font-size: 20px;
+}
 
 .Profile-Button:hover {
   background-color: var(--nav-bar-button-hover-background-color);
@@ -282,8 +295,8 @@
 }
 .Guest-Icon {
   background-image: var(--nav-bar-Guest-icon);
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   background-size: cover;
 }
 .Moon-Icon {
@@ -374,6 +387,14 @@
   border-radius: 50%;
   background-position: center;
 }
+.default-icon {
+  width: 36px;
+  height: 36px;
+  background-size: contain;
+  border-radius: 50%;
+  background-position: center;
+  background-image: var(--nav-bar-Guest-icon);
+}
 .alarm-popup-Top-User-More {
   display: flex;
   flex-direction: column;
@@ -382,10 +403,14 @@
 }
 
 .alarm-popup-Top-User-Nickname {
+  width: 100px;
   font-size: 14px;
   align-items: center;
   justify-content: center;
   color: var(--nav-bar-alarm-popup-box-user-nickname-text-color);
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
 }
 .alarm-popup-Top-User-Alarm-Count {
   display: flex;
@@ -480,12 +505,20 @@
 }
 
 .alarm-popup-Item-Profile {
+  width: 36px;
+  height: 36px;
+  background-size: cover;
+  border-radius: 50%;
+  background-position: 50%;
+  object-fit: cover;
+}
+.alarm-popup-default-Profile {
+  background-image: var(--nav-bar-Guest-icon);
   width: 26px;
   height: 26px;
-  background-image: url('./../../assets/WR.png');
   background-size: cover;
-  background-position: center;
   border-radius: 50%;
+  background-position: 50%;
 }
 
 .alarm-popup-Item-Content {
@@ -498,6 +531,14 @@
 
 .alarm-popup-Item-Text {
   font-size: 12px;
+}
+.alarm-popup-Item-Nickname {
+  font-size: 14px;
+  font-weight: bolder;
+  width: 100px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
 }
 /* 읽음 처리된 알람에 대한 스타일 */
 .read {
@@ -540,4 +581,5 @@
   height: 48px;
   background-size: cover;
   border-radius: 50%;
+  background-position: 50%;
 }
