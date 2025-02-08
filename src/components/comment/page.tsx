@@ -243,13 +243,11 @@ export default function Comment({ commentsList }: Props) {
       alert('댓글 삭제 권한이 없습니다.');
       return;
     }
-
     try {
       const response = await deleteCommentRequest(
         commentId,
         cookies.accessToken,
       );
-      const currentData = queryClient.getQueryData(['reply', commentId]);
       if (response.code === 'C003') {
         queryClient.setQueryData(['comments', recordId], (oldData: any) => {
           if (!oldData) return oldData;
