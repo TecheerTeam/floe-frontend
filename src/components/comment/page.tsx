@@ -109,7 +109,7 @@ export default function Comment({ commentsList }: Props) {
     refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
   } = useInfiniteQuery({
-    queryKey,
+    queryKey: ['reply', commentId],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getReplyRequest(
         commentId,

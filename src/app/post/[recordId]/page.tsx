@@ -170,7 +170,7 @@ export default function PostDetail() {
     refetch, // 데이터 최신화
     fetchNextPage, // 다음 페이지 요청
   } = useInfiniteQuery({
-    queryKey,
+    queryKey: ['comments', recordId],
     queryFn: async ({ pageParam = 0 }) => {
       const response = await getCommentRequest(
         id,
@@ -254,7 +254,7 @@ export default function PostDetail() {
   };
   //     function: 좋아요 개수 가져오기     //
   const fetchLikeCount = async () => {
-    if (!recordId || !cookies.accessToken) return;
+    if (!recordId || !record || !cookies.accessToken) return;
 
     try {
       const response = await getLikeCountRequest(id, cookies.accessToken);
@@ -268,7 +268,7 @@ export default function PostDetail() {
   };
   //     function: 저장 개수 가져오기     //
   const fetchSaveCount = async () => {
-    if (!recordId || !cookies.accessToken) return;
+    if (!recordId || !record || !cookies.accessToken) return;
 
     try {
       const response = await getSaveCountRecordRequest(id, cookies.accessToken);
@@ -306,7 +306,7 @@ export default function PostDetail() {
   };
   //          function : 저장 여부 체크 함수(저장 여부(true/false)에 따라 저장 상태 변경)        //
   const fetchSaveStatus = async () => {
-    if (!recordId || !cookies.accessToken) return;
+    if (!recordId || !record || !cookies.accessToken) return;
 
     try {
       const response = await getIsSaveRecordRequest(id, cookies.accessToken);
@@ -564,7 +564,7 @@ export default function PostDetail() {
   };
   //  effect: record Id path variable 바뀔떄마다 해당 게시물 좋아요, 저장 데이터 불러     //
   useEffect(() => {
-    if (record) {
+    if (recordId) {
       fetchSaveStatus();
       fetchSaveCount();
       fetchLikeStatus();
