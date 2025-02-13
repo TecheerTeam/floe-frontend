@@ -180,6 +180,7 @@
   text-align: left;
   cursor: pointer;
   border-radius: 8px;
+  color: red;
 }
 
 .option-button:hover {

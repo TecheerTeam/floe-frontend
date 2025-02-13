@@ -848,6 +848,29 @@ export const getLikeListRecordRequest = async (page: number, size: number, acces
         }
     }
 }
+//          function: 회원 탈퇴 요청 조회 API          //   
+export const withDrawUserRequest = async (accessToken: string) => {
+    try {
+        const result = await axios.delete(DELETE_USER_URL(), {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        console.log('회원탈퇴 요청 API ', result);
+        return result.data;
+    } catch (error: unknown) {
+        // error가 AxiosError인지 확인하고 안전하게 접근
+        if (axios.isAxiosError(error)) {
+            if (!error.response) return null;
+            return error.response.data;
+        } else {
+            // AxiosError가 아닌 경우 처리
+            console.error('An unexpected error occurred:', error);
+            return null;
+        }
+    }
+}
+
 //  알림 리스트 조회 API(실시간X / 매 요청마다 알림을 조회)   //
 const GET_AlARM_LIST_URL = () => `${API_DOMAIN}/notification`;
 //  해당 알림 읽음 처리 API    //
