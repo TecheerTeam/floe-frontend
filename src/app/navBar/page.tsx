@@ -426,7 +426,7 @@ export default function NavBar() {
             <button
               className={styles['option-button']}
               onClick={withdrawClickHandler}>
-              <div className={styles['Option-Icon']}></div> Option
+              <div className={styles['Option-Icon']}></div>회원탈퇴
             </button>
           )}
           {loginUser && ( // 유저가 로그인된 상태에서만 렌더링
