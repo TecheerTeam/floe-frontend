@@ -13,6 +13,7 @@ import {
   getUnreadAlarmCountRequest,
   patchReadAlarmRequest,
   patchReadAllAlarmRequest,
+  withDrawUserRequest,
 } from '@/apis';
 
 //   function: 날짜 처리 함수    //
@@ -222,6 +223,20 @@ export default function NavBar() {
     router.push('/');
   };
 
+  const withdrawClickHandler = async () => {
+    if (!cookies.accessToken && !loginUser) return;
+    try {
+      const response = await withDrawUserRequest(cookies.accessToken);
+      if (response.code === 'U003') {
+        alert('회원탈퇴 성공');
+        console.log('회원탈퇴 성공', response.data);
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Delete All Alarm Request Error', error);
+    }
+  };
+
   //          effect: 페이지 로드 시 다크모드 여부를 로컬 스토리지에서 확인 //
   useEffect(() => {
     const savedMode = localStorage.getItem('theme') === 'dark';
@@ -408,7 +423,9 @@ export default function NavBar() {
       {showSeeMorePopup && (
         <div className={styles['popup-container']}>
           {loginUser && (
-            <button className={styles['option-button']}>
+            <button
+              className={styles['option-button']}
+              onClick={withdrawClickHandler}>
               <div className={styles['Option-Icon']}></div> Option
             </button>
           )}
