@@ -155,13 +155,15 @@ export const saveCancelRecordRequest = async (recordId: number, accessToken: str
     }
 }
 //          function: 기록 저장 카운트 API          //
-export const getSaveCountRecordRequest = async (recordId: number, accessToken: string) => {
+export const getSaveCountRecordRequest = async (recordId: number) => {
     try {
-        const result = await axios.get(SAVE_COUNT_RECORD_URL(recordId), {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
+        const result = await axios.get(SAVE_COUNT_RECORD_URL(recordId),
+        //  {
+        //     headers: {
+        //         'Authorization': `Bearer ${accessToken}`,
+        //     },
+        // }
+    );
         console.log('save count result ', result);
         return result.data;
     } catch (error: unknown) {

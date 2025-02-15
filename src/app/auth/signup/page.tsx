@@ -159,6 +159,7 @@ export default function SignUp() {
       experience,
       field,
       age,
+      
     };
     signUpRequest(requestBody).then(signUpResponse);
   };

@@ -565,8 +565,8 @@
 //     if (recordId) {
 //       fetchSaveStatus();
 //       fetchSaveCount();
-//       fetchLikeStatus();
 //       fetchLikeCount();
+//       fetchLikeStatus();
 //     }
 //   }, [recordId, cookies.accessToken, record]);
 
@@ -814,42 +814,49 @@
 //   );
 // }
 
-import {
-  getDetailRecordRequest,
-  getCommentRequest,
-  getLikeCountRequest,
-} from '@/apis';
+import { getDetailRecordRequest } from '@/apis';
 import PostDetail from './PostDetail';
-import { RecordItem, CommentItem } from '@/types/interface';
-export default async function PostDetailPage({params,}: {  params: { recordId: string };}) {
-  const recordId = Number(params.recordId);
 
-  if (!recordId) {
+export default async function PostDetailPage({
+  params,
+}: {
+  params?: Promise<{ recordId?: string | string[] }>;
+}) {
+  // ✅ `params`가 비동기적으로 반환될 수 있으므로 `await`으로 처리
+  const resolvedParams = await params;
+
+  if (!resolvedParams || !resolvedParams.recordId) {
+    console.error('⚠️ params가 존재하지 않음');
+    return <div>잘못된 접근입니다.</div>;
+  }
+
+  // ✅ recordId가 배열이면 첫 번째 값을 사용하고, 숫자로 변환
+  const recordIdParam = Array.isArray(resolvedParams.recordId)
+    ? resolvedParams.recordId[0]
+    : resolvedParams.recordId;
+  const id = Number(recordIdParam);
+
+  // ✅ 유효성 검사
+  if (isNaN(id) || id <= 0) {
+    console.error('⚠️ 잘못된 recordId:', recordIdParam);
     return <div>존재하지 않는 게시물입니다.</div>;
   }
 
   try {
     // ✅ 서버에서 데이터 가져오기 (SSR 적용)
-    const recordResponse = await getDetailRecordRequest(recordId);
-    const commentResponse = await getCommentRequest(recordId, 0, 10); // SSR에서는 accessToken 없음
-    const likeResponse = await getLikeCountRequest(recordId); // SSR에서는 accessToken 없음
+    const recordResponse = await getDetailRecordRequest(id);
 
-    if (recordResponse?.code !== 'R003') {
+    if (!recordResponse || recordResponse.code !== 'R003') {
+      console.error('⚠️ 게시물을 찾을 수 없습니다.');
       return <div>게시물을 찾을 수 없습니다.</div>;
     }
-    console.log('게시물데이터 SSR', recordResponse.data);
-    // ✅ 서버에서 가져온 데이터 -> 클라이언트 컴포넌트로 전달
-    return (
-      <PostDetail
-        record={{
-          ...recordResponse.data,
-          comments: commentResponse.data.content,
-          likeCount: likeResponse.data.count,
-        }}
-      />
-    );
+
+    console.log('✅ 게시물데이터 SSR', recordResponse.data);
+
+    // ✅ SSR로 가져온 데이터를 클라이언트 컴포넌트로 전달
+    return <PostDetail record={{ ...recordResponse.data }} />;
   } catch (error) {
-    console.error('게시물 데이터 불러오기 오류:', error);
+    console.error('❌ 게시물 데이터 불러오기 오류:', error);
     return <div>오류 발생</div>;
   }
 }
