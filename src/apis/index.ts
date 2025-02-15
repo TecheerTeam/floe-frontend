@@ -381,15 +381,15 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
 
 // };
 //          function: 댓글 조회 요청 API  토큰O        //
-export const getCommentRequest = async (recordId: number, page: number, size: number, accessToken: string): Promise<GetCommentResponseDto> => {
+export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
     try {
         const response = await axios.get<GetCommentResponseDto>(
             `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-                },
-            }
+            // {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            //     },
+            // }
         );
         return response.data;
     } catch (error) {
@@ -577,14 +577,15 @@ export const postLikeRequest = async (recordId: number, accessToken: string) => 
     }
 }
 //         function: 좋아요 수 조회 API         //
-export const getLikeCountRequest = async (recordId: number, accessToken: string) => {
+export const getLikeCountRequest = async (recordId: number, ) => {
     try {
         const response = await axios.get<GetRecordLikeCountResponseDto>(
-            `${GET_LIKE_COUNT_URL(recordId)}`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-            }
-        }
+            `${GET_LIKE_COUNT_URL(recordId)}`, 
+        //     {
+        //     headers: {
+        //         Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+        //     }
+        // }
         )
         console.log('get Like Count API Response:', response); // 응답 전체 확인
         return response.data;
