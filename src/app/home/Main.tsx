@@ -12,17 +12,22 @@ import NavBar from '@/app/navBar/page';
 import SideBar from '@/app/sideBar/page';
 import PostItemCardType from '@/components/post/postItemCardType/page';
 import PostItemListType from '@/components/post/postItemListType/page';
-import { getRecordRequest } from '@/apis';
+import { getRecordRequest, getUserRecordRequest, getUserRequest } from '@/apis';
 import { RecordListItem } from '@/types/interface';
 import { GetRecordResponseDto } from '@/apis/response/record';
 import { ResponseDto } from '@/apis/response';
 import { useInView } from 'react-intersection-observer';
 import LoadingSpinner from '@/components/LoadingSpinner/page';
+import { useCookies } from 'react-cookie';
+import { useLoginUserStore } from '@/store';
 
 //     component: 메인(홈) 페이지     //
 export default function Main() {
   //        state : 라우팅     //
   const router = useRouter();
+  //        state: cookie 상태        //
+  const [cookies] = useCookies();
+  const { setUser } = useLoginUserStore();
   //          state: Splash Screen 상태          //
   const [showSplash, setShowSplash] = useState(true);
   //          state: Fade Out 효과 상태          //
@@ -78,7 +83,25 @@ export default function Main() {
       clearTimeout(redirectTimer);
     };
   }, []);
-
+  //        function: getUser 처리 함수(사용자 정보를 받아온다)       //
+  const getUserRequestAPI = async () => {
+    try {
+      const UserResponse = await getUserRequest(cookies.accessToken);
+      if (UserResponse.code === 'U002') {
+        setUser({
+          email: UserResponse.data.email,
+          nickname: UserResponse.data.nickname,
+          experience: UserResponse.data.experience,
+          age: UserResponse.data.age,
+          field: UserResponse.data.field,
+          profileImage: UserResponse.data.profileImage,
+          userId: UserResponse.data.id, // ✅ 여기서 userId를 저장
+        });
+      }
+    } catch (error) {
+      console.error('사용자 정보 요청 실패:', error);
+    }
+  };
   //      event handler: 토글 버튼을 클릭할 때 뷰 모드 변경     //
   const toggleViewCardMode = () => setViewMode('card');
   const toggleViewListMode = () => setViewMode('list');
@@ -89,6 +112,11 @@ export default function Main() {
       setQueryKey(['records', new Date().getTime()]); // queryKey 변경
     }
   }, [pathname]);
+  useEffect(() => {
+    if (cookies.accessToken) {
+      getUserRequestAPI(); // 🛠️ 메인 페이지에서도 실행하도록 설정
+    }
+  }, [cookies.accessToken]);
   //          effect: 스크롤 감지해서 다음 페이지로 넘기기(무한 스크롤)          //
   useEffect(() => {
     fetchNextPage();

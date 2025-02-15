@@ -230,7 +230,7 @@ export default function MyPage() {
   const handleTabClick = (tab: string) => {
     setActivetab(tab);
   };
-  //        function: getUser 처리 함수(사용자 정보를 받아온다다)       //
+  //        function: getUser 처리 함수(사용자 정보를 받아온다)       //
   const getUserRequestAPI = async () => {
     try {
       const UserResponse = await getUserRequest(cookies.accessToken);
