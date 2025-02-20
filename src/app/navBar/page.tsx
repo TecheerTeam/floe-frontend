@@ -15,6 +15,7 @@ import {
   patchReadAllAlarmRequest,
   withDrawUserRequest,
 } from '@/apis';
+import { log } from 'console';
 
 //   function: 날짜 처리 함수    //
 const formatElapsedTime = (createdAt: string) => {
@@ -47,7 +48,7 @@ const formatElapsedTime = (createdAt: string) => {
 export default function NavBar() {
   const [cookies] = useCookies(); // 쿠키 상태 관리
   const router = useRouter();
-  const { user: loginUser, setUser, logout } = useLoginUserStore(); // Zustand로 로그인
+  const { user: loginUser, logout } = useLoginUserStore(); // Zustand로 로그인
   //          state: See More 버튼 팝업 상태          //
   const [showSeeMorePopup, setShowSeeMorePopup] = useState<boolean>(false);
   //          state: Alarm 버튼 팝업 상태          //
@@ -213,12 +214,13 @@ export default function NavBar() {
 
   //     event handler: 로그아웃 이벤트 처리     //
   const onLogoutButtonClickHandler = () => {
+    if (!cookies.accessToken) return;
     logout();
-
     // 로컬 스토리지 초기화
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
 
+    console.log('🟢 로컬 스토리지 및 쿠키 초기화 완료');
     // 홈으로 리디렉션
     router.push('/');
   };
@@ -236,7 +238,15 @@ export default function NavBar() {
       console.error('Delete All Alarm Request Error', error);
     }
   };
-
+  useEffect(() => {
+    console.log('🔵 현재 로그인 상태:', loginUser);
+  }, [loginUser]);
+  useEffect(() => {
+    console.log(
+      '🟢 Zustand getState()로 확인:',
+      useLoginUserStore.getState().user,
+    );
+  }, []);
   //          effect: 페이지 로드 시 다크모드 여부를 로컬 스토리지에서 확인 //
   useEffect(() => {
     const savedMode = localStorage.getItem('theme') === 'dark';
@@ -250,6 +260,7 @@ export default function NavBar() {
       onAlarmCountsHandler();
     }
   }, [cookies.accessToken]);
+
   //          render: NavBar 렌더링          //
   return (
     <div className={styles['navBar-container']}>

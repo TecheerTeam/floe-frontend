@@ -81,64 +81,67 @@ export default function OAuthSignUp() {
 
   return (
     <div className={styles['signUp-wrapper']}>
-      <div className={styles['signUp-container']}>
-        <h1>추가 정보 입력</h1>
-        <form onSubmit={handleSubmit}>
-          <div className={styles['input-group']}>
-            <label>닉네임</label>
-            <input
-              type="text"
-              name="nickname"
-              value={formData.nickname}
-              onChange={handleChange}
-              required
-            />
-          </div>
+      <div className={styles['signUp-left-box']}></div>
+      <div className={styles['signUp-right-box']}>
+        <div className={styles['signUp-container']}>
+          <h1>추가 정보 입력</h1>
+          <form onSubmit={handleSubmit}>
+            <div className={styles['input-group']}>
+              <label>닉네임</label>
+              <input
+                type="text"
+                name="nickname"
+                value={formData.nickname}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div className={styles['input-group']}>
-            <label>경력(년차)</label>
-            <input
-              type="number"
-              name="experience"
-              value={formData.experience}
-              onChange={handleChange}
-              min="0"
-              required
-            />
-          </div>
+            <div className={styles['input-group']}>
+              <label>경력(년차)</label>
+              <input
+                type="number"
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                min="0"
+                required
+              />
+            </div>
 
-          <div className={styles['input-group']}>
-            <label>나이</label>
-            <input
-              type="number"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              min="0"
-              required
-            />
-          </div>
+            <div className={styles['input-group']}>
+              <label>나이</label>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                min="0"
+                required
+              />
+            </div>
 
-          <div className={styles['input-group']}>
-            <label>분야</label>
-            <select
-              name="field"
-              value={formData.field}
-              onChange={handleChange}
-              required>
-              <option value="">선택하세요</option>
-              <option value="프론트엔드">프론트엔드</option>
-              <option value="백엔드">백엔드</option>
-              <option value="풀스택">풀스택</option>
-              <option value="데브옵스">데브옵스</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
+            <div className={styles['input-group']}>
+              <label>분야</label>
+              <select
+                name="field"
+                value={formData.field}
+                onChange={handleChange}
+                required>
+                <option value="">선택하세요</option>
+                <option value="프론트엔드">프론트엔드</option>
+                <option value="백엔드">백엔드</option>
+                <option value="풀스택">풀스택</option>
+                <option value="데브옵스">데브옵스</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
 
-          <button type="submit" className={styles['submit-button']}>
-            회원가입 완료
-          </button>
-        </form>
+            <button type="submit" className={styles['submit-button']}>
+              회원가입 완료
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
