@@ -12,13 +12,12 @@ export default function GithubLoginButton({
 }: GithubLoginButtonProps) {
   const handleGithubLogin = () => {
     try {
-      const githubAuthUrl = `${process.env.NEXT_PUBLIC_GITHUB_AUTH_BASE_URL}?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI}&scope=read:user,user:email`;
-
-      // Github 로그인 페이지로 이동
-      window.location.href = githubAuthUrl;
+      // OAuth2 로그인 요청 URL로 리다이렉트
+      window.location.href =
+        'http://localhost:8080/oauth2/authorization/github';
     } catch (error) {
-      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요');
-      console.log('깃헙 로그인 요청 중 오류: ', error);
+      alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error('깃허브 로그인 요청 중 오류:', error);
     }
   };
 
