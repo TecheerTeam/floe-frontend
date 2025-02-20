@@ -228,8 +228,8 @@ export default function NavBar() {
     try {
       const response = await withDrawUserRequest(cookies.accessToken);
       if (response.code === 'U003') {
-        alert('회원탈퇴 성공');
         console.log('회원탈퇴 성공', response.data);
+        logout();
         router.push('/');
       }
     } catch (error) {
