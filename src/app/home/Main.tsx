@@ -27,7 +27,7 @@ export default function Main() {
   const router = useRouter();
   //        state: cookie 상태        //
   const [cookies] = useCookies();
-  const { setUser } = useLoginUserStore();
+  const { user,setUser } = useLoginUserStore();
   //          state: Splash Screen 상태          //
   const [showSplash, setShowSplash] = useState(true);
   //          state: Fade Out 효과 상태          //
@@ -113,7 +113,7 @@ export default function Main() {
     }
   }, [pathname]);
   useEffect(() => {
-    if (cookies.accessToken) {
+    if (user) {
       getUserRequestAPI(); // 🛠️ 메인 페이지에서도 실행하도록 설정
     }
   }, [cookies.accessToken]);

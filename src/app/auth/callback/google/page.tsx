@@ -18,7 +18,6 @@ export default function GoogleCallback() {
         const response = await axios.get(
           `http://localhost:8080/api/v1/auth/oauth/token?email=${email}`,
           {},
-          { withCredentials: true },
         );
 
         if (response.status === 200) {
