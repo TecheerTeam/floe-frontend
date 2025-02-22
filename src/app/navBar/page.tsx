@@ -16,7 +16,7 @@ import {
   withDrawUserRequest,
 } from '@/apis';
 import { log } from 'console';
-
+import WithdrawModal from '@/components/common/WIthDrawModal';
 //   function: 날짜 처리 함수    //
 const formatElapsedTime = (createdAt: string) => {
   // 'YYYY-MM-DD HH:mm:ss' 형식의 문자열을 Date 객체로 변환
@@ -60,7 +60,7 @@ export default function NavBar() {
   const { alarms, setAlarms, readAllAlarms, deleteAlarm, readAlarm } =
     useAlarmStore();
   const [alarmCounts, setAlarmCounts] = useState<number>(0);
-
+  const [withDrawModalOpen, setWithDrawModalOpen] = useState<boolean>(false);
   //          function: See More 팝업 토글 함수          //
   const toggleSeeMorePopup = () => {
     setShowSeeMorePopup(!showSeeMorePopup);
@@ -225,17 +225,24 @@ export default function NavBar() {
     router.push('/');
   };
 
+  //          function: Alarm 팝업 토글 함수          //
+  const toggleWithDrawModalOpen = () => {
+    if (!loginUser) {
+      return;
+    }
+    setShowAlarmPopup(!showAlarmPopup);
+  };
+  //     event handler: 회원탈퇴 이벤트 처리     //
   const withdrawClickHandler = async () => {
-    if (!cookies.accessToken && !loginUser) return;
+    if (!cookies.accessToken || !loginUser) return;
     try {
       const response = await withDrawUserRequest(cookies.accessToken);
       if (response.code === 'U003') {
-        console.log('회원탈퇴 성공', response.data);
         logout();
         router.push('/');
       }
     } catch (error) {
-      console.error('Delete All Alarm Request Error', error);
+      console.error('with Draw User Request Error', error);
     }
   };
   useEffect(() => {
@@ -436,7 +443,7 @@ export default function NavBar() {
           {loginUser && (
             <button
               className={styles['option-button']}
-              onClick={withdrawClickHandler}>
+              onClick={() => setWithDrawModalOpen(true)}>
               <div className={styles['Option-Icon']}></div>회원탈퇴
             </button>
           )}
@@ -456,6 +463,8 @@ export default function NavBar() {
           </button>
         </div>
       )}
+      {withDrawModalOpen &&  <WithdrawModal onClose={() => setWithDrawModalOpen(false)} onWithdraw={withdrawClickHandler} />}
+
       <Link
         href={loginUser ? '/mypage' : '/auth'}
         passHref
