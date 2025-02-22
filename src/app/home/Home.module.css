@@ -32,7 +32,7 @@
 }
 .page-container {
   display: grid;
-  grid-template-columns: 400px minmax(600px, 1fr) 420px; 
+  grid-template-columns: 400px minmax(600px, 1fr) 420px;
   gap: 20px;
   width: 100%;
   max-width: 1920px; /* 전체 너비 제한 */
@@ -54,6 +54,7 @@
   max-width: 1100px;
   width: 100%;
   position: relative;
+  z-index: 1;
 }
 
 .sidebar {
@@ -68,6 +69,7 @@
   position: absolute;
   top: 147px;
   right: 0px;
+  justify-content: flex-end;
   width: 70px;
   height: 40px;
   border: none;
@@ -86,6 +88,7 @@
   height: 30px;
   background-color: var(--main-background-color);
   border: none;
+  box-sizing: border-box;
 }
 .list-icon {
   background-image: var(--toggle-List-icon);
@@ -94,6 +97,7 @@
   height: 30px;
   background-color: var(--main-background-color);
   border: none;
+  box-sizing: border-box;
 }
 .card-icon:hover {
   background-image: var(--toggle-Card-icon-hover);
