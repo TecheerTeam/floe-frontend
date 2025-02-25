@@ -192,6 +192,7 @@ export default function PostUpdate() {
     const dtoBlob = new Blob([JSON.stringify(updateDto)], {
       type: 'application/json',
     });
+    console.log(updateDto);
     formData.append('updateDto', dtoBlob);
     // 이미지 파일들을 formData에 추가
 
@@ -201,9 +202,6 @@ export default function PostUpdate() {
           formData.append('updateFiles', image);
         }
       });
-    } else {
-      const emptyBlob = new Blob([], { type: 'application/json' });
-      formData.append('updateFiles', emptyBlob);
     }
 
     // 3. API 호출: 서버에 FormData 보내기
