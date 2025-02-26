@@ -201,9 +201,6 @@ export default function PostUpdate() {
           formData.append('updateFiles', image);
         }
       });
-    } else {
-      const emptyBlob = new Blob([], { type: 'application/json' });
-      formData.append('updateFiles', emptyBlob);
     }
 
     // 3. API 호출: 서버에 FormData 보내기
