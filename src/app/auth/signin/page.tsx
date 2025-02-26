@@ -8,6 +8,8 @@ import { SignInRequestDto } from '@/apis/request/auth';
 import { signInRequest } from '@/apis';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation'; // App Router 전용
+import GoogleLoginButton from '@/components/login/googleLogin/page';
+import GithubLoginButton from '@/components/login/githubLogin/page';
 export default function SignIn() {
   const router = useRouter();
   //          state: 쿠키 상태          //
@@ -139,23 +141,8 @@ export default function SignIn() {
           </Link>
         </div>
         <div className={styles['divider']}></div>
-        <div className={styles['signIn-bottom']}>
-          <button className={styles['google-login-button']}>
-            <img
-              src={'/signin-assets/Web/svg/light/web_light_sq_na.svg'}
-              alt="Google icon"
-              className={styles['google-icon']}
-            />
-            Sign in With Google
-          </button>
-          <button className={styles['github-login-button']}>
-            <div className={styles['github-icon']} />
-            Sign in with Github
-          </button>
-          <Link href="/auth" passHref style={{ textDecoration: 'none' }}>
-            <div className={styles['return-button']}></div>
-          </Link>
-        </div>
+        <GoogleLoginButton buttonText="Sign in with Google" />
+        <GithubLoginButton buttonText="Sign in with Github" />
       </div>
     </div>
   );
