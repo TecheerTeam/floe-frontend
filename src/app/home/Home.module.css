@@ -35,18 +35,17 @@
   grid-template-columns: 400px minmax(600px, 1fr) 420px;
   gap: 20px;
   width: 100%;
-  max-width: 1920px; /* 전체 너비 제한 */
+  max-width: 1920px;
   margin: 0 auto;
-  padding-top: 157px;
+  padding-top: 57px;
   background-color: var(--main-background-color);
 }
 
 .navbar {
   position: sticky;
-  top: 157px;
   width: 170px; /* Navbar 너비 고정 */
   align-self: start; /* 스크롤 시 시작 위치에 고정 */
-  height: calc(100vh - 157px);
+  height: calc(100vh - 57px);
 }
 .main-content {
   display: flex;
@@ -104,4 +103,42 @@
 }
 .list-icon:hover {
   background-image: var(--toggle-List-icon-hover);
+}
+@media screen and (max-width: 768px) {
+  .page-container {
+    position: unset;
+    width: 390px;
+    min-height: 100vh;
+    padding: 10px 0 60px 0;
+  }
+  .toggle-button {
+    display: none;
+  }
+  .main-banner {
+    width: 370px;
+    margin-left: 10px;
+    margin-top: 0;
+    padding: 0;
+  }
+  .main-content {
+    overflow-y: auto;
+  }
+
+  .card-view,
+  .list-view {
+    max-width: 500px;
+  }
+  .navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 1000; /* ✅ 다른 요소보다 위에 위치 */
+  }
+
+  /* 📌 4. 사이드바 숨기기 */
+  .sidebar {
+    display: none;
+  }
 }

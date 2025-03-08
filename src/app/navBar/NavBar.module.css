@@ -671,3 +671,64 @@
 .modal-cancel:hover {
   background: #aaa;
 }
+@media screen and (max-width: 768px) {
+  .navBar-container {
+    position: fixed;
+    bottom: 0;
+    margin: 0;
+    padding: 0; /* 기존 padding 제거하고 위아래만 추가 */
+    width: 390px;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--nav-background-color);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .Home-Button,
+  .Alarm-Button,
+  .Post-Button,
+  .Issue-Button,
+  .See-More-Button,
+  .Profile-Button {
+    width: 40px;
+    height: 50px;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+  .See-More-Button,
+  .Save-Button {
+    display: none;
+  }
+
+  .button-text,
+  .guest-Text,
+  .user-nickname {
+    display: none;
+  }
+  .Guest-Icon {
+    background-image: var(--nav-bar-Guest-icon);
+    width: 32px;
+    height: 32px;
+    background-size: cover;
+  }
+  .Home-Button:hover,
+  .Alarm-Button:hover,
+  .Post-Button:hover,
+  .Issue-Button:hover,
+  .See-More-Button:hover,
+  .Profile-Button:hover {
+    background-color: var(--nav-bar-button-hover-background-color);
+  }
+
+  .spacer {
+    display: none; /* 모바일에서는 spacer 숨김 */
+  }
+}
