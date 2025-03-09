@@ -38,3 +38,9 @@
   color: var(--mypage-text-color-active);
   font-weight: bolder;
 }
+@media screen and (max-width: 768px) {
+  .tab-Container {
+    width: 390px;
+    height: 2.75rem;
+  }
+}

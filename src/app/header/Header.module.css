@@ -169,7 +169,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    gap: 50px; /* ✅ 간격 줄이기 */
+    gap: 200px; 
     padding: 8px 24px;
     margin: 0;
   }

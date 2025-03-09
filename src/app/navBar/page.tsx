@@ -297,89 +297,96 @@ export default function NavBar() {
       </button>
 
       {showAlarmPopup && (
-        <div className={styles['alarm-popup-container']}>
-          <div className={styles['alarm-popup-Top']}>
-            {loginUser?.profileImage !== null ? (
-              <div
-                className={styles['alarm-popup-Top-User-Profile-Image']}
-                style={{
-                  backgroundImage: `url(${loginUser?.profileImage})`,
-                }}></div>
-            ) : (
-              <div className={styles['default-icon']}></div>
-            )}
-            <div className={styles['alarm-popup-Top-User-More']}>
-              <div className={styles['alarm-popup-Top-User-Nickname']}>
-                {loginUser?.nickname}
+        <div
+          className={styles['alarm-overlay']}
+          onClick={() => setShowAlarmPopup(false)}>
+          <div
+            className={styles['alarm-popup-container']}
+            onClick={(e) => e.stopPropagation()}>
+            <div className={styles['alarm-popup-Top']}>
+              {loginUser?.profileImage !== null ? (
+                <div
+                  className={styles['alarm-popup-Top-User-Profile-Image']}
+                  style={{
+                    backgroundImage: `url(${loginUser?.profileImage})`,
+                  }}></div>
+              ) : (
+                <div className={styles['default-icon']}></div>
+              )}
+              <div className={styles['alarm-popup-Top-User-More']}>
+                <div className={styles['alarm-popup-Top-User-Nickname']}>
+                  {loginUser?.nickname}
+                </div>
+                <div className={styles['alarm-popup-Top-User-Alarm-Count']}>
+                  {'New Alarm'}
+                  <div className={styles['Alarm-Count']}>{alarmCounts}</div>
+                </div>
               </div>
-              <div className={styles['alarm-popup-Top-User-Alarm-Count']}>
-                {'New Alarm'}
-                <div className={styles['Alarm-Count']}>{alarmCounts}</div>
-              </div>
-            </div>
-            <div className={styles['alarm-popup-Top-More']}>
-              <div
-                className={`${styles['alarm-All-Read-button']} ${
-                  alarmCounts > 0 ? '' : styles['active']
-                }`}
-                onClick={onReadAllAlarmHandler}></div>
+              <div className={styles['alarm-popup-Top-More']}>
+                <div
+                  className={`${styles['alarm-All-Read-button']} ${
+                    alarmCounts > 0 ? '' : styles['active']
+                  }`}
+                  onClick={onReadAllAlarmHandler}></div>
 
-              <div
-                className={styles['alarm-All-Delete-button']}
-                onClick={onDeleteAllReadAlarmHandler}></div>
+                <div
+                  className={styles['alarm-All-Delete-button']}
+                  onClick={onDeleteAllReadAlarmHandler}></div>
+              </div>
             </div>
-          </div>
-          <div className={styles['alarm-popup-Bottom']}>
-            <div className={styles['alarm-popup-list']}>
-              {alarms
-                .filter((alarm) => !alarm.isDelete) // 삭제된 알람을 제외하고 렌더링
-                .map((alarm) => {
-                  return (
-                    <div
-                      key={alarm.id}
-                      className={`${styles['alarm-popup-Item']} ${alarm.isRead ? styles['read'] : ''}`}
-                      onClick={() =>
-                        onAlarmClickHandler(alarm.id, alarm.relatedUrl)
-                      }>
-                      {alarm.senderProfileImage !== null ? (
-                        <img
-                          src={alarm.senderProfileImage}
-                          alt="프로필 이미지"
-                          className={styles['alarm-popup-Item-Profile']}
-                        />
-                      ) : (
-                        <div
-                          className={
-                            styles['alarm-popup-default-Profile']
-                          }></div>
-                      )}
-                      <div className={styles['alarm-Content']}>
-                        <div className={styles['alarm-popup-Item-Text']}>
-                          <div className={styles['alarm-popup-Item-Nickname']}>
-                            {alarm.senderNickname}
-                            {'님이'}
+            <div className={styles['alarm-popup-Bottom']}>
+              <div className={styles['alarm-popup-list']}>
+                {alarms
+                  .filter((alarm) => !alarm.isDelete) // 삭제된 알람을 제외하고 렌더링
+                  .map((alarm) => {
+                    return (
+                      <div
+                        key={alarm.id}
+                        className={`${styles['alarm-popup-Item']} ${alarm.isRead ? styles['read'] : ''}`}
+                        onClick={() =>
+                          onAlarmClickHandler(alarm.id, alarm.relatedUrl)
+                        }>
+                        {alarm.senderProfileImage !== null ? (
+                          <img
+                            src={alarm.senderProfileImage}
+                            alt="프로필 이미지"
+                            className={styles['alarm-popup-Item-Profile']}
+                          />
+                        ) : (
+                          <div
+                            className={
+                              styles['alarm-popup-default-Profile']
+                            }></div>
+                        )}
+                        <div className={styles['alarm-Content']}>
+                          <div className={styles['alarm-popup-Item-Text']}>
+                            <div
+                              className={styles['alarm-popup-Item-Nickname']}>
+                              {alarm.senderNickname}
+                              {'님이'}
+                            </div>
+                            {alarm.notificationType === 'NEW_COMMENT'
+                              ? '내 게시글에 댓글을 남겼습니다.'
+                              : '내 댓글에 대댓글을 남겼습니다.'}
                           </div>
-                          {alarm.notificationType === 'NEW_COMMENT'
-                            ? '내 게시글에 댓글을 남겼습니다.'
-                            : '내 댓글에 대댓글을 남겼습니다.'}
+                          <div className={styles['alarm-popup-Item-Time']}>
+                            {formatElapsedTime(alarm.createdAt)}
+                          </div>
                         </div>
-                        <div className={styles['alarm-popup-Item-Time']}>
-                          {formatElapsedTime(alarm.createdAt)}
+                        <div className={styles['alarm-popup-Item-button']}>
+                          <div
+                            className={`${styles['alarm-popup-Item-Read-button']} ${alarm.isRead ? styles['active-icon'] : ''}`}
+                            onClick={() => onReadAlarmHandler(alarm.id)}></div>
+                          <div
+                            className={styles['alarm-popup-Item-Delete-button']}
+                            onClick={() =>
+                              onDeleteAlarmHandler(alarm.id, alarm.isRead)
+                            }></div>
                         </div>
                       </div>
-                      <div className={styles['alarm-popup-Item-button']}>
-                        <div
-                          className={`${styles['alarm-popup-Item-Read-button']} ${alarm.isRead ? styles['active-icon'] : ''}`}
-                          onClick={() => onReadAlarmHandler(alarm.id)}></div>
-                        <div
-                          className={styles['alarm-popup-Item-Delete-button']}
-                          onClick={() =>
-                            onDeleteAlarmHandler(alarm.id, alarm.isRead)
-                          }></div>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>

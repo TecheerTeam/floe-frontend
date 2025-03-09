@@ -449,7 +449,7 @@ export default function MyPage() {
     <>
       <Header />
       <div className={styles['mypage-Container']}>
-        <aside className={styles['navbar']}>
+        <aside className={styles['desktop-navbar']}>
           <NavBar />
         </aside>
 
@@ -509,6 +509,12 @@ export default function MyPage() {
                   Edit profile
                 </button>
                 <div className={styles['user-Name']}>{user?.nickname}</div>
+              </div>
+              <div className={styles['more-button']}>
+                <div className={styles['more-overlay']}></div>
+                <div className={styles['mode-button']}>{'darkmode'}</div>
+                <div className={styles['logout-button']}>{'로그아웃'}</div>
+                <div className={styles['withdraw-button']}>{'회원탈퇴'}</div>
               </div>
             </div>
           </div>
@@ -744,6 +750,9 @@ export default function MyPage() {
         <aside className={styles['sidebar']}>
           <SideBar />
         </aside>
+      </div>
+      <div className={styles['mobile-navbar']}>
+        <NavBar />
       </div>
     </>
   );
