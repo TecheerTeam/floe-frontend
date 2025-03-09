@@ -144,7 +144,7 @@ export default function Main() {
         <>
           <Header />
           <div className={styles['page-container']}>
-            <aside className={styles['navbar']}>
+            <aside className={styles['desktop-navbar']}>
               <NavBar />
             </aside>
             <main className={styles['main-content']}>
@@ -220,6 +220,9 @@ export default function Main() {
             <aside className={styles['sidebar']}>
               <SideBar />
             </aside>
+          </div>
+          <div className={styles['mobile-navbar']}>
+            <NavBar />
           </div>
         </>
       )}

@@ -10,6 +10,8 @@
   align-items: center;
   z-index: 5050;
   border-bottom: 1px solid var(--header-border-bottom-color);
+  position: sticky;
+  top: 0;
 }
 .Header-Container {
   display: flex;
@@ -160,6 +162,7 @@
     z-index: 5050;
     margin: 0;
     padding: 0;
+    position: unset;
   }
 
   .Header-Container {
