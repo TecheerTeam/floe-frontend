@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 1920px; /* 전체 너비 제한 */
   margin: 0 auto;
-  padding-top: 157px; /* Header 높이 */
+  padding-top: 57px; /* Header 높이 */
   background-color: var(--main-background-color);
 }
 .navbar {
@@ -27,4 +27,5 @@
   width: 100%;
   height: 150px;
   border-radius: 25px;
+  min-width: 450px;
 }

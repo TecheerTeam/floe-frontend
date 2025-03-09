@@ -16,7 +16,7 @@ import {
   withDrawUserRequest,
 } from '@/apis';
 import { log } from 'console';
-import WithdrawModal from '@/components/common/WIthDrawModal';
+import WithdrawModal from '@/components/common/WithDrawModal';
 //   function: 날짜 처리 함수    //
 const formatElapsedTime = (createdAt: string) => {
   // 'YYYY-MM-DD HH:mm:ss' 형식의 문자열을 Date 객체로 변환
@@ -280,7 +280,7 @@ export default function NavBar() {
             className={`${styles['Home-Icon']} ${
               isActive('/') ? styles['active-icon'] : ''
             }`}></div>
-          Home
+          <div className={styles['button-text']}>Home</div>
         </button>
       </Link>
 
@@ -293,7 +293,7 @@ export default function NavBar() {
           className={`${styles['Heart-Icon']} ${alarmCounts > 0 ? styles['has-alarm'] : ''} ${
             isActive('/alarm') ? styles['active-icon'] : ''
           }`}></div>
-        Alarm
+        <div className={styles['button-text']}>Alarm</div>
       </button>
 
       {showAlarmPopup && (
@@ -394,30 +394,10 @@ export default function NavBar() {
             className={`${styles['Add-Icon']} ${
               isActive('/post') ? styles['active-icon'] : ''
             }`}></div>
-          Post
+          <div className={styles['button-text']}>Post</div>
         </button>
       </Link>
-      {/* /mypage/save -> /mypage 로 임시변경 */}
-      <Link href="/mypage" passHref style={{ textDecoration: 'none' }}>
-        <button
-          className={`${styles['Save-Button']} ${
-            isActive('/mypage') ? styles['active'] : ''
-          }`}
-          onClick={(e) => {
-            e.preventDefault(); // 기본 동작 방지
-            if (loginUser) {
-              router.push('/mypage'); // 로그인 상태면 /mypage로 이동
-            } else {
-              router.push('/auth'); // 비로그인 상태면 /auth로 이동
-            }
-          }}>
-          <div
-            className={`${styles['Save-Icon']} ${
-              isActive('/mypage') ? styles['active-icon'] : ''
-            }`}></div>
-          Save
-        </button>
-      </Link>
+
       <Link href="/issue" passHref style={{ textDecoration: 'none' }}>
         <button
           className={`${styles['Issue-Button']} ${
@@ -427,7 +407,7 @@ export default function NavBar() {
             className={`${styles['Issue-Icon']} ${
               isActive('/issue') ? styles['active-icon'] : ''
             }`}></div>
-          Issue
+          <div className={styles['button-text']}>Issue</div>
         </button>
       </Link>
       <div className={styles['spacer']}></div>
@@ -435,7 +415,7 @@ export default function NavBar() {
         className={styles['See-More-Button']}
         onClick={toggleSeeMorePopup}>
         <div className={styles['More-Icon']}></div>
-        More
+        <div className={styles['button-text']}>More</div>
       </button>
 
       {showSeeMorePopup && (
@@ -463,7 +443,12 @@ export default function NavBar() {
           </button>
         </div>
       )}
-      {withDrawModalOpen &&  <WithdrawModal onClose={() => setWithDrawModalOpen(false)} onWithdraw={withdrawClickHandler} />}
+      {withDrawModalOpen && (
+        <WithdrawModal
+          onClose={() => setWithDrawModalOpen(false)}
+          onWithdraw={withdrawClickHandler}
+        />
+      )}
 
       <Link
         href={loginUser ? '/mypage' : '/auth'}

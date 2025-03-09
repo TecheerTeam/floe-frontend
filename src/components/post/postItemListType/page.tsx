@@ -117,8 +117,7 @@ export default function PostItemListType({
       const response = await getCommentRequest(
         recordId,
         0,
-        1,
-        cookies.accessToken,
+        1
       ); // 첫 번째 페이지에서 댓글 데이터 요청
       console.log('comment count: ', response.data.totalElements);
       return response.data.totalElements; // 총 댓글 수 반환
@@ -130,7 +129,7 @@ export default function PostItemListType({
   const { data: likeData } = useQuery({
     queryKey: ['likes', recordId],
     queryFn: async () => {
-      const response = await getLikeCountRequest(recordId, cookies.accessToken); // 첫 번째 페이지에서 댓글 데이터 요청
+      const response = await getLikeCountRequest(recordId); // 첫 번째 페이지에서 댓글 데이터 요청
       console.log('like count in query: ', response.data.count);
       return response.data.count; // 총 댓글 수 반환
     },
@@ -143,7 +142,6 @@ export default function PostItemListType({
     queryFn: async () => {
       const response = await getSaveCountRecordRequest(
         recordId,
-        cookies.accessToken,
       ); // 첫 번째 페이지에서 댓글 데이터 요청
       console.log('save count in query: ', response.data.count);
       return response.data.count; // 총 댓글 수 반환

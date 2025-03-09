@@ -2,6 +2,14 @@
   margin: 0;
   padding: 0;
 }
+@media screen and (max-width: 768px) {
+  * {
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    overflow-x: hidden;
+  }
+}
 @font-face {
   font-family: 'Road Rage';
   src: url('/fonts/RoadRage-Regular.ttf') format('truetype');
@@ -58,7 +66,7 @@
   --other-text-color: rgba(0, 0, 0, 0.7);
   --other-text-color-hover: #000000;
   --sign-in-divider-color: #000000;
-  --error-text-color : red;
+  --error-text-color: red;
 
   /* signUp-Page */
   --sign-up-container-color: #ffffff;
@@ -285,7 +293,7 @@ body {
   --other-text-color: lightgrey;
   --other-text-color-hover: #ffffff;
   --sign-up-divider-color: #ffffff;
-  --error-text-color : red;
+  --error-text-color: red;
   /* navbar */
   --nav-background-color: #000000;
   --nav-bar-button-text-color: #ffffff;
