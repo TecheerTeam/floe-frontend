@@ -98,20 +98,41 @@
 /* 반응형 스타일 */
 @media (max-width: 768px) {
   .signUp-wrapper {
+    width: 390px;
+    height: 100vh;
+    display: flex;
     flex-direction: column;
   }
 
   .signUp-left-box {
-    flex: none;
-    height: 30vh;
+    display: flex;
   }
 
   .signUp-right-box {
-    flex: none;
+    flex: 1.7;
     height: 70vh;
   }
 
   .signUp-container {
     width: 90%;
+    box-shadow: none;
+  }
+  .input-group input,
+  .input-group select {
+    width: 93%;
+    /* padding: 10px; */
+    border: 1px solid #dcdcdc;
+    border-radius: 5px;
+    font-size: 16px;
+    appearance: textfield;
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-family: 'Pretendard Variable';
   }
 }
