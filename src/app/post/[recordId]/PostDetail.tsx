@@ -131,8 +131,6 @@ export default function PostDetail({ record }: PostDetailProps) {
   const [commentClick, setCommentClick] = useState<boolean>(false);
   //          state: 저장 아이콘 버튼 클릭 상태          //
   const [isSave, setIsSave] = useState<boolean>(false);
-  //          state: 댓글창 팝업 상태          //
-  const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
   //          state: 댓글 입력 참조 상태          //
   const commentRef = useRef<HTMLInputElement | null>(null);
   //          state: 더보기 버튼 클릭 상태          //
@@ -239,10 +237,7 @@ export default function PostDetail({ record }: PostDetailProps) {
       console.error('fetch Like Count Error', error);
     }
   };
-  //   event handler: 댓글 영역 보이기 토글   //
-  const toggleCommentSection = () => {
-    setShowCommentSection((prev) => !prev);
-  };
+
   //          event handler: 댓글 입력값 변경 이벤트 처리          //
   const onCommentChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -676,9 +671,7 @@ export default function PostDetail({ record }: PostDetailProps) {
             </div>
 
             <div className={styles['post-detail-comment-box']}>
-              <div
-                className={styles['post-detail-comment-icon']}
-                onClick={toggleCommentSection}></div>
+              <div className={styles['post-detail-comment-icon']}></div>
               <div className={styles['post-detail-comment-count']}>
                 {totalCommentCount}
               </div>
@@ -703,81 +696,75 @@ export default function PostDetail({ record }: PostDetailProps) {
               {formatCreatedAt(record.createdAt)}
             </div>
           </div>
-          {showCommentSection && (
-            <div className={styles['comment-section']}>
-              <div className={styles['comment-header']}>
-                Comment <span>{totalCommentCount}</span>
-              </div>
 
-              <div className={styles['comment-input-container']}>
-                <div className={styles['user-profile-box']}>
-                  {user ? (
-                    // 로그인한 유저의 프로필 이미지가 있을 경우
-                    user?.profileImage !== null ? (
-                      <img
-                        src={user?.profileImage}
-                        alt="프로필 이미지"
-                        className={styles['user-profile-image']}
-                      />
-                    ) : (
-                      <div // 로그인한 유저의 프로필 이미지가 없을 경우
-                        className={
-                          styles['comment-default-profile-image']
-                        }></div>
-                    )
-                  ) : (
-                    // 로그인하지 않은 경우
-                    <div
-                      className={styles['comment-default-profile-image']}></div>
-                  )}
-                  {user ? (
-                    <div className={styles['user-profile-nickname']}>
-                      {user?.nickname}
-                    </div>
-                  ) : (
-                    <div className={styles['user-profile-nickname']}>
-                      {'Guest'}
-                    </div>
-                  )}
-                </div>
-
-                <input
-                  ref={commentRef}
-                  type="text"
-                  placeholder={
-                    user ? '댓글을 입력해주세요...' : '로그인이 필요합니다'
-                  }
-                  value={newComment}
-                  className={styles['comment-input']}
-                  onChange={onCommentChangeHandler}
-                />
-                <div
-                  className={styles['comment-Apply-Button']}
-                  onClick={onApplyClickHandler}>
-                  Apply
-                </div>
-              </div>
-              {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
-                <>
-                  {data.pages.map((page, pageIndex) => {
-                    if (page.data.content && Array.isArray(page.data.content)) {
-                      return page.data.content.map((comment) => (
-                        <Comment
-                          key={comment.commentId}
-                          commentsList={comment}
-                        />
-                      ));
-                    } else {
-                      return <p key={pageIndex}></p>; // content가 없을 때
-                    }
-                  })}
-                  <div ref={ref} style={{ height: '1px' }} />{' '}
-                </>
-              ) : (
-                <></> // 데이터가 없을 때
-              )}
+          <div className={styles['comment-section']}>
+            <div className={styles['comment-header']}>
+              Comment <span>{totalCommentCount}</span>
             </div>
-          )}
+
+            <div className={styles['comment-input-container']}>
+              <div className={styles['user-profile-box']}>
+                {user ? (
+                  // 로그인한 유저의 프로필 이미지가 있을 경우
+                  user?.profileImage !== null ? (
+                    <img
+                      src={user?.profileImage}
+                      alt="프로필 이미지"
+                      className={styles['user-profile-image']}
+                    />
+                  ) : (
+                    <div // 로그인한 유저의 프로필 이미지가 없을 경우
+                      className={styles['comment-default-profile-image']}></div>
+                  )
+                ) : (
+                  // 로그인하지 않은 경우
+                  <div
+                    className={styles['comment-default-profile-image']}></div>
+                )}
+                {user ? (
+                  <div className={styles['user-profile-nickname']}>
+                    {user?.nickname}
+                  </div>
+                ) : (
+                  <div className={styles['user-profile-nickname']}>
+                    {'Guest'}
+                  </div>
+                )}
+              </div>
+
+              <input
+                ref={commentRef}
+                type="text"
+                placeholder={
+                  user ? '댓글을 입력해주세요...' : '로그인이 필요합니다'
+                }
+                value={newComment}
+                className={styles['comment-input']}
+                onChange={onCommentChangeHandler}
+              />
+              <div
+                className={styles['comment-Apply-Button']}
+                onClick={onApplyClickHandler}>
+                Apply
+              </div>
+            </div>
+            {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
+              <>
+                {data.pages.map((page, pageIndex) => {
+                  if (page.data.content && Array.isArray(page.data.content)) {
+                    return page.data.content.map((comment) => (
+                      <Comment key={comment.commentId} commentsList={comment} />
+                    ));
+                  } else {
+                    return <p key={pageIndex}></p>; // content가 없을 때
+                  }
+                })}
+                <div ref={ref} style={{ height: '1px' }} />{' '}
+              </>
+            ) : (
+              <></> // 데이터가 없을 때
+            )}
+          </div>
         </div>
       </div>
     </>

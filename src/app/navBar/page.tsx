@@ -426,29 +426,32 @@ export default function NavBar() {
       </button>
 
       {showSeeMorePopup && (
-        <div className={styles['popup-container']}>
-          {loginUser && (
-            <button
-              className={styles['option-button']}
-              onClick={() => setWithDrawModalOpen(true)}>
-              <div className={styles['Option-Icon']}></div>회원탈퇴
+        <>
+          <div className={styles['popup-overlay']} onClick={() => setShowSeeMorePopup(false)}></div>
+          <div className={styles['popup-container']}>
+            {loginUser && (
+              <button
+                className={styles['option-button']}
+                onClick={() => setWithDrawModalOpen(true)}>
+                <div className={styles['Option-Icon']}></div>회원탈퇴
+              </button>
+            )}
+            {loginUser && ( // 유저가 로그인된 상태에서만 렌더링
+              <button
+                className={styles['logout-button']}
+                onClick={onLogoutButtonClickHandler}>
+                <div className={styles['logout-Icon']}></div> Logout
+              </button>
+            )}
+            <button className={styles['mode-button']} onClick={toggleDarkMode}>
+              <div
+                className={
+                  isDarkMode ? styles['Sun-Icon'] : styles['Moon-Icon']
+                }></div>
+              {isDarkMode ? 'Light' : 'Dark'}
             </button>
-          )}
-          {loginUser && ( // 유저가 로그인된 상태에서만 렌더링
-            <button
-              className={styles['logout-button']}
-              onClick={onLogoutButtonClickHandler}>
-              <div className={styles['logout-Icon']}></div> Logout
-            </button>
-          )}
-          <button className={styles['mode-button']} onClick={toggleDarkMode}>
-            <div
-              className={
-                isDarkMode ? styles['Sun-Icon'] : styles['Moon-Icon']
-              }></div>
-            {isDarkMode ? 'Light' : 'Dark'}
-          </button>
-        </div>
+          </div>
+        </>
       )}
       {withDrawModalOpen && (
         <WithdrawModal

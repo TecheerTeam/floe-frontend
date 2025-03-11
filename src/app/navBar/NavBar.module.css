@@ -157,7 +157,7 @@
 
 .popup-container {
   position: absolute;
-  bottom: 200px;
+  bottom: 250px;
   left: 180;
   width: 150px;
   background-color: var(--nav-bar-popup-box-background-color);
@@ -167,7 +167,13 @@
   padding: 10px;
   z-index: 1000;
 }
-
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
 .option-button {
   display: flex;
   align-items: center;
@@ -770,11 +776,11 @@
   .alarm-popup-list {
     width: 340px;
   }
-  .alarm-popup-Item{
+  .alarm-popup-Item {
     padding: 0;
     margin: 0;
   }
-  .alarm-popup-Item-button{
+  .alarm-popup-Item-button {
     padding: 0 0 0 70px;
     gap: 10px;
   }

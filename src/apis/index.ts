@@ -158,12 +158,12 @@ export const saveCancelRecordRequest = async (recordId: number, accessToken: str
 export const getSaveCountRecordRequest = async (recordId: number) => {
     try {
         const result = await axios.get(SAVE_COUNT_RECORD_URL(recordId),
-        //  {
-        //     headers: {
-        //         'Authorization': `Bearer ${accessToken}`,
-        //     },
-        // }
-    );
+            //  {
+            //     headers: {
+            //         'Authorization': `Bearer ${accessToken}`,
+            //     },
+            // }
+        );
         console.log('save count result ', result);
         return result.data;
     } catch (error: unknown) {
@@ -579,15 +579,15 @@ export const postLikeRequest = async (recordId: number, accessToken: string) => 
     }
 }
 //         function: 좋아요 수 조회 API         //
-export const getLikeCountRequest = async (recordId: number, ) => {
+export const getLikeCountRequest = async (recordId: number,) => {
     try {
         const response = await axios.get<GetRecordLikeCountResponseDto>(
-            `${GET_LIKE_COUNT_URL(recordId)}`, 
-        //     {
-        //     headers: {
-        //         Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-        //     }
-        // }
+            `${GET_LIKE_COUNT_URL(recordId)}`,
+            //     {
+            //     headers: {
+            //         Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
+            //     }
+            // }
         )
         console.log('get Like Count API Response:', response); // 응답 전체 확인
         return response.data;
@@ -1037,11 +1037,13 @@ const GET_USER_TAG_RATIO_URL = () => `${API_DOMAIN}/tags`;
 
 export const getAllTagRatioRequest = async (accessToken: string) => {
     try {
-        const result = await axios.get<GetTagRatioResponseDto>(`${GET_All_TAG_RATIO_URL()}`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            },
-        });
+        const result = await axios.get<GetTagRatioResponseDto>(`${GET_All_TAG_RATIO_URL()}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            }
+        );
         console.log('전체 태그 통계 조회 API 요청 ', result);
         return result.data;
     }
