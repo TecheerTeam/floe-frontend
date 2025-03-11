@@ -159,7 +159,6 @@ export default function SignUp() {
       experience,
       field,
       age,
-      
     };
     signUpRequest(requestBody).then(signUpResponse);
   };
@@ -193,72 +192,72 @@ export default function SignUp() {
         </div>
         <div className={styles['signUp-input-section']}>
           <div className={styles['signUp-email-section']}>
-            <div className={styles['E-MAIL']}>{'E-Mail *'}</div>
+            <div className={styles['E-MAIL']}>{'이메일 *'}</div>
             <input
               ref={emailRef}
               type="text"
               placeholder="Enter your Email"
               className={`${styles['email-input']} ${isEmailError ? styles['input-error'] : ''}`}
-              value={email}
+              value={isEmailError ? emailErrorMessage : email}
               onChange={onEmailChangeHandler}
               onKeyDown={onEmailKeyDownHandler}
+              onFocus={() => {
+                if (isEmailError) {
+                  setEmail(''); // 에러 메시지가 보일 때 input 클릭 시 초기화
+                  setEmailError(false);
+                  setEmailErrorMessage('');
+                }
+              }}
             />
-            <div className={styles['error-section']}>
-              {isEmailError && (
-                <div className={styles['error-message']}>
-                  {emailErrorMessage}
-                </div>
-              )}
-            </div>
           </div>
           <div className={styles['signUp-pw-section']}>
-            <div className={styles['PW']}>{'PW *'}</div>
+            <div className={styles['PW']}>{'비밀번호 *'}</div>
             <input
               ref={passwordRef}
               type="text"
               placeholder="Enter your Password"
               className={`${styles['pw-input']} ${isPasswordError ? styles['input-error'] : ''}`}
-              value={password}
+              value={isPasswordError ? passwordErrorMessage : password}
               onChange={onPassWordChangeHandler}
               onKeyDown={onPasswordKeyDownHandler}
+              onFocus={() => {
+                if (isPasswordError) {
+                  setPassword(''); // 에러 메시지가 보일 때 input 클릭 시 초기화
+                  setPasswordError(false);
+                  setPasswordErrorMessage('');
+                }
+              }}
             />
-            <div className={styles['error-section']}>
-              {isPasswordError && (
-                <div className={styles['error-message']}>
-                  {passwordErrorMessage}
-                </div>
-              )}
-            </div>
           </div>
 
           <div className={styles['divider']}></div>
           {/* 닉네임임 */}
           <div className={styles['signUp-nickname-input-section']}>
-            <div className={styles['Nickname']}>{'Nickname *'}</div>
+            <div className={styles['Nickname']}>{'닉네임 *'}</div>
             <input
               ref={nicknameRef}
               type="text"
-              placeholder="Enter your Nickname"
+              placeholder="닉네임을 입력하세요"
               className={`${styles['nickname-input']} ${isPasswordError ? styles['input-error'] : ''}`}
-              value={nickname}
+              value={isNicknameError ? nicknameErrorMessage : nickname}
               onChange={onNicknameChangeHandler}
               onKeyDown={onNicknameKeyDownHandler}
+              onFocus={() => {
+                if (isNicknameError) {
+                  setNickname(''); // 에러 메시지가 보일 때 input 클릭 시 초기화
+                  setNicknameError(false);
+                  setNicknameErrorMessage('');
+                }
+              }}
             />
-            <div className={styles['error-section']}>
-              {isNicknameError && (
-                <div className={styles['error-message']}>
-                  {nicknameErrorMessage}
-                </div>
-              )}
-            </div>
           </div>
           {/* 연차 */}
           <div className={styles['signUp-experience-input-section']}>
-            <div className={styles['Experience']}>{'Experience(연차)'}</div>
+            <div className={styles['Experience']}>{'연차'}</div>
             <input
               ref={experienceRef}
               type="text"
-              placeholder="연차를 숫자로 입력하세요(ex. 1 -> 1년차)"
+              placeholder="숫자로 입력하세요"
               className={styles['experience-input']}
               value={experience === null ? '' : experience.toString()} // null인 경우 빈 문자열로 처리
               onChange={onExperienceChangeHandler}
@@ -267,11 +266,11 @@ export default function SignUp() {
           </div>
           {/* 나이 */}
           <div className={styles['signUp-Age-input-section']}>
-            <div className={styles['Age']}>{'Age(나이)'}</div>
+            <div className={styles['Age']}>{'나이'}</div>
             <input
               ref={ageRef}
               type="text"
-              placeholder="Enter your Age (ex. 20)"
+              placeholder="나이를 입력하세요"
               className={styles['Age-input']}
               value={age === null ? '' : age.toString()} // null인 경우 빈 문자열로 처리
               onChange={onAgeChangeHandler}
@@ -280,11 +279,11 @@ export default function SignUp() {
           </div>
           {/* 분야  */}
           <div className={styles['signUp-Field-input-section']}>
-            <div className={styles['Field']}>{'Field(분야)'}</div>
+            <div className={styles['Field']}>{'분야'}</div>
             <input
               ref={fieldRef}
               type="tel"
-              placeholder="Enter your Field (ex. Frontend / Backend)"
+              placeholder="ex. 프론트엔드 / 백엔드"
               className={styles['Field-input']}
               value={field === null ? '' : field.toString()} // null인 경우 빈 문자열로 처리
               onChange={onFieldChangeHandler}
