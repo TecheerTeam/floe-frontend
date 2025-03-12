@@ -29,7 +29,6 @@ const SIGN_UP_URL = () => `${API_DOMAIN}/auth/sign-up`;
 export const signInRequest = async (requestBody: SignInRequestDto) => {
     const result = await axios.post(SIGN_IN_URL(), requestBody, { withCredentials: true })
         .then(response => {
-            console.log('Response Headers:', response.headers);
             // 응답 헤더에서 'accessToken'과 'refreshToken' 추출
             const accessToken = response.headers['authorization']; // 'authorization'이 맞는지 확인
             const refreshToken = response.headers['authorization-refresh']; // 'auth
@@ -44,10 +43,8 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
 
             // 토큰 값이 없으면 실패 처리
             if (!accessToken || !refreshToken) {
-                console.error('토큰 정보가 없습니다.');
                 return null;  // 또는 error 처리
             }
-            console.log('로그인 api 결과', responseBody);
             return responseBody;
         })
         .catch(error => {
@@ -55,7 +52,6 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
                 return null;
             }
             const responseBody: ResponseDto = error.response.data;
-            console.error('로그인 오류:', responseBody);
             return responseBody;
         });
 
@@ -118,7 +114,6 @@ export const saveRecordRequest = async (recordId: number, accessToken: string) =
                 'Authorization': `Bearer ${accessToken}`,
             },
         });
-        console.log('save result ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -127,7 +122,6 @@ export const saveRecordRequest = async (recordId: number, accessToken: string) =
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -140,7 +134,6 @@ export const saveCancelRecordRequest = async (recordId: number, accessToken: str
                 'Authorization': `Bearer ${accessToken}`,
             },
         });
-        console.log('save result ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -149,7 +142,6 @@ export const saveCancelRecordRequest = async (recordId: number, accessToken: str
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -158,13 +150,8 @@ export const saveCancelRecordRequest = async (recordId: number, accessToken: str
 export const getSaveCountRecordRequest = async (recordId: number) => {
     try {
         const result = await axios.get(SAVE_COUNT_RECORD_URL(recordId),
-            //  {
-            //     headers: {
-            //         'Authorization': `Bearer ${accessToken}`,
-            //     },
-            // }
+
         );
-        console.log('save count result ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -173,7 +160,6 @@ export const getSaveCountRecordRequest = async (recordId: number) => {
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -190,7 +176,6 @@ export const getIsSaveRecordRequest = async (recordId: number, accessToken: stri
                 },
             }
         );
-        console.log('rr', response);
         return response.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -199,7 +184,6 @@ export const getIsSaveRecordRequest = async (recordId: number, accessToken: stri
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -234,7 +218,6 @@ export const postRecordRequest = async (formData: FormData, accessToken: string)
                 'Content-Type': 'multipart/form-data'
             },
         });
-        console.log('post ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -243,7 +226,6 @@ export const postRecordRequest = async (formData: FormData, accessToken: string)
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -257,7 +239,6 @@ export const putRecordRequest = async (recordId: number, formData: FormData, acc
                 'Content-Type': 'multipart/form-data'
             },
         });
-        console.log('put: ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -266,7 +247,6 @@ export const putRecordRequest = async (recordId: number, formData: FormData, acc
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -280,7 +260,7 @@ export const deleteRecordRequest = async (recordId: number, accessToken: string)
                 'Authorization': `Bearer ${accessToken}`,
             },
         });
-        console.log('rr', result);
+
         return result;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -289,7 +269,6 @@ export const deleteRecordRequest = async (recordId: number, accessToken: string)
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -327,11 +306,7 @@ export const getSearchRecordRequest = async (searchRequest: SearchRecordRequestD
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -367,21 +342,10 @@ export const postCommentRequest = async (requestBody: PostCommentRequestDto, acc
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
 }
-//          function: 댓글 조회 요청 API  토큰X        //
-// export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
-//     const response = await axios.get<GetCommentResponseDto>(
-//         `${GET_COMMENT_URL(recordId)}?page=${page}&size=${size}`
-//     );
-//     console.log('ddd', response)
-//     return response.data;
-
-// };
 //          function: 댓글 조회 요청 API  토큰O        //
 export const getCommentRequest = async (recordId: number, page: number, size: number): Promise<GetCommentResponseDto> => {
     try {
@@ -396,11 +360,8 @@ export const getCommentRequest = async (recordId: number, page: number, size: nu
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
+
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -420,11 +381,7 @@ export const getReplyRequest = async (commentId: number, page: number, size: num
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -440,8 +397,6 @@ export const putCommentRequest = async (commentId: number, requestBody: PutComme
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -457,8 +412,6 @@ export const deleteCommentRequest = async (commentId: number, accessToken: strin
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -475,11 +428,7 @@ export const postCommentLikeRequest = async (commentId: number, accessToken: str
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -495,11 +444,7 @@ export const deleteCommentLikeRequest = async (commentId: number, accessToken: s
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -514,15 +459,11 @@ export const getCommentLikeListRequest = async (commentId: number, accessToken: 
             }
         }
         )
-        console.log('get comment Like List API Response:', response); // 응답 전체 확인
+
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -537,15 +478,12 @@ export const getCommentLikeCountRequest = async (commentId: number, accessToken:
             }
         }
         )
-        console.log('get Like Count API Response:', response); // 응답 전체 확인
+
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
+
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -564,16 +502,14 @@ const DELETE_LIKE_URL = (recordId: number) => `${API_DOMAIN}/records/${recordId}
 export const postLikeRequest = async (recordId: number, accessToken: string) => {
     try {
         const response = await axios.post(POST_LIKE_URL(recordId), {}, authorization(accessToken))
-        console.log('post like request api response', response);
+
         return response;
     }
     catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
+
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
+
         }
         throw error;
     }
@@ -582,22 +518,15 @@ export const postLikeRequest = async (recordId: number, accessToken: string) => 
 export const getLikeCountRequest = async (recordId: number,) => {
     try {
         const response = await axios.get<GetRecordLikeCountResponseDto>(
-            `${GET_LIKE_COUNT_URL(recordId)}`,
-            //     {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`, // Authorization 헤더 추가
-            //     }
-            // }
+            `${GET_LIKE_COUNT_URL(recordId)}`
         )
-        console.log('get Like Count API Response:', response); // 응답 전체 확인
+
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
+
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -615,11 +544,10 @@ export const getLikeListRequest = async (recordId: number, accessToken: string) 
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
+
         } else {
             // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
+
         }
         throw error;
     }
@@ -628,16 +556,12 @@ export const getLikeListRequest = async (recordId: number, accessToken: string) 
 export const deleteLikeRequest = async (recordId: number, accessToken: string) => {
     try {
         const response = await axios.delete(DELETE_LIKE_URL(recordId), authorization(accessToken))
-        console.log('delete like request api response', response);
+
         return response;
     }
     catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
-            // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -670,7 +594,6 @@ export const getUserRequest = async (accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('사용자 정보 추출출 api ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -678,8 +601,6 @@ export const getUserRequest = async (accessToken: string) => {
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -692,7 +613,6 @@ export const getOtherUserProfileRequest = async (userId: number, accessToken: st
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('타 유저 정보 추출출 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -701,8 +621,6 @@ export const getOtherUserProfileRequest = async (userId: number, accessToken: st
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -718,15 +636,12 @@ export const getOtherUserRecordRequest = async (userId: number, page: number, si
                 },
             }
         );
-        console.log('타유저 게시글 조회 api 결과:', response.data);
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
             // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
+
         }
         throw error;
     }
@@ -741,7 +656,6 @@ export const putUserProfileImageUpdateRequest = async (formData: FormData, acces
                 'Content-Type': 'multipart/form-data'
             },
         });
-        console.log('프로필 이미지 변경 api ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -750,7 +664,6 @@ export const putUserProfileImageUpdateRequest = async (formData: FormData, acces
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -773,7 +686,6 @@ export const patchUserUpdateRequest = async (requestBody: patchUserRequestDto, a
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -793,11 +705,8 @@ export const getUserRecordRequest = async (page: number, size: number, accessTok
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            // Axios 에러라면 response 데이터 확인
-            console.error('Error fetching comments:', error.response?.data || error.message);
         } else {
             // 일반적인 에러 메시지 출력
-            console.error('Unknown error:', error);
         }
         throw error;
     }
@@ -822,7 +731,6 @@ export const getSaveListRecordRequest = async (page: number, size: number, acces
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -846,7 +754,6 @@ export const getLikeListRecordRequest = async (page: number, size: number, acces
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -859,7 +766,6 @@ export const withDrawUserRequest = async (accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('회원탈퇴 요청 API ', result);
         return result.data;
     } catch (error: unknown) {
         // error가 AxiosError인지 확인하고 안전하게 접근
@@ -867,8 +773,6 @@ export const withDrawUserRequest = async (accessToken: string) => {
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -897,7 +801,6 @@ export const getAlarmListRequest = async (accessToken: string) => {
                     'Authorization': `Bearer ${accessToken}`
                 },
             });
-        console.log('알람 리스트 조회 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -907,7 +810,6 @@ export const getAlarmListRequest = async (accessToken: string) => {
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -920,7 +822,6 @@ export const patchReadAlarmRequest = async (notificationId: number, accessToken:
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('해당 알람 읽음 처리 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -930,7 +831,6 @@ export const patchReadAlarmRequest = async (notificationId: number, accessToken:
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -943,7 +843,6 @@ export const patchReadAllAlarmRequest = async (accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('모든 알람 읽음 처리 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -953,7 +852,6 @@ export const patchReadAllAlarmRequest = async (accessToken: string) => {
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -967,7 +865,6 @@ export const deleteAlarmRequest = async (notificationId: number, accessToken: st
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('해당 알람 삭제 처리 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -977,7 +874,6 @@ export const deleteAlarmRequest = async (notificationId: number, accessToken: st
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -991,7 +887,6 @@ export const deleteAlreadyReadAllAlarmRequest = async (accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('읽은 알람 모두 삭제 처리 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -1001,7 +896,6 @@ export const deleteAlreadyReadAllAlarmRequest = async (accessToken: string) => {
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1015,7 +909,6 @@ export const getUnreadAlarmCountRequest = async (accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('읽지 않은 알림 수 카운트 api ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -1025,7 +918,6 @@ export const getUnreadAlarmCountRequest = async (accessToken: string) => {
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1044,7 +936,6 @@ export const getAllTagRatioRequest = async (accessToken: string) => {
                 },
             }
         );
-        console.log('전체 태그 통계 조회 API 요청 ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -1054,7 +945,6 @@ export const getAllTagRatioRequest = async (accessToken: string) => {
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1068,7 +958,6 @@ export const getUserTagRatioRequest = async (accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저저 태그 통계 조회 API 요청 ', result);
         return result.data;
     }
     catch (error: unknown) {
@@ -1077,8 +966,6 @@ export const getUserTagRatioRequest = async (accessToken: string) => {
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1097,7 +984,6 @@ export const postUserFollowRequest = async (userId: number, accessToken: string)
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저 팔로우 생성 api ', result);
         return result.data;
     }
 
@@ -1108,7 +994,6 @@ export const postUserFollowRequest = async (userId: number, accessToken: string)
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1121,7 +1006,6 @@ export const deleteUserFollowRequest = async (userId: number, accessToken: strin
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저 팔로우 취소소 api ', result);
         return result.data;
     }
 
@@ -1132,7 +1016,6 @@ export const deleteUserFollowRequest = async (userId: number, accessToken: strin
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1144,7 +1027,6 @@ export const getUserFollowerRequest = async (userId: number, accessToken: string
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저 팔로워 목록 조회 api ', result);
         return result.data;
     }
 
@@ -1155,7 +1037,6 @@ export const getUserFollowerRequest = async (userId: number, accessToken: string
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1167,7 +1048,6 @@ export const getUserFollowingRequest = async (userId: number, accessToken: strin
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저 팔로잉 목록 조회 api ', result);
         return result.data;
     }
 
@@ -1178,7 +1058,6 @@ export const getUserFollowingRequest = async (userId: number, accessToken: strin
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1191,7 +1070,6 @@ export const getUserFollowCountRequest = async (userId: number, accessToken: str
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저 팔로우 수 조회 api ', result);
         return result.data;
     }
 
@@ -1202,7 +1080,6 @@ export const getUserFollowCountRequest = async (userId: number, accessToken: str
             return error.response.data;
         } else {
             // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
@@ -1215,7 +1092,6 @@ export const getUserFollowStatusRequest = async (userId: number, accessToken: st
                 'Authorization': `Bearer ${accessToken}`
             },
         });
-        console.log('유저 팔로우 상태 조회 api ', result);
         return result.data;
     }
 
@@ -1225,8 +1101,6 @@ export const getUserFollowStatusRequest = async (userId: number, accessToken: st
             if (!error.response) return null;
             return error.response.data;
         } else {
-            // AxiosError가 아닌 경우 처리
-            console.error('An unexpected error occurred:', error);
             return null;
         }
     }
