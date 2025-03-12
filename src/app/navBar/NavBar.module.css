@@ -157,7 +157,7 @@
 
 .popup-container {
   position: absolute;
-  bottom: 250px;
+  bottom: 180px;
   left: 180;
   width: 150px;
   background-color: var(--nav-bar-popup-box-background-color);

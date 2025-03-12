@@ -1,11 +1,11 @@
 .post-update-page-Container {
   display: grid;
-  grid-template-columns: 400px 1fr 320px;
+  grid-template-columns: 400px 1fr 420px;
   gap: 20px;
   width: 100%;
   max-width: 1920px; /* 전체 너비 제한 */
   margin: 0 auto;
-  padding-top: 157px;
+  padding-top: 17px;
   height: auto;
   background-color: var(--main-background-color);
 }
