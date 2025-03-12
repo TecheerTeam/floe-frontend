@@ -151,15 +151,7 @@ export default function Main() {
               <div className={styles['main-banner']}>
                 <Image src={Banner} alt="banner" className={styles['banner']} />
               </div>
-              <div className={styles['toggle-button']}>
-                <button
-                  className={styles['card-icon']}
-                  onClick={toggleViewCardMode}></button>
 
-                <button
-                  className={styles['list-icon']}
-                  onClick={toggleViewListMode}></button>
-              </div>
               {isLoading ? (
                 <LoadingSpinner />
               ) : (

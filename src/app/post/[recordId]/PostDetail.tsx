@@ -48,6 +48,7 @@ import {
   getUserFollowStatusRequest,
   deleteUserFollowRequest,
 } from '@/apis';
+import Image from 'next/image';
 import { GetCommentResponseDto } from '@/apis/response/record';
 import { useCookies } from 'react-cookie';
 import { useLoginUserStore } from '@/store';
@@ -131,8 +132,6 @@ export default function PostDetail({ record }: PostDetailProps) {
   const [commentClick, setCommentClick] = useState<boolean>(false);
   //          state: 저장 아이콘 버튼 클릭 상태          //
   const [isSave, setIsSave] = useState<boolean>(false);
-  //          state: 댓글창 팝업 상태          //
-  const [showCommentSection, setShowCommentSection] = useState<boolean>(false);
   //          state: 댓글 입력 참조 상태          //
   const commentRef = useRef<HTMLInputElement | null>(null);
   //          state: 더보기 버튼 클릭 상태          //
@@ -152,7 +151,6 @@ export default function PostDetail({ record }: PostDetailProps) {
   };
   const id = Array.isArray(recordId) ? Number(recordId[0]) : Number(recordId);
   if (!id || isNaN(id)) {
-    console.error('Invalid recordId:', recordId);
     return undefined;
   }
   //     function: 댓글 무한 스크롤     //
@@ -195,9 +193,7 @@ export default function PostDetail({ record }: PostDetailProps) {
         (like) => like.userName === user?.nickname,
       );
       setIsLike(isLiked);
-    } catch (error) {
-      console.error('좋아요 상태 가져오기 오류:', error);
-    }
+    } catch (error) {}
   };
   //     function: 좋아요 개수 가져오기     //
   const fetchLikeCount = async () => {
@@ -208,9 +204,7 @@ export default function PostDetail({ record }: PostDetailProps) {
       if (response.code === 'RL01') {
         setLikeCount(response.data.count);
       }
-    } catch (error) {
-      console.error('fetch Like Count Error', error);
-    }
+    } catch (error) {}
   };
   //  function:  유저가 저장을 했는지 확인 (CSR)   //
   const fetchSaveStatus = async () => {
@@ -221,9 +215,7 @@ export default function PostDetail({ record }: PostDetailProps) {
         cookies.accessToken,
       );
       setIsSave(response.data.saved);
-    } catch (error) {
-      console.error('저장 상태 가져오기 오류:', error);
-    }
+    } catch (error) {}
   };
 
   //     function: 저장 개수 가져오기     //
@@ -235,14 +227,9 @@ export default function PostDetail({ record }: PostDetailProps) {
       if (response.code === 'RS01') {
         setSaveCount(response.data.count);
       }
-    } catch (error) {
-      console.error('fetch Like Count Error', error);
-    }
+    } catch (error) {}
   };
-  //   event handler: 댓글 영역 보이기 토글   //
-  const toggleCommentSection = () => {
-    setShowCommentSection((prev) => !prev);
-  };
+
   //          event handler: 댓글 입력값 변경 이벤트 처리          //
   const onCommentChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -267,9 +254,7 @@ export default function PostDetail({ record }: PostDetailProps) {
         setIsLike(true);
         setLikeCount((prev) => prev + 1);
       }
-    } catch (error) {
-      console.error('좋아요 api 실패', error);
-    }
+    } catch (error) {}
   };
   //          event handler: 저장 버튼 클릭 이벤트 처리          //
   const onSaveClickHandler = async () => {
@@ -287,9 +272,7 @@ export default function PostDetail({ record }: PostDetailProps) {
         setIsSave(true);
         setSaveCount((prev) => prev + 1);
       }
-    } catch (error) {
-      console.error('저장 api 실패', error);
-    }
+    } catch (error) {}
   };
 
   const onApplyClickHandler = async () => {
@@ -334,11 +317,8 @@ export default function PostDetail({ record }: PostDetailProps) {
         await refetch();
       } else {
         alert('댓글 작성에 실패했습니다.');
-        console.log('comment:', requestBody);
       }
-    } catch (error) {
-      console.error('댓글 작성 오류:', error);
-    }
+    } catch (error) {}
   };
 
   //    function: 게시물 삭제 처리 함수      //
@@ -354,9 +334,7 @@ export default function PostDetail({ record }: PostDetailProps) {
       } else {
         alert('게시물 삭제에 실패했습니다.');
       }
-    } catch (error) {
-      console.error('게시물 데이터 불러오기 오류:', error);
-    }
+    } catch (error) {}
   };
 
   const onFollowFollowingButtonClickHandler = async () => {
@@ -371,9 +349,7 @@ export default function PostDetail({ record }: PostDetailProps) {
         if (response.code === 'UF02') {
           setIsFollowing(false);
         }
-      } catch (error) {
-        console.error('팔로우 오류', error);
-      }
+      } catch (error) {}
     } else if (!isFollowing) {
       try {
         const response = await postUserFollowRequest(
@@ -383,9 +359,7 @@ export default function PostDetail({ record }: PostDetailProps) {
         if (response.code === 'UF01') {
           setIsFollowing(true);
         }
-      } catch (error) {
-        console.error('팔로우 오류', error);
-      }
+      } catch (error) {}
     }
   };
 
@@ -399,9 +373,7 @@ export default function PostDetail({ record }: PostDetailProps) {
       if (response.code === 'UF05') {
         setIsFollowing(response.data.isFollowed);
       }
-    } catch (error) {
-      console.error('팔로우 오류', error);
-    }
+    } catch (error) {}
   };
   //     event handler: 게시물 수정 버튼 이벤트 처리     //
   const onEditButtonClickHandler = () => {
@@ -645,10 +617,17 @@ export default function PostDetail({ record }: PostDetailProps) {
                   className={styles['swiper-container']}>
                   {record.medias.map((media) => (
                     <SwiperSlide key={media.mediaId}>
-                      <img
+                      <Image
                         src={media.mediaUrl}
                         alt="게시물 이미지"
-                        className={styles['post-detail-images']}
+                        width={800}
+                        height={500}
+                        style={{
+                          objectFit: 'contain',
+                          backgroundSize: 'cover',
+                        }}
+                        priority={true} // 첫 번째 이미지는 즉시 로드
+                        quality={80} // 이미지 품질 80% (기본값 75, 고화질 유지)
                       />
                     </SwiperSlide>
                   ))}
@@ -676,9 +655,7 @@ export default function PostDetail({ record }: PostDetailProps) {
             </div>
 
             <div className={styles['post-detail-comment-box']}>
-              <div
-                className={styles['post-detail-comment-icon']}
-                onClick={toggleCommentSection}></div>
+              <div className={styles['post-detail-comment-icon']}></div>
               <div className={styles['post-detail-comment-count']}>
                 {totalCommentCount}
               </div>
@@ -703,81 +680,75 @@ export default function PostDetail({ record }: PostDetailProps) {
               {formatCreatedAt(record.createdAt)}
             </div>
           </div>
-          {showCommentSection && (
-            <div className={styles['comment-section']}>
-              <div className={styles['comment-header']}>
-                Comment <span>{totalCommentCount}</span>
-              </div>
 
-              <div className={styles['comment-input-container']}>
-                <div className={styles['user-profile-box']}>
-                  {user ? (
-                    // 로그인한 유저의 프로필 이미지가 있을 경우
-                    user?.profileImage !== null ? (
-                      <img
-                        src={user?.profileImage}
-                        alt="프로필 이미지"
-                        className={styles['user-profile-image']}
-                      />
-                    ) : (
-                      <div // 로그인한 유저의 프로필 이미지가 없을 경우
-                        className={
-                          styles['comment-default-profile-image']
-                        }></div>
-                    )
-                  ) : (
-                    // 로그인하지 않은 경우
-                    <div
-                      className={styles['comment-default-profile-image']}></div>
-                  )}
-                  {user ? (
-                    <div className={styles['user-profile-nickname']}>
-                      {user?.nickname}
-                    </div>
-                  ) : (
-                    <div className={styles['user-profile-nickname']}>
-                      {'Guest'}
-                    </div>
-                  )}
-                </div>
-
-                <input
-                  ref={commentRef}
-                  type="text"
-                  placeholder={
-                    user ? '댓글을 입력해주세요...' : '로그인이 필요합니다'
-                  }
-                  value={newComment}
-                  className={styles['comment-input']}
-                  onChange={onCommentChangeHandler}
-                />
-                <div
-                  className={styles['comment-Apply-Button']}
-                  onClick={onApplyClickHandler}>
-                  Apply
-                </div>
-              </div>
-              {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
-                <>
-                  {data.pages.map((page, pageIndex) => {
-                    if (page.data.content && Array.isArray(page.data.content)) {
-                      return page.data.content.map((comment) => (
-                        <Comment
-                          key={comment.commentId}
-                          commentsList={comment}
-                        />
-                      ));
-                    } else {
-                      return <p key={pageIndex}></p>; // content가 없을 때
-                    }
-                  })}
-                  <div ref={ref} style={{ height: '1px' }} />{' '}
-                </>
-              ) : (
-                <></> // 데이터가 없을 때
-              )}
+          <div className={styles['comment-section']}>
+            <div className={styles['comment-header']}>
+              Comment <span>{totalCommentCount}</span>
             </div>
-          )}
+
+            <div className={styles['comment-input-container']}>
+              <div className={styles['user-profile-box']}>
+                {user ? (
+                  // 로그인한 유저의 프로필 이미지가 있을 경우
+                  user?.profileImage !== null ? (
+                    <img
+                      src={user?.profileImage}
+                      alt="프로필 이미지"
+                      className={styles['user-profile-image']}
+                    />
+                  ) : (
+                    <div // 로그인한 유저의 프로필 이미지가 없을 경우
+                      className={styles['comment-default-profile-image']}></div>
+                  )
+                ) : (
+                  // 로그인하지 않은 경우
+                  <div
+                    className={styles['comment-default-profile-image']}></div>
+                )}
+                {user ? (
+                  <div className={styles['user-profile-nickname']}>
+                    {user?.nickname}
+                  </div>
+                ) : (
+                  <div className={styles['user-profile-nickname']}>
+                    {'Guest'}
+                  </div>
+                )}
+              </div>
+
+              <input
+                ref={commentRef}
+                type="text"
+                placeholder={
+                  user ? '댓글을 입력해주세요...' : '로그인이 필요합니다'
+                }
+                value={newComment}
+                className={styles['comment-input']}
+                onChange={onCommentChangeHandler}
+              />
+              <div
+                className={styles['comment-Apply-Button']}
+                onClick={onApplyClickHandler}>
+                Apply
+              </div>
+            </div>
+            {Array.isArray(data?.pages) && data?.pages.length > 0 ? (
+              <>
+                {data.pages.map((page, pageIndex) => {
+                  if (page.data.content && Array.isArray(page.data.content)) {
+                    return page.data.content.map((comment) => (
+                      <Comment key={comment.commentId} commentsList={comment} />
+                    ));
+                  } else {
+                    return <p key={pageIndex}></p>; // content가 없을 때
+                  }
+                })}
+                <div ref={ref} style={{ height: '1px' }} />{' '}
+              </>
+            ) : (
+              <></> // 데이터가 없을 때
+            )}
+          </div>
         </div>
       </div>
     </>

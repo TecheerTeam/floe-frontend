@@ -24,7 +24,7 @@
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  -webkit-text-fill-color: transparent; 
+  -webkit-text-fill-color: transparent;
   width: 122px;
   margin-bottom: 34px;
   line-height: 150%;
@@ -181,9 +181,41 @@
   font-family: 'Pretendard Variable';
   font-size: 16px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 .Button-Return-Home:hover {
   background-color: #555;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+@media screen and (max-width: 768px) {
+  #auth-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 390px;
+    height: 100vh;
+  }
+  .auth-left-box {
+    display: none;
+  }
+  .auth-right-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .auth-right-top-title {
+    font-size: 80px;
+    height: auto;
+  }
+  .auth-right-intro-title {
+    margin-bottom: 20px;
+    padding: 0;
+    font-size: 20px;
+  }
+  .divider {
+    margin-bottom: 35px;
+    padding: 0;
+  }
 }

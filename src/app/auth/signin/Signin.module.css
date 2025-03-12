@@ -10,7 +10,6 @@
   position: relative; /* 자식의 절대 위치를 기준으로 설정 */
   display: flex;
   width: 1176px;
-  min-width: 500px;
   height: 700px;
   min-height: 200px;
   border-radius: 15px;
@@ -214,4 +213,61 @@
 }
 .error-message {
   color: red;
+}
+@media screen and (max-width: 768px) {
+  .signIn-wrapper {
+    width: 390px;
+  }
+  .signIn-container {
+    width: 370px;
+  }
+  .signIn-top {
+    width: 100%;
+    gap: 20px;
+    height: auto;
+  }
+  .signIn-logo {
+    margin-left: 10px;
+    font-size: 60px;
+    height: auto;
+  }
+  .signIn-signin {
+    font-size: 35px;
+  }
+  .signIn-input-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    height: 200px;
+    width: inherit;
+  }
+  .signIn-email-section {
+    display: flex;
+    flex-direction: row;
+  }
+  .email-input,
+  .pw-input {
+    width: 250px;
+    height: 40px;
+    padding-left: 10px;
+    font-size: 14px;
+    background-color: #ffffff;
+  }
+  .other-text-section {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 40px;
+    height: 30px;
+  }
+  .other-text-left,
+  .other-text-right {
+    font-size: 16px;
+    color: var(--other-text-color);
+    height: auto;
+    width: auto;
+  }
 }

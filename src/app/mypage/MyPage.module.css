@@ -1,14 +1,12 @@
 .mypage-Container {
   display: grid;
-  grid-template-columns: 400px 1fr 320px;
+  grid-template-columns: 400px minmax(600px, 1fr) 420px;
   gap: 20px;
   width: 100%;
-  max-width: 1920px; /* 전체 너비 제한 */
-  margin: 0 auto;
-  padding-top: 157px;
-  height: auto;
+  max-width: 1920px;
+  margin: 0;
+  padding-top: 17px;
   background-color: var(--main-background-color);
-  font-family: 'Pretendard Variable';
 }
 .desktop-navbar {
   position: sticky;
@@ -153,13 +151,18 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-contnet: space-between;
+  justify-content: space-between;
 }
 .postContentWrapper {
   width: 60rem;
+  padding: 0;
+  margin: 0;
 }
 .no-records {
-  padding-top: 50px;
+  width: 60rem;
+  padding: 0;
+  margin: 50px 0 0 0;
+  min-height: 400px; /* 최소 높이 설정 */
   display: flex;
   justify-content: center;
 }
@@ -167,6 +170,7 @@
   padding: 30px 0px;
   display: flex;
   justify-content: center;
+  min-height: 50px; /* 페이지네이션 최소 높이 유지 */
 }
 .paginationButton {
   padding: 5px 10px;
@@ -388,6 +392,7 @@
     width: inherit;
     padding: 0;
     margin: 1rem 0;
+    height: 340px;
   }
   .user-profile-image {
     width: 60px;
@@ -420,20 +425,22 @@
     margin-right: 10px;
   }
   .tab-Content {
-    width: inherit;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-contnet: space-between;
   }
   .postContentWrapper {
-    width: inherit;
+    width: 370px;
+    padding: 0;
+    margin: 0 0 0 10px;
   }
   .no-records {
     padding-top: 200px;
     display: flex;
     justify-content: center;
   }
-  .user-setting{
+  .user-setting {
     display: none;
   }
   .more-button {

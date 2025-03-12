@@ -10,9 +10,7 @@
   position: relative; /* 자식의 절대 위치를 기준으로 설정 */
   display: flex;
   width: 1176px;
-  min-width: 500px;
   height: 700px;
-  min-height: 200px;
   border-radius: 15px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
@@ -89,7 +87,9 @@
 }
 .input-error {
   border: 1px solid red;
+  color: red; /* 에러 메시지가 보일 때 텍스트 색상 변경 */
 }
+
 .error-section {
   width: 15px;
   display: flex;
@@ -159,4 +159,76 @@
 
 .return-button:hover {
   background-image: var(--return-icon-hover);
+}
+@media screen and (max-width: 768px) {
+  .signUp-wrapper {
+    width: 390px;
+  }
+  .signUp-container {
+    width: 370px;
+  }
+  .signUp-top {
+    width: 100%;
+    gap: 20px;
+    height: auto;
+  }
+  .signUp-logo {
+    margin-left: 10px;
+    font-size: 60px;
+    height: auto;
+  }
+  .signUp-signUp {
+    font-size: 35px;
+  }
+  .signUp-input-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    height: auto;
+    width: 370px;
+  }
+  .E-MAIL,
+  .PW,
+  .Nickname,
+  .Experience,
+  .Age,
+  .Field {
+    display: flex;
+    font-family: 'Pretendard Variable';
+    font-size: 15px;
+    color: var(--text-color);
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+  }
+  .signUp-email-section,
+  .signUp-pw-section,
+  .signUp-experience-input-section,
+  .signUp-nickname-input-section,
+  .signUp-Age-input-section,
+  .signUp-Field-input-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 80%;
+  }
+
+  .email-input,
+  .pw-input,
+  .experience-input,
+  .nickname-input,
+  .Field-input,
+  .Age-input {
+    width: 200px;
+    height: 40px;
+    margin: 0;
+    padding-left: 10px;
+    font-size: 14px;
+    background-color: #ffffff;
+    outline: none;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+  }
 }

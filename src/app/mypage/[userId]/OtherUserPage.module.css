@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 1920px; /* 전체 너비 제한 */
   margin: 0 auto;
-  padding-top: 157px;
+  padding-top: 17px;
   height: auto;
   background-color: var(--main-background-color);
   font-family: 'Pretendard Variable';
@@ -103,8 +103,6 @@
 .data-Number {
   width: 3rem;
 }
-
-
 
 .user-Name {
   margin-top: 20px;

@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 1920px; /* 전체 너비 제한 */
   margin: 0 auto;
-  padding-top: 157px;
+  padding-top: 17px;
   background-color: var(--main-background-color);
 }
 
@@ -166,12 +166,7 @@
   width: auto;
   height: 100%;
 }
-.post-detail-images {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background-size: cover;
-}
+
 .post-detail-bottom {
   margin-left: 15px;
   margin-right: 15px;
