@@ -102,9 +102,6 @@ export default function Main() {
       console.error('사용자 정보 요청 실패:', error);
     }
   };
-  //      event handler: 토글 버튼을 클릭할 때 뷰 모드 변경     //
-  const toggleViewCardMode = () => setViewMode('card');
-  const toggleViewListMode = () => setViewMode('list');
 
   //          effect: 게시글 데이터 최신화          //
   useEffect(() => {

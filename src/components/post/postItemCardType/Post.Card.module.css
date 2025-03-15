@@ -210,6 +210,8 @@
   font-size: 16px;
   margin-bottom: 15px;
   white-space: pre-wrap;
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
 }
 .card-image {
   margin-top: 20px;
