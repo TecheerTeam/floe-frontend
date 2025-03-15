@@ -157,13 +157,15 @@
   height: 100%;
 }
 .title-Input {
-  max-height: 40px;
+  min-height: 30px;
   min-width: 99%;
-  height: 100%;
   border: 1px solid #b1b0b0;
   border-radius: 10px;
   background-color: var(--post-Page-Section-color);
   color: var(--post-Page-text-color);
+}
+.title-Input :focus {
+  outline: none;
 }
 .content-Section {
   padding-top: 10px;

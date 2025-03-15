@@ -1,6 +1,6 @@
 .mypage-Container {
   display: grid;
-  grid-template-columns: 400px minmax(600px, 1fr) 420px;
+  grid-template-columns: 400px minmax(600px, 1fr) 320px;
   gap: 20px;
   width: 100%;
   max-width: 1920px;
@@ -117,9 +117,6 @@
   flex-direction: row;
   justify-content: space-between;
   gap: 1rem;
-}
-.more-button {
-  display: none;
 }
 .user-setting {
   width: 1.125rem;
@@ -443,9 +440,5 @@
   .user-setting {
     display: none;
   }
-  .more-button {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--mypage-edit-modal-background-color);
-  }
+ 
 }
