@@ -6,7 +6,6 @@
   gap: 20px;
   max-height: calc(100vh - 137px); /* 헤더 높이를 제외한 최대 높이 */
   position: relative;
-  margin-left: auto; /* 페이지 우측으로 정렬 */
   background-color: var(--side-bar-background-color);
 }
 
