@@ -68,26 +68,35 @@ ERD
 
 
 #### Sign-Up Page
+![signup-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/6044ed02-01ad-4eaa-a4e5-f046fc661b97)
 
 
 #### Sign-In Page
+![signin-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/7cf957cc-2144-4dff-9cf2-23c633ee62d5)
 
 
 #### O.Auth Page
+![oauth-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/5c07f0ca-c34b-48a7-b009-625a6ee69215)
 
 
 #### Post-Detail Page
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/072401d2-1cfb-4a92-95f8-d7c84da1ae94)
 
 
 #### MyPage
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/8b2fc87d-948e-45d7-8a58-92d96000e26a)
 
 
 #### Search
+![ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/1c5617a3-d7b8-4938-bb61-c4f57f56227b)
 
 
 #### Alarm
+![ezgif com-video-to-gif-converter (3)](https://github.com/user-attachments/assets/f4abf805-077d-41c5-baaa-3005a6d73b85)
+
 
 #### Dark Mode
+![ezgif com-video-to-gif-converter (4)](https://github.com/user-attachments/assets/41e33a11-2e11-4613-be35-fb84d3ed883a)
 
 
 
