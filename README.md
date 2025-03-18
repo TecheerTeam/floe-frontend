@@ -1,5 +1,5 @@
 #  FLOE - 트러블 슈팅 기록 SNS
-### 팀원 : 김지훈(FE), 강재훈(FE), 박진형(BE), 서지민(BE),  연경수(BE)
+### 팀원 : 김지훈(FE), 강재훈(FE)
 
 #### 사용 스택 : 
 FrontEnd : React, TypeScript, Next.js, Chart.js, Tanstack-Query, Axios, Zustand
@@ -13,7 +13,7 @@ Deploy : Docker, AWS S3
 Design : Figma
 
 ### 'npm run dev' 를 터미널에 입력해 구동합니다.
-#### !! 팀 전원 연락 두절로 배포 불가 !!
+#### 팀 사정으로 인해 배포 불가
 
 
 ### 프로젝트 소개
