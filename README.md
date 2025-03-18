@@ -1,5 +1,5 @@
 #  FLOE - 트러블 슈팅 기록 SNS
-### 팀원 : 김지훈(FE), 강재훈(FE)
+### 팀원 : 김지훈(FE)
 
 #### 사용 스택 : 
 FrontEnd : React, TypeScript, Next.js, Chart.js, Tanstack-Query, Axios, Zustand
